@@ -30,9 +30,14 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.text.AnnotatedString
 import androidx.lifecycle.viewmodel.compose.viewModel
+import dev.skymansandy.kurlclient.ui.request.ImportCurlDialog
+import kotlinx.coroutines.launch
 import dev.skymansandy.kurlclient.ui.adaptive.WindowWidthClass
 import dev.skymansandy.kurlclient.ui.adaptive.toWindowWidthClass
 import dev.skymansandy.kurlclient.ui.collections.CollectionsScreen
@@ -52,7 +57,10 @@ fun KurlAppScaffold() {
 
     var selectedNav by remember { mutableStateOf(NavDestination.New) }
     var showSaveDialog by remember { mutableStateOf(false) }
+    var showImportCurlDialog by remember { mutableStateOf(false) }
     val snackbarHostState = remember { SnackbarHostState() }
+    val clipboard = LocalClipboardManager.current
+    val scope = rememberCoroutineScope()
 
     // Show snackbar on successful save
     LaunchedEffect(vm.saveSuccess) {
@@ -65,6 +73,17 @@ fun KurlAppScaffold() {
 
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
         val windowClass = maxWidth.toWindowWidthClass()
+
+        if (showImportCurlDialog) {
+            ImportCurlDialog(
+                onImport = { curlText ->
+                    vm.importFromCurl(curlText).also { success ->
+                        if (success) selectedNav = NavDestination.New
+                    }
+                },
+                onDismiss = { showImportCurlDialog = false }
+            )
+        }
 
         if (showSaveDialog) {
             SaveRequestDialog(
@@ -82,6 +101,16 @@ fun KurlAppScaffold() {
             )
         }
 
+        val onCopyCurl: () -> Unit = {
+            clipboard.setText(AnnotatedString(vm.buildCurlCommand()))
+            scope.launch { snackbarHostState.showSnackbar("Copied as cURL") }
+        }
+        val onImportCurl: () -> Unit = { showImportCurlDialog = true }
+        val onRequestSelected: (dev.skymansandy.kurlclient.db.SavedRequest) -> Unit = { saved ->
+            vm.loadSavedRequest(saved)
+            selectedNav = NavDestination.New
+        }
+
         when (windowClass) {
             WindowWidthClass.Compact -> CompactScaffold(
                 vm = vm,
@@ -90,10 +119,9 @@ fun KurlAppScaffold() {
                 snackbarHostState = snackbarHostState,
                 onNavSelect = { selectedNav = it },
                 onSave = { showSaveDialog = true },
-                onRequestSelected = { saved ->
-                    vm.loadSavedRequest(saved)
-                    selectedNav = NavDestination.New
-                }
+                onCopyCurl = onCopyCurl,
+                onImportCurl = onImportCurl,
+                onRequestSelected = onRequestSelected
             )
             else -> ExpandedScaffold(
                 vm = vm,
@@ -102,10 +130,9 @@ fun KurlAppScaffold() {
                 snackbarHostState = snackbarHostState,
                 onNavSelect = { selectedNav = it },
                 onSave = { showSaveDialog = true },
-                onRequestSelected = { saved ->
-                    vm.loadSavedRequest(saved)
-                    selectedNav = NavDestination.New
-                }
+                onCopyCurl = onCopyCurl,
+                onImportCurl = onImportCurl,
+                onRequestSelected = onRequestSelected
             )
         }
     }
@@ -121,6 +148,8 @@ private fun CompactScaffold(
     snackbarHostState: SnackbarHostState,
     onNavSelect: (NavDestination) -> Unit,
     onSave: () -> Unit,
+    onCopyCurl: () -> Unit,
+    onImportCurl: () -> Unit,
     onRequestSelected: (dev.skymansandy.kurlclient.db.SavedRequest) -> Unit
 ) {
     Scaffold(
@@ -152,6 +181,8 @@ private fun CompactScaffold(
                         onBodyChange = vm::setRequestBody,
                         onSend = vm::sendRequest,
                         onSave = onSave,
+                        onCopyCurl = onCopyCurl,
+                        onImportCurl = onImportCurl,
                         modifier = Modifier.weight(1f).fillMaxWidth()
                     )
                     HorizontalDivider()
@@ -182,6 +213,8 @@ private fun ExpandedScaffold(
     snackbarHostState: SnackbarHostState,
     onNavSelect: (NavDestination) -> Unit,
     onSave: () -> Unit,
+    onCopyCurl: () -> Unit,
+    onImportCurl: () -> Unit,
     onRequestSelected: (dev.skymansandy.kurlclient.db.SavedRequest) -> Unit
 ) {
     Scaffold(
@@ -215,6 +248,8 @@ private fun ExpandedScaffold(
                         onBodyChange = vm::setRequestBody,
                         onSend = vm::sendRequest,
                         onSave = onSave,
+                        onCopyCurl = onCopyCurl,
+                        onImportCurl = onImportCurl,
                         modifier = Modifier.weight(1f).fillMaxHeight()
                     )
                     VerticalDivider()

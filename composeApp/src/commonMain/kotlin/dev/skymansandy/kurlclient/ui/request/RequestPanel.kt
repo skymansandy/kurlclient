@@ -20,6 +20,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.FolderOpen
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
@@ -69,6 +70,8 @@ fun RequestPanel(
     onBodyChange: (String) -> Unit,
     onSend: () -> Unit,
     onSave: () -> Unit,
+    onCopyCurl: () -> Unit,
+    onImportCurl: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     var selectedTab by remember { mutableIntStateOf(0) }
@@ -82,6 +85,8 @@ fun RequestPanel(
             onUrlChange = onUrlChange,
             onSend = onSend,
             onSave = onSave,
+            onCopyCurl = onCopyCurl,
+            onImportCurl = onImportCurl,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 12.dp, vertical = 10.dp)
@@ -133,9 +138,12 @@ private fun UrlBar(
     onUrlChange: (String) -> Unit,
     onSend: () -> Unit,
     onSave: () -> Unit,
+    onCopyCurl: () -> Unit,
+    onImportCurl: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     var expanded by remember { mutableStateOf(false) }
+    var moreMenuExpanded by remember { mutableStateOf(false) }
 
     Row(
         modifier = modifier.height(48.dp),
@@ -194,6 +202,26 @@ private fun UrlBar(
             },
             modifier = Modifier.weight(1f).fillMaxSize()
         )
+
+        // ⋮ More menu: cURL import / export
+        Box(modifier = Modifier.wrapContentSize(Alignment.TopStart)) {
+            IconButton(onClick = { moreMenuExpanded = true }) {
+                Icon(Icons.Default.MoreVert, contentDescription = "More actions")
+            }
+            DropdownMenu(
+                expanded = moreMenuExpanded,
+                onDismissRequest = { moreMenuExpanded = false }
+            ) {
+                DropdownMenuItem(
+                    text = { Text("Import from cURL") },
+                    onClick = { moreMenuExpanded = false; onImportCurl() }
+                )
+                DropdownMenuItem(
+                    text = { Text("Copy as cURL") },
+                    onClick = { moreMenuExpanded = false; onCopyCurl() }
+                )
+            }
+        }
 
         FilledTonalIconButton(
             onClick = onSave,

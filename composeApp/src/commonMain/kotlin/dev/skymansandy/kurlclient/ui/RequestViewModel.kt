@@ -11,7 +11,9 @@ import dev.skymansandy.kurl.core.model.NetworkInfo
 import dev.skymansandy.kurlclient.db.AppDatabase
 import dev.skymansandy.kurlclient.db.CollectionRepository
 import dev.skymansandy.kurlclient.db.SavedRequest
+import dev.skymansandy.kurlclient.util.buildCurlCommand
 import dev.skymansandy.kurlclient.util.deserializeKeyValueEntries
+import dev.skymansandy.kurlclient.util.parseCurlCommand
 import dev.skymansandy.kurlclient.util.serialize
 import kotlinx.coroutines.launch
 
@@ -120,6 +122,28 @@ class RequestViewModel : ViewModel() {
 
     fun clearSaveSuccess() { saveSuccess = false }
 
+    // ── cURL export / import ──────────────────────────────────────────────────
+
+    fun buildCurlCommand(): String =
+        buildCurlCommand(url, method, headers, params, body)
+
+    /** Returns true on success, false if the command couldn't be parsed. */
+    fun importFromCurl(curlCommand: String): Boolean {
+        val parsed = parseCurlCommand(curlCommand) ?: return false
+        url = parsed.url
+        method = runCatching { HttpMethod.valueOf(parsed.method) }.getOrDefault(HttpMethod.GET)
+        headers = parsed.headers
+            .map { (k, v) -> KeyValueEntry(id = nextId++, key = k, value = v) }
+            .ifEmpty { listOf(KeyValueEntry(id = nextId++)) }
+        params = parsed.params
+            .map { (k, v) -> KeyValueEntry(id = nextId++, key = k, value = v) }
+            .ifEmpty { listOf(KeyValueEntry(id = nextId++)) }
+        body = parsed.body ?: ""
+        response = null
+        error = null
+        return true
+    }
+
     fun loadSavedRequest(saved: SavedRequest) {
         url = saved.url
         method = runCatching { HttpMethod.valueOf(saved.method) }.getOrDefault(HttpMethod.GET)
@@ -137,6 +161,9 @@ class RequestViewModel : ViewModel() {
 
     fun sendRequest() {
         if (url.isBlank()) return
+        if (!url.startsWith("http://", ignoreCase = true) && !url.startsWith("https://", ignoreCase = true)) {
+            url = "https://$url"
+        }
         viewModelScope.launch {
             isLoading = true
             error = null
