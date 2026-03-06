@@ -9,7 +9,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
@@ -50,11 +52,20 @@ fun ResponsePanel(
         )
 
         TabRow(selectedTabIndex = selectedTab) {
+            val headerCount = response?.headers?.size ?: 0
+            val hasBody = response?.body?.isNotBlank() == true
+            val hasNetwork = response?.networkInfo != null
             RESPONSE_TABS.forEachIndexed { index, title ->
                 Tab(
                     selected = selectedTab == index,
                     onClick = { selectedTab = index },
-                    text = { Text(title) }
+                    text = {
+                        TabLabel(
+                            title = title,
+                            count = when (index) { 1 -> headerCount; else -> 0 },
+                            hasDot = when (index) { 0 -> hasBody; 2 -> hasNetwork; else -> false }
+                        )
+                    }
                 )
             }
         }
@@ -65,6 +76,23 @@ fun ResponsePanel(
                 1 -> ResponseHeadersTab(headers = response?.headers ?: emptyMap())
                 2 -> NetworkInfoTab(networkInfo = response?.networkInfo)
             }
+        }
+    }
+}
+
+@Composable
+private fun TabLabel(title: String, count: Int = 0, hasDot: Boolean = false) {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(if (count > 0) "$title ($count)" else title)
+        if (hasDot) {
+            Box(
+                modifier = Modifier
+                    .size(6.dp)
+                    .background(MaterialTheme.colorScheme.primary, CircleShape)
+            )
         }
     }
 }

@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -93,11 +94,20 @@ fun RequestPanel(
         )
 
         ScrollableTabRow(selectedTabIndex = selectedTab, edgePadding = 12.dp) {
+            val activeParamCount = params.count { it.key.isNotBlank() }
+            val activeHeaderCount = headers.count { it.key.isNotBlank() }
+            val hasBody = body.isNotBlank()
             REQUEST_TABS.forEachIndexed { index, title ->
                 Tab(
                     selected = selectedTab == index,
                     onClick = { selectedTab = index },
-                    text = { Text(title) }
+                    text = {
+                        TabLabel(
+                            title = title,
+                            count = when (index) { 1 -> activeHeaderCount; else -> 0 },
+                            hasDot = when (index) { 0 -> activeParamCount > 0; 3 -> hasBody; else -> false }
+                        )
+                    }
                 )
             }
         }
@@ -123,6 +133,25 @@ fun RequestPanel(
                 2 -> AuthTab()
                 3 -> BodyTab(body = body, onBodyChange = onBodyChange)
             }
+        }
+    }
+}
+
+// ── Tab Label ─────────────────────────────────────────────────────────────────
+
+@Composable
+private fun TabLabel(title: String, count: Int = 0, hasDot: Boolean = false) {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(if (count > 0) "$title ($count)" else title)
+        if (hasDot) {
+            Box(
+                modifier = Modifier
+                    .size(6.dp)
+                    .background(MaterialTheme.colorScheme.primary, CircleShape)
+            )
         }
     }
 }
