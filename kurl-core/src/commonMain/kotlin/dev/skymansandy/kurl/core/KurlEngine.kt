@@ -37,6 +37,8 @@ class KurlEngine {
         val elapsedMs = mark.elapsedNow().inWholeMilliseconds
         val bodyText = response.bodyAsText()
 
+        val httpVersion = "HTTP/${response.version.major}.${response.version.minor}"
+
         return KurlResponse(
             statusCode = response.status.value,
             statusText = response.status.description,
@@ -44,7 +46,8 @@ class KurlEngine {
                 .associate { it.key to it.value.joinToString(", ") },
             body = bodyText,
             timeMs = elapsedMs,
-            sizeBytes = bodyText.encodeToByteArray().size.toLong()
+            sizeBytes = bodyText.encodeToByteArray().size.toLong(),
+            networkInfo = buildNetworkInfo(request.url, httpVersion)
         )
     }
 

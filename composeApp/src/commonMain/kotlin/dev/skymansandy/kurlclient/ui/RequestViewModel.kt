@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dev.skymansandy.kurl.core.KurlEngine
 import dev.skymansandy.kurl.core.model.KurlRequest
+import dev.skymansandy.kurl.core.model.NetworkInfo
 import dev.skymansandy.kurlclient.db.AppDatabase
 import dev.skymansandy.kurlclient.db.CollectionRepository
 import dev.skymansandy.kurlclient.db.SavedRequest
@@ -29,7 +30,8 @@ data class ResponseState(
     val timeMs: Long = 0,
     val sizeBytes: Long = 0,
     val body: String = "",
-    val headers: Map<String, String> = emptyMap()
+    val headers: Map<String, String> = emptyMap(),
+    val networkInfo: NetworkInfo? = null
 )
 
 class RequestViewModel : ViewModel() {
@@ -158,7 +160,8 @@ class RequestViewModel : ViewModel() {
                     timeMs = kurlResponse.timeMs,
                     sizeBytes = kurlResponse.sizeBytes,
                     body = kurlResponse.body,
-                    headers = kurlResponse.headers
+                    headers = kurlResponse.headers,
+                    networkInfo = kurlResponse.networkInfo
                 )
             } catch (e: Exception) {
                 error = e.message ?: "Request failed"
