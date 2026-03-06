@@ -1,0 +1,134 @@
+package dev.skymansandy.kurlclient.ui
+
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import dev.skymansandy.kurl.core.KurlEngine
+import dev.skymansandy.kurl.core.model.KurlRequest
+import kotlinx.coroutines.launch
+
+enum class HttpMethod { GET, POST, PUT, DELETE, PATCH, HEAD, OPTIONS }
+
+data class KeyValueEntry(
+    val id: Long,
+    val key: String = "",
+    val value: String = "",
+    val enabled: Boolean = true
+)
+
+data class ResponseState(
+    val statusCode: Int? = null,
+    val statusText: String = "",
+    val timeMs: Long = 0,
+    val sizeBytes: Long = 0,
+    val body: String = "",
+    val headers: Map<String, String> = emptyMap()
+)
+
+class RequestViewModel : ViewModel() {
+
+    private val engine = KurlEngine()
+    private var nextId = 1L
+
+    var url by mutableStateOf("")
+        private set
+
+    var method by mutableStateOf(HttpMethod.GET)
+        private set
+
+    var params by mutableStateOf(listOf(KeyValueEntry(id = nextId++)))
+        private set
+
+    var headers by mutableStateOf(listOf(KeyValueEntry(id = nextId++)))
+        private set
+
+    var body by mutableStateOf("")
+        private set
+
+    var isLoading by mutableStateOf(false)
+        private set
+
+    var response by mutableStateOf<ResponseState?>(null)
+        private set
+
+    var error by mutableStateOf<String?>(null)
+        private set
+
+    // ── Request field updates ─────────────────────────────────────────────────
+
+    fun setRequestUrl(value: String) { url = value }
+    fun setRequestMethod(value: HttpMethod) { method = value }
+    fun setRequestBody(value: String) { body = value }
+
+    // ── Params ────────────────────────────────────────────────────────────────
+
+    fun updateParam(id: Long, key: String, value: String, enabled: Boolean) {
+        params = params.map { if (it.id == id) it.copy(key = key, value = value, enabled = enabled) else it }
+    }
+
+    fun addParam() {
+        params = params + KeyValueEntry(id = nextId++)
+    }
+
+    fun removeParam(id: Long) {
+        params = params.filter { it.id != id }
+    }
+
+    // ── Headers ───────────────────────────────────────────────────────────────
+
+    fun updateHeader(id: Long, key: String, value: String, enabled: Boolean) {
+        headers = headers.map { if (it.id == id) it.copy(key = key, value = value, enabled = enabled) else it }
+    }
+
+    fun addHeader() {
+        headers = headers + KeyValueEntry(id = nextId++)
+    }
+
+    fun removeHeader(id: Long) {
+        headers = headers.filter { it.id != id }
+    }
+
+    // ── Send ──────────────────────────────────────────────────────────────────
+
+    fun sendRequest() {
+        if (url.isBlank()) return
+        viewModelScope.launch {
+            isLoading = true
+            error = null
+            try {
+                val kurlResponse = engine.execute(
+                    KurlRequest(
+                        url = url,
+                        method = method.name,
+                        headers = headers
+                            .filter { it.enabled && it.key.isNotBlank() }
+                            .associate { it.key to it.value },
+                        queryParams = params
+                            .filter { it.enabled && it.key.isNotBlank() }
+                            .associate { it.key to it.value },
+                        body = body.ifBlank { null }
+                    )
+                )
+                response = ResponseState(
+                    statusCode = kurlResponse.statusCode,
+                    statusText = kurlResponse.statusText,
+                    timeMs = kurlResponse.timeMs,
+                    sizeBytes = kurlResponse.sizeBytes,
+                    body = kurlResponse.body,
+                    headers = kurlResponse.headers
+                )
+            } catch (e: Exception) {
+                error = e.message ?: "Request failed"
+            } finally {
+                isLoading = false
+            }
+        }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        engine.close()
+    }
+}

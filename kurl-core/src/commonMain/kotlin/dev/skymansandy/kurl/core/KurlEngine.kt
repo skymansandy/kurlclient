@@ -1,0 +1,54 @@
+package dev.skymansandy.kurl.core
+
+import dev.skymansandy.kurl.core.model.KurlRequest
+import dev.skymansandy.kurl.core.model.KurlResponse
+import io.ktor.client.request.header
+import io.ktor.client.request.request
+import io.ktor.client.request.setBody
+import io.ktor.client.statement.bodyAsText
+import io.ktor.http.HttpMethod
+import kotlin.time.TimeSource
+
+class KurlEngine {
+
+    private val client = createHttpClient()
+
+    suspend fun execute(request: KurlRequest): KurlResponse {
+        val mark = TimeSource.Monotonic.markNow()
+
+        val response = client.request(request.url) {
+            method = HttpMethod(request.method)
+
+            request.headers.forEach { (key, value) ->
+                header(key, value)
+            }
+
+            url {
+                request.queryParams.forEach { (key, value) ->
+                    parameters.append(key, value)
+                }
+            }
+
+            if (!request.body.isNullOrEmpty()) {
+                setBody(request.body)
+            }
+        }
+
+        val elapsedMs = mark.elapsedNow().inWholeMilliseconds
+        val bodyText = response.bodyAsText()
+
+        return KurlResponse(
+            statusCode = response.status.value,
+            statusText = response.status.description,
+            headers = response.headers.entries()
+                .associate { it.key to it.value.joinToString(", ") },
+            body = bodyText,
+            timeMs = elapsedMs,
+            sizeBytes = bodyText.encodeToByteArray().size.toLong()
+        )
+    }
+
+    fun close() {
+        client.close()
+    }
+}
