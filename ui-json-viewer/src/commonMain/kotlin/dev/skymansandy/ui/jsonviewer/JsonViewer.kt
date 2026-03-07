@@ -1,4 +1,4 @@
-package dev.skymansandy.kurlclient.presentation.screens.workspace.response
+package dev.skymansandy.ui.jsonviewer
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row

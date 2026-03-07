@@ -7,7 +7,7 @@ plugins {
 
 kotlin {
     android {
-        namespace = "dev.skymansandy.feature.workspace"
+        namespace = "dev.skymansandy.ui.jsonviewer"
         compileSdk {
             version = release(36) {
                 minorApiLevel = 1
@@ -30,7 +30,7 @@ kotlin {
         iosSimulatorArm64(),
     ).forEach { iosTarget ->
         iosTarget.binaries.framework {
-            baseName = "feature-workspaceKit"
+            baseName = "uiJsonViewerKit"
             isStatic = true
         }
     }
@@ -44,12 +44,6 @@ kotlin {
                 implementation(libs.compose.foundation)
                 implementation(libs.compose.material3)
                 implementation(libs.compose.ui)
-                implementation(libs.material.icons.extended)
-                implementation(libs.androidx.lifecycle.viewmodelCompose)
-                implementation(libs.androidx.lifecycle.runtimeCompose)
-                implementation(projects.kurlCore)
-                implementation(projects.kurlStore)
-                implementation(projects.uiJsonViewer)
             }
         }
 
