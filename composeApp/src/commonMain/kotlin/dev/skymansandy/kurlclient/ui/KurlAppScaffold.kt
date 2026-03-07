@@ -9,8 +9,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.automirrored.filled.List
+import androidx.compose.material.icons.filled.Dashboard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -48,7 +48,7 @@ import dev.skymansandy.kurlclient.ui.response.ResponsePanel
 import kotlinx.coroutines.launch
 
 private enum class NavDestination(val label: String) {
-    New("New"), Collections("Collections")
+    Workspace("Workspace"), Collections("Collections")
 }
 
 @Composable
@@ -56,7 +56,7 @@ fun KurlAppScaffold() {
     val vm = viewModel<RequestViewModel> { RequestViewModel() }
     val collectionsVm = viewModel<CollectionsViewModel> { CollectionsViewModel() }
 
-    var selectedNav by remember { mutableStateOf(NavDestination.New) }
+    var selectedNav by remember { mutableStateOf(NavDestination.Workspace) }
     var showSaveDialog by remember { mutableStateOf(false) }
     var showImportCurlDialog by remember { mutableStateOf(false) }
     val snackbarHostState = remember { SnackbarHostState() }
@@ -87,7 +87,7 @@ fun KurlAppScaffold() {
             ImportCurlDialog(
                 onImport = { curlText ->
                     vm.importFromCurl(curlText).also { success ->
-                        if (success) selectedNav = NavDestination.New
+                        if (success) selectedNav = NavDestination.Workspace
                     }
                 },
                 onDismiss = { showImportCurlDialog = false }
@@ -117,7 +117,7 @@ fun KurlAppScaffold() {
         val onImportCurl: () -> Unit = { showImportCurlDialog = true }
         val onRequestSelected: (dev.skymansandy.kurlclient.db.SavedRequest) -> Unit = { saved ->
             vm.loadSavedRequest(saved)
-            selectedNav = NavDestination.New
+            selectedNav = NavDestination.Workspace
         }
         val onSaveChanges: () -> Unit = { vm.overwriteLoadedRequest() }
 
@@ -175,7 +175,7 @@ private fun CompactScaffold(
     ) { innerPadding ->
         Box(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
             when (selectedNav) {
-                NavDestination.New -> {
+                NavDestination.Workspace -> {
                     var selectedTab by remember { mutableStateOf(0) }
                     Column(modifier = Modifier.fillMaxSize()) {
                         UrlBar(
@@ -269,7 +269,7 @@ private fun ExpandedScaffold(
             VerticalDivider()
 
             when (selectedNav) {
-                NavDestination.New -> {
+                NavDestination.Workspace -> {
                     var selectedTab by remember { mutableStateOf(0) }
                     Column(modifier = Modifier.fillMaxSize()) {
                         UrlBar(
@@ -375,7 +375,7 @@ private fun KurlNavigationRail(
 @Composable
 private fun NavIcon(dest: NavDestination) {
     when (dest) {
-        NavDestination.New -> Icon(Icons.Default.Add, contentDescription = dest.label)
-        NavDestination.Collections -> Icon(Icons.Default.List, contentDescription = dest.label)
+        NavDestination.Workspace -> Icon(Icons.Default.Dashboard, contentDescription = dest.label)
+        NavDestination.Collections -> Icon(Icons.AutoMirrored.Filled.List, contentDescription = dest.label)
     }
 }
