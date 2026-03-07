@@ -2,11 +2,9 @@ package dev.skymansandy.kurlclient.presentation.core
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
@@ -24,21 +22,16 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalClipboardManager
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.skymansandy.kurlclient.presentation.adaptive.WindowWidthClass
@@ -46,12 +39,10 @@ import dev.skymansandy.kurlclient.presentation.adaptive.toWindowWidthClass
 import dev.skymansandy.kurlclient.presentation.screens.collections.CollectionsScreen
 import dev.skymansandy.kurlclient.presentation.screens.collections.CollectionsViewModel
 import dev.skymansandy.kurlclient.presentation.screens.workspace.RequestViewModel
-import dev.skymansandy.kurlclient.presentation.screens.workspace.request.ImportCurlDialog
-import dev.skymansandy.kurlclient.presentation.screens.workspace.request.RequestPanel
-import dev.skymansandy.kurlclient.presentation.screens.workspace.request.SaveRequestDialog
-import dev.skymansandy.kurlclient.presentation.screens.workspace.request.UrlBar
-import dev.skymansandy.kurlclient.presentation.screens.workspace.response.ResponsePanel
+import dev.skymansandy.kurlclient.presentation.screens.workspace.WorkspaceScreen
+import dev.skymansandy.kurlstore.db.CollectionFolder
 import dev.skymansandy.kurlstore.db.SavedRequest
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 private enum class NavDestination(val label: String) {
@@ -60,134 +51,95 @@ private enum class NavDestination(val label: String) {
 
 @Composable
 fun KurlAppScaffold() {
-    val vm = viewModel<RequestViewModel> { RequestViewModel() }
+    // Both VMs are accessed here only for cross-feature coordination.
+    // WorkspaceScreen and CollectionsScreen create their own instances via viewModel(),
+    // which returns the same activity-scoped instance.
+    val workspaceVm = viewModel<RequestViewModel> { RequestViewModel() }
     val collectionsVm = viewModel<CollectionsViewModel> { CollectionsViewModel() }
 
     var selectedNav by remember { mutableStateOf(NavDestination.Workspace) }
-    var showSaveDialog by remember { mutableStateOf(false) }
-    var showImportCurlDialog by remember { mutableStateOf(false) }
     var pendingRequest by remember { mutableStateOf<SavedRequest?>(null) }
     var showDiscardDialog by remember { mutableStateOf(false) }
     val snackbarHostState = remember { SnackbarHostState() }
-    val clipboard = LocalClipboardManager.current
     val scope = rememberCoroutineScope()
 
-    // Show snackbar on successful save
-    LaunchedEffect(vm.saveSuccess) {
-        if (vm.saveSuccess) {
-            collectionsVm.refresh()
-            snackbarHostState.showSnackbar("Request saved to collections")
-            vm.clearSaveSuccess()
+    // Cross-feature callbacks passed down to the layout composables
+    val onShowSnackbar: (String) -> Unit = { msg ->
+        scope.launch { snackbarHostState.showSnackbar(msg) }
+    }
+    val onSaveSuccess: () -> Unit = {
+        collectionsVm.refresh()
+        onShowSnackbar("Request saved to collections")
+    }
+    val onOverwriteSuccess: () -> Unit = {
+        collectionsVm.refresh()
+        onShowSnackbar("Changes saved")
+    }
+    val onRequestSelected: (SavedRequest) -> Unit = { saved ->
+        if (workspaceVm.hasUnsavedChanges) {
+            pendingRequest = saved
+            showDiscardDialog = true
+        } else {
+            workspaceVm.loadSavedRequest(saved)
+            selectedNav = NavDestination.Workspace
         }
     }
 
-    LaunchedEffect(vm.overwriteSuccess) {
-        if (vm.overwriteSuccess) {
-            collectionsVm.refresh()
-            snackbarHostState.showSnackbar("Changes saved")
-            vm.clearOverwriteSuccess()
-        }
+    if (showDiscardDialog) {
+        AlertDialog(
+            onDismissRequest = { showDiscardDialog = false; pendingRequest = null },
+            title = { Text("Discard changes?") },
+            text = { Text("You have unsaved changes. Opening another request will discard them.") },
+            confirmButton = {
+                TextButton(onClick = {
+                    showDiscardDialog = false
+                    pendingRequest?.let { workspaceVm.loadSavedRequest(it) }
+                    pendingRequest = null
+                    selectedNav = NavDestination.Workspace
+                }) { Text("Discard") }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDiscardDialog = false; pendingRequest = null }) {
+                    Text("Cancel")
+                }
+            }
+        )
     }
 
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
         val windowClass = maxWidth.toWindowWidthClass()
-
-        if (showImportCurlDialog) {
-            ImportCurlDialog(
-                onImport = { curlText ->
-                    vm.importFromCurl(curlText).also { success ->
-                        if (success) selectedNav = NavDestination.Workspace
-                    }
-                },
-                onDismiss = { showImportCurlDialog = false }
-            )
-        }
-
-        if (showSaveDialog) {
-            SaveRequestDialog(
-                initialName = if (vm.url.isNotBlank()) vm.url.substringAfterLast("/").take(40) else "Untitled",
-                folders = collectionsVm.allFolders,
-                folderPaths = collectionsVm.folderPaths,
-                onSave = { name, folderId ->
-                    vm.saveRequest(name, folderId)
-                    showSaveDialog = false
-                },
-                onCreateFolder = { name, parentId ->
-                    collectionsVm.createFolder(name, parentId)
-                },
-                onDismiss = { showSaveDialog = false }
-            )
-        }
-
-        if (showDiscardDialog) {
-            AlertDialog(
-                onDismissRequest = {
-                    showDiscardDialog = false
-                    pendingRequest = null
-                },
-                title = { Text("Discard changes?") },
-                text = { Text("You have unsaved changes. Opening another request will discard them.") },
-                confirmButton = {
-                    TextButton(onClick = {
-                        showDiscardDialog = false
-                        pendingRequest?.let { saved ->
-                            vm.loadSavedRequest(saved)
-                            selectedNav = NavDestination.Workspace
-                        }
-                        pendingRequest = null
-                    }) { Text("Discard") }
-                },
-                dismissButton = {
-                    TextButton(onClick = {
-                        showDiscardDialog = false
-                        pendingRequest = null
-                    }) { Text("Cancel") }
-                }
-            )
-        }
-
-        val onCopyCurl: () -> Unit = {
-            clipboard.setText(AnnotatedString(vm.buildCurlCommand()))
-            scope.launch { snackbarHostState.showSnackbar("Copied as cURL") }
-        }
-        val onImportCurl: () -> Unit = { showImportCurlDialog = true }
-        val onRequestSelected: (SavedRequest) -> Unit = { saved ->
-            if (vm.hasUnsavedChanges) {
-                pendingRequest = saved
-                showDiscardDialog = true
-            } else {
-                vm.loadSavedRequest(saved)
-                selectedNav = NavDestination.Workspace
-            }
-        }
-        val onSaveChanges: () -> Unit = { vm.overwriteLoadedRequest() }
-
         when (windowClass) {
             WindowWidthClass.Compact -> CompactScaffold(
-                vm = vm,
-                collectionsVm = collectionsVm,
+                hasUnsavedChanges = workspaceVm.hasUnsavedChanges,
+                activeRequestId = workspaceVm.loadedRequest?.id,
+                allFolders = collectionsVm.allFolders,
+                folderPaths = collectionsVm.folderPaths,
                 selectedNav = selectedNav,
-                hasUnsavedChanges = vm.hasUnsavedChanges,
                 snackbarHostState = snackbarHostState,
+                scope = scope,
                 onNavSelect = { selectedNav = it },
-                onSave = { showSaveDialog = true },
-                onCopyCurl = onCopyCurl,
-                onImportCurl = onImportCurl,
+                onSaveSuccess = onSaveSuccess,
+                onOverwriteSuccess = onOverwriteSuccess,
+                onShowSnackbar = onShowSnackbar,
+                onCreateFolder = collectionsVm::createFolder,
                 onRequestSelected = onRequestSelected,
-                onSaveChanges = onSaveChanges
+                onSaveChanges = workspaceVm::overwriteLoadedRequest
             )
             else -> ExpandedScaffold(
-                vm = vm,
-                collectionsVm = collectionsVm,
+                hasUnsavedChanges = workspaceVm.hasUnsavedChanges,
+                activeRequestId = workspaceVm.loadedRequest?.id,
+                allFolders = collectionsVm.allFolders,
+                folderPaths = collectionsVm.folderPaths,
                 selectedNav = selectedNav,
-                hasUnsavedChanges = vm.hasUnsavedChanges,
                 snackbarHostState = snackbarHostState,
+                scope = scope,
                 onNavSelect = { selectedNav = it },
-                onSave = { showSaveDialog = true },
-                onCopyCurl = onCopyCurl,
-                onImportCurl = onImportCurl,
+                onSaveSuccess = onSaveSuccess,
+                onOverwriteSuccess = onOverwriteSuccess,
+                onShowSnackbar = onShowSnackbar,
+                onCreateFolder = collectionsVm::createFolder,
                 onRequestSelected = onRequestSelected,
-                onSaveChanges = onSaveChanges
+                onSaveChanges = workspaceVm::overwriteLoadedRequest
             )
         }
     }
@@ -197,86 +149,38 @@ fun KurlAppScaffold() {
 
 @Composable
 private fun CompactScaffold(
-    vm: RequestViewModel,
-    collectionsVm: CollectionsViewModel,
-    selectedNav: NavDestination,
     hasUnsavedChanges: Boolean,
+    activeRequestId: Long?,
+    allFolders: List<CollectionFolder>,
+    folderPaths: Map<Long, String>,
+    selectedNav: NavDestination,
     snackbarHostState: SnackbarHostState,
+    scope: CoroutineScope,
     onNavSelect: (NavDestination) -> Unit,
-    onSave: () -> Unit,
-    onCopyCurl: () -> Unit,
-    onImportCurl: () -> Unit,
+    onSaveSuccess: () -> Unit,
+    onOverwriteSuccess: () -> Unit,
+    onShowSnackbar: (String) -> Unit,
+    onCreateFolder: (name: String, parentId: Long?) -> Unit,
     onRequestSelected: (SavedRequest) -> Unit,
     onSaveChanges: () -> Unit
 ) {
     Scaffold(
         bottomBar = { KurlNavigationBar(selected = selectedNav, hasUnsavedChanges = hasUnsavedChanges, onSelect = onNavSelect) },
-        snackbarHost = {
-            SnackbarHost(snackbarHostState) { data ->
-                Snackbar(snackbarData = data)
-            }
-        }
+        snackbarHost = { SnackbarHost(snackbarHostState) { Snackbar(snackbarData = it) } }
     ) { innerPadding ->
         Box(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
             when (selectedNav) {
-                NavDestination.Workspace -> {
-                    var selectedTab by remember { mutableStateOf(0) }
-                    Column(modifier = Modifier.fillMaxSize()) {
-                        UrlBar(
-                            method = vm.method,
-                            url = vm.url,
-                            isLoading = vm.isLoading,
-                            onMethodChange = vm::setRequestMethod,
-                            onUrlChange = vm::setRequestUrl,
-                            onSend = { vm.sendRequest(); selectedTab = 1 },
-                            onSave = onSave,
-                            onCopyCurl = onCopyCurl,
-                            onImportCurl = onImportCurl,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 12.dp, vertical = 10.dp)
-                        )
-                        TabRow(selectedTabIndex = selectedTab) {
-                            Tab(selected = selectedTab == 0, onClick = { selectedTab = 0 },
-                                text = { Text("Request") })
-                            Tab(selected = selectedTab == 1, onClick = { selectedTab = 1 },
-                                text = { Text("Response") })
-                        }
-                        when (selectedTab) {
-                            0 -> RequestPanel(
-                                url = vm.url,
-                                method = vm.method,
-                                params = vm.params,
-                                headers = vm.headers,
-                                body = vm.body,
-                                isLoading = vm.isLoading,
-                                onUrlChange = vm::setRequestUrl,
-                                onMethodChange = vm::setRequestMethod,
-                                onParamUpdate = vm::updateParam,
-                                onParamAdd = vm::addParam,
-                                onParamRemove = vm::removeParam,
-                                onHeaderUpdate = vm::updateHeader,
-                                onHeaderAdd = vm::addHeader,
-                                onHeaderRemove = vm::removeHeader,
-                                onBodyChange = vm::setRequestBody,
-                                onSend = { vm.sendRequest(); selectedTab = 1 },
-                                onSave = onSave,
-                                onCopyCurl = onCopyCurl,
-                                onImportCurl = onImportCurl,
-                                showUrlBar = false,
-                                modifier = Modifier.weight(1f).fillMaxWidth()
-                            )
-                            else -> ResponsePanel(
-                                response = vm.response,
-                                error = vm.error,
-                                modifier = Modifier.weight(1f).fillMaxWidth()
-                            )
-                        }
-                    }
-                }
+                NavDestination.Workspace -> WorkspaceScreen(
+                    allFolders = allFolders,
+                    folderPaths = folderPaths,
+                    onSaveSuccess = onSaveSuccess,
+                    onOverwriteSuccess = onOverwriteSuccess,
+                    onCreateFolder = onCreateFolder,
+                    onShowSnackbar = onShowSnackbar,
+                    modifier = Modifier.fillMaxSize()
+                )
                 NavDestination.Collections -> CollectionsScreen(
-                    vm = collectionsVm,
-                    activeRequestId = vm.loadedRequest?.id,
+                    activeRequestId = activeRequestId,
                     onRequestSelected = onRequestSelected,
                     onSaveChanges = onSaveChanges,
                     modifier = Modifier.fillMaxSize()
@@ -290,88 +194,39 @@ private fun CompactScaffold(
 
 @Composable
 private fun ExpandedScaffold(
-    vm: RequestViewModel,
-    collectionsVm: CollectionsViewModel,
-    selectedNav: NavDestination,
     hasUnsavedChanges: Boolean,
+    activeRequestId: Long?,
+    allFolders: List<CollectionFolder>,
+    folderPaths: Map<Long, String>,
+    selectedNav: NavDestination,
     snackbarHostState: SnackbarHostState,
+    scope: CoroutineScope,
     onNavSelect: (NavDestination) -> Unit,
-    onSave: () -> Unit,
-    onCopyCurl: () -> Unit,
-    onImportCurl: () -> Unit,
+    onSaveSuccess: () -> Unit,
+    onOverwriteSuccess: () -> Unit,
+    onShowSnackbar: (String) -> Unit,
+    onCreateFolder: (name: String, parentId: Long?) -> Unit,
     onRequestSelected: (SavedRequest) -> Unit,
     onSaveChanges: () -> Unit
 ) {
     Scaffold(
-        snackbarHost = {
-            SnackbarHost(snackbarHostState) { data ->
-                Snackbar(snackbarData = data)
-            }
-        }
+        snackbarHost = { SnackbarHost(snackbarHostState) { Snackbar(snackbarData = it) } }
     ) { innerPadding ->
         Row(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
             KurlNavigationRail(selected = selectedNav, hasUnsavedChanges = hasUnsavedChanges, onSelect = onNavSelect)
             VerticalDivider()
-
             when (selectedNav) {
-                NavDestination.Workspace -> {
-                    var selectedTab by remember { mutableStateOf(0) }
-                    Column(modifier = Modifier.fillMaxSize()) {
-                        UrlBar(
-                            method = vm.method,
-                            url = vm.url,
-                            isLoading = vm.isLoading,
-                            onMethodChange = vm::setRequestMethod,
-                            onUrlChange = vm::setRequestUrl,
-                            onSend = { vm.sendRequest(); selectedTab = 1 },
-                            onSave = onSave,
-                            onCopyCurl = onCopyCurl,
-                            onImportCurl = onImportCurl,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 12.dp, vertical = 10.dp)
-                        )
-                        TabRow(selectedTabIndex = selectedTab) {
-                            Tab(selected = selectedTab == 0, onClick = { selectedTab = 0 },
-                                text = { Text("Request") })
-                            Tab(selected = selectedTab == 1, onClick = { selectedTab = 1 },
-                                text = { Text("Response") })
-                        }
-                        when (selectedTab) {
-                            0 -> RequestPanel(
-                                url = vm.url,
-                                method = vm.method,
-                                params = vm.params,
-                                headers = vm.headers,
-                                body = vm.body,
-                                isLoading = vm.isLoading,
-                                onUrlChange = vm::setRequestUrl,
-                                onMethodChange = vm::setRequestMethod,
-                                onParamUpdate = vm::updateParam,
-                                onParamAdd = vm::addParam,
-                                onParamRemove = vm::removeParam,
-                                onHeaderUpdate = vm::updateHeader,
-                                onHeaderAdd = vm::addHeader,
-                                onHeaderRemove = vm::removeHeader,
-                                onBodyChange = vm::setRequestBody,
-                                onSend = { vm.sendRequest(); selectedTab = 1 },
-                                onSave = onSave,
-                                onCopyCurl = onCopyCurl,
-                                onImportCurl = onImportCurl,
-                                showUrlBar = false,
-                                modifier = Modifier.weight(1f).fillMaxWidth()
-                            )
-                            else -> ResponsePanel(
-                                response = vm.response,
-                                error = vm.error,
-                                modifier = Modifier.weight(1f).fillMaxWidth()
-                            )
-                        }
-                    }
-                }
+                NavDestination.Workspace -> WorkspaceScreen(
+                    allFolders = allFolders,
+                    folderPaths = folderPaths,
+                    onSaveSuccess = onSaveSuccess,
+                    onOverwriteSuccess = onOverwriteSuccess,
+                    onCreateFolder = onCreateFolder,
+                    onShowSnackbar = onShowSnackbar,
+                    modifier = Modifier.fillMaxSize()
+                )
                 NavDestination.Collections -> CollectionsScreen(
-                    vm = collectionsVm,
-                    activeRequestId = vm.loadedRequest?.id,
+                    activeRequestId = activeRequestId,
                     onRequestSelected = onRequestSelected,
                     onSaveChanges = onSaveChanges,
                     modifier = Modifier.fillMaxSize()
