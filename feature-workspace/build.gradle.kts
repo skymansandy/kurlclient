@@ -1,8 +1,11 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
+
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.androidMultiplatformLibrary)
     alias(libs.plugins.composeCompiler)
+    alias(libs.plugins.ksp)
 }
 
 kotlin {
@@ -50,6 +53,8 @@ kotlin {
                 implementation(projects.kurlCore)
                 implementation(projects.kurlStore)
                 implementation(projects.uiJsonViewer)
+                implementation(libs.koin.compose.viewmodel)
+                implementation(libs.koin.annotations)
             }
         }
 
@@ -58,5 +63,17 @@ kotlin {
                 implementation(libs.kotlin.test)
             }
         }
+    }
+}
+
+dependencies {
+    add("kspCommonMainMetadata", libs.koin.ksp.compiler)
+}
+
+kotlin.sourceSets.commonMain.get().kotlin.srcDir("build/generated/ksp/metadata/commonMain/kotlin")
+
+tasks.withType<KotlinCompilationTask<*>>().configureEach {
+    if (name != "kspCommonMainKotlinMetadata") {
+        dependsOn("kspCommonMainKotlinMetadata")
     }
 }

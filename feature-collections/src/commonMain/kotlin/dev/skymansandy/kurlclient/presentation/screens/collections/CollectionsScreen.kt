@@ -65,8 +65,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.skymansandy.kurl.core.model.HttpMethod
+import org.koin.compose.viewmodel.koinViewModel
 import dev.skymansandy.kurl.core.utils.formatRelativeTime
 import dev.skymansandy.kurlstore.db.CollectionFolder
 import dev.skymansandy.kurlstore.db.SavedRequest
@@ -74,7 +74,7 @@ import dev.skymansandy.kurlstore.db.SavedRequest
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CollectionsScreen(
-    vm: CollectionsViewModel = viewModel { CollectionsViewModel() },
+    vm: CollectionsViewModel = koinViewModel(),
     activeRequestId: Long? = null,
     onRequestSelected: (SavedRequest) -> Unit,
     onSaveChanges: () -> Unit,

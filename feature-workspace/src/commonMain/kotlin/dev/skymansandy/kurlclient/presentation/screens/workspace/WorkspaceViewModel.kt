@@ -13,10 +13,10 @@ import dev.skymansandy.kurl.core.model.NetworkInfo
 import dev.skymansandy.kurl.core.utils.deserializeKeyValueEntries
 import dev.skymansandy.kurl.core.utils.parseCurlCommand
 import dev.skymansandy.kurl.core.utils.serialize
-import dev.skymansandy.kurl.store.AppDatabase
 import dev.skymansandy.kurl.store.CollectionRepository
 import dev.skymansandy.kurlstore.db.SavedRequest
 import kotlinx.coroutines.launch
+import org.koin.android.annotation.KoinViewModel
 
 data class ResponseState(
     val statusCode: Int? = null,
@@ -28,10 +28,12 @@ data class ResponseState(
     val networkInfo: NetworkInfo? = null
 )
 
-class RequestViewModel : ViewModel() {
+@KoinViewModel
+class RequestViewModel(
+    private val engine: KurlEngine,
+    private val repo: CollectionRepository
+) : ViewModel() {
 
-    private val engine = KurlEngine()
-    private val repo = CollectionRepository(AppDatabase.db)
     private var nextId = 1L
 
     var url by mutableStateOf("")
@@ -228,8 +230,4 @@ class RequestViewModel : ViewModel() {
         }
     }
 
-    override fun onCleared() {
-        super.onCleared()
-        engine.close()
-    }
 }

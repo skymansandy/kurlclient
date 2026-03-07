@@ -8,16 +8,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import dev.skymansandy.store.AppDatabase
-import dev.skymansandy.store.createDatabaseDriver
-import dev.skymansandy.store.initAndroidContext
+import dev.skymansandy.kurlclient.di.initKoin
 import dev.skymansandy.kurlclient.ui.theme.KurlClientTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        initAndroidContext(this)
-        AppDatabase.init(createDatabaseDriver())
+        initKoin(this)
         enableEdgeToEdge()
         setContent {
             KurlClientTheme {

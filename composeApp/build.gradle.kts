@@ -45,6 +45,8 @@ kotlin {
             implementation(projects.kurlStore)
             implementation(projects.featureWorkspace)
             implementation(projects.featureCollections)
+            implementation(libs.koin.core)
+            implementation(libs.koin.compose.viewmodel)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

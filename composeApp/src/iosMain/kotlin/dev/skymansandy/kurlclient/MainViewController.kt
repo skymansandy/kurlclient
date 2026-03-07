@@ -1,11 +1,10 @@
 package dev.skymansandy.kurlclient
 
 import androidx.compose.ui.window.ComposeUIViewController
-import dev.skymansandy.kurl.store.AppDatabase
-import dev.skymansandy.kurl.store.createDatabaseDriver
+import dev.skymansandy.kurlclient.di.initKoin
 import platform.UIKit.UIViewController
 
 fun MainViewController(): UIViewController {
-    AppDatabase.init(createDatabaseDriver())
+    initKoin()
     return ComposeUIViewController { App() }
 }

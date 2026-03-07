@@ -33,8 +33,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.skymansandy.kurlclient.presentation.adaptive.WindowWidthClass
+import org.koin.compose.viewmodel.koinViewModel
 import dev.skymansandy.kurlclient.presentation.adaptive.toWindowWidthClass
 import dev.skymansandy.kurlclient.presentation.screens.collections.CollectionsScreen
 import dev.skymansandy.kurlclient.presentation.screens.collections.CollectionsViewModel
@@ -54,8 +54,8 @@ fun KurlAppScaffold() {
     // Both VMs are accessed here only for cross-feature coordination.
     // WorkspaceScreen and CollectionsScreen create their own instances via viewModel(),
     // which returns the same activity-scoped instance.
-    val workspaceVm = viewModel<RequestViewModel> { RequestViewModel() }
-    val collectionsVm = viewModel<CollectionsViewModel> { CollectionsViewModel() }
+    val workspaceVm = koinViewModel<RequestViewModel>()
+    val collectionsVm = koinViewModel<CollectionsViewModel>()
 
     var selectedNav by remember { mutableStateOf(NavDestination.Workspace) }
     var pendingRequest by remember { mutableStateOf<SavedRequest?>(null) }

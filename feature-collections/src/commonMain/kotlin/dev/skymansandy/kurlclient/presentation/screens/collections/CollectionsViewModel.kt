@@ -5,20 +5,19 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import dev.skymansandy.kurl.store.AppDatabase
 import dev.skymansandy.kurl.store.CollectionRepository
 import dev.skymansandy.kurlstore.db.CollectionFolder
 import dev.skymansandy.kurlstore.db.SavedRequest
 import kotlinx.coroutines.launch
+import org.koin.android.annotation.KoinViewModel
 
 sealed interface TreeItem {
     data class Folder(val folder: CollectionFolder, val depth: Int, val isExpanded: Boolean) : TreeItem
     data class Request(val request: SavedRequest, val depth: Int) : TreeItem
 }
 
-class CollectionsViewModel : ViewModel() {
-
-    private val repo = CollectionRepository(AppDatabase.db)
+@KoinViewModel
+class CollectionsViewModel(private val repo: CollectionRepository) : ViewModel() {
 
     var allFolders by mutableStateOf(emptyList<CollectionFolder>())
         private set

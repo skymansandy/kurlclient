@@ -2,11 +2,10 @@ package dev.skymansandy.kurlclient
 
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
-import dev.skymansandy.kurl.store.AppDatabase
-import dev.skymansandy.kurl.store.createDatabaseDriver
+import dev.skymansandy.kurlclient.di.initKoin
 
 fun main() {
-    AppDatabase.init(createDatabaseDriver())
+    initKoin()
     application {
         Window(
             onCloseRequest = ::exitApplication,

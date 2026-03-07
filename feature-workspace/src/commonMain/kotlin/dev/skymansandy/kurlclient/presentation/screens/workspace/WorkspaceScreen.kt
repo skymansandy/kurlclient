@@ -17,8 +17,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.skymansandy.kurlclient.presentation.screens.workspace.request.ImportCurlDialog
+import org.koin.compose.viewmodel.koinViewModel
 import dev.skymansandy.kurlclient.presentation.screens.workspace.request.RequestPanel
 import dev.skymansandy.kurlclient.presentation.screens.workspace.request.SaveRequestDialog
 import dev.skymansandy.kurlclient.presentation.screens.workspace.request.UrlBar
@@ -27,7 +27,7 @@ import dev.skymansandy.kurlstore.db.CollectionFolder
 
 @Composable
 fun WorkspaceScreen(
-    vm: RequestViewModel = viewModel { RequestViewModel() },
+    vm: RequestViewModel = koinViewModel(),
     allFolders: List<CollectionFolder>,
     folderPaths: Map<Long, String>,
     onSaveSuccess: () -> Unit,
