@@ -1,4 +1,4 @@
-package dev.skymansandy.kurlclient.ui.adaptive
+package dev.skymansandy.kurlclient.presentation.adaptive
 
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp

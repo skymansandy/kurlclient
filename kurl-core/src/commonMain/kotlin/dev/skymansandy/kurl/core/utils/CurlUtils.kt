@@ -1,7 +1,7 @@
-package dev.skymansandy.kurlclient.util
+package dev.skymansandy.kurl.core.utils
 
-import dev.skymansandy.kurlclient.ui.HttpMethod
-import dev.skymansandy.kurlclient.ui.KeyValueEntry
+import dev.skymansandy.kurl.core.model.HttpMethod
+import dev.skymansandy.kurl.core.model.KeyValueEntry
 
 data class ParsedCurlRequest(
     val url: String,

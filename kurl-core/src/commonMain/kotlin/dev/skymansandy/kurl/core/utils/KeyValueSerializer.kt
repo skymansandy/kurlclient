@@ -1,6 +1,6 @@
-package dev.skymansandy.kurlclient.util
+package dev.skymansandy.kurl.core.utils
 
-import dev.skymansandy.kurlclient.ui.KeyValueEntry
+import dev.skymansandy.kurl.core.model.KeyValueEntry
 
 private const val ENTRY_SEP = "\u001E"   // record separator between entries
 private const val FIELD_SEP = "\u001F"   // unit separator between fields

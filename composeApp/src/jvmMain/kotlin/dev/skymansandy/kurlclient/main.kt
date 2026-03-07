@@ -2,8 +2,8 @@ package dev.skymansandy.kurlclient
 
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
-import dev.skymansandy.kurlclient.db.AppDatabase
-import dev.skymansandy.kurlclient.db.createDatabaseDriver
+import dev.skymansandy.kurl.store.AppDatabase
+import dev.skymansandy.kurl.store.createDatabaseDriver
 
 fun main() {
     AppDatabase.init(createDatabaseDriver())

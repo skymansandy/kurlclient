@@ -1,4 +1,4 @@
-package dev.skymansandy.kurlclient.ui.theme
+package dev.skymansandy.kurlclient.presentation.theme
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.lightColorScheme

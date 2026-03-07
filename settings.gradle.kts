@@ -36,3 +36,7 @@ include(":composeApp")
 include(":androidApp")
 
 include(":kurl-core")
+include(":kurl-store")
+
+include(":feature-workspace")
+include(":feature-collections")

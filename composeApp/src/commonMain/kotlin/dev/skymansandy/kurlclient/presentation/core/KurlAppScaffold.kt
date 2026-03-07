@@ -1,4 +1,4 @@
-package dev.skymansandy.kurlclient.ui
+package dev.skymansandy.kurlclient.presentation.core
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -8,9 +8,13 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Dashboard
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -23,6 +27,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -36,15 +41,17 @@ import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import dev.skymansandy.kurlclient.ui.adaptive.WindowWidthClass
-import dev.skymansandy.kurlclient.ui.adaptive.toWindowWidthClass
-import dev.skymansandy.kurlclient.ui.collections.CollectionsScreen
-import dev.skymansandy.kurlclient.ui.collections.CollectionsViewModel
-import dev.skymansandy.kurlclient.ui.request.ImportCurlDialog
-import dev.skymansandy.kurlclient.ui.request.RequestPanel
-import dev.skymansandy.kurlclient.ui.request.SaveRequestDialog
-import dev.skymansandy.kurlclient.ui.request.UrlBar
-import dev.skymansandy.kurlclient.ui.response.ResponsePanel
+import dev.skymansandy.kurlclient.presentation.adaptive.WindowWidthClass
+import dev.skymansandy.kurlclient.presentation.adaptive.toWindowWidthClass
+import dev.skymansandy.kurlclient.presentation.screens.collections.CollectionsScreen
+import dev.skymansandy.kurlclient.presentation.screens.collections.CollectionsViewModel
+import dev.skymansandy.kurlclient.presentation.screens.workspace.RequestViewModel
+import dev.skymansandy.kurlclient.presentation.screens.workspace.request.ImportCurlDialog
+import dev.skymansandy.kurlclient.presentation.screens.workspace.request.RequestPanel
+import dev.skymansandy.kurlclient.presentation.screens.workspace.request.SaveRequestDialog
+import dev.skymansandy.kurlclient.presentation.screens.workspace.request.UrlBar
+import dev.skymansandy.kurlclient.presentation.screens.workspace.response.ResponsePanel
+import dev.skymansandy.kurlstore.db.SavedRequest
 import kotlinx.coroutines.launch
 
 private enum class NavDestination(val label: String) {
@@ -59,6 +66,8 @@ fun KurlAppScaffold() {
     var selectedNav by remember { mutableStateOf(NavDestination.Workspace) }
     var showSaveDialog by remember { mutableStateOf(false) }
     var showImportCurlDialog by remember { mutableStateOf(false) }
+    var pendingRequest by remember { mutableStateOf<SavedRequest?>(null) }
+    var showDiscardDialog by remember { mutableStateOf(false) }
     val snackbarHostState = remember { SnackbarHostState() }
     val clipboard = LocalClipboardManager.current
     val scope = rememberCoroutineScope()
@@ -110,14 +119,46 @@ fun KurlAppScaffold() {
             )
         }
 
+        if (showDiscardDialog) {
+            AlertDialog(
+                onDismissRequest = {
+                    showDiscardDialog = false
+                    pendingRequest = null
+                },
+                title = { Text("Discard changes?") },
+                text = { Text("You have unsaved changes. Opening another request will discard them.") },
+                confirmButton = {
+                    TextButton(onClick = {
+                        showDiscardDialog = false
+                        pendingRequest?.let { saved ->
+                            vm.loadSavedRequest(saved)
+                            selectedNav = NavDestination.Workspace
+                        }
+                        pendingRequest = null
+                    }) { Text("Discard") }
+                },
+                dismissButton = {
+                    TextButton(onClick = {
+                        showDiscardDialog = false
+                        pendingRequest = null
+                    }) { Text("Cancel") }
+                }
+            )
+        }
+
         val onCopyCurl: () -> Unit = {
             clipboard.setText(AnnotatedString(vm.buildCurlCommand()))
             scope.launch { snackbarHostState.showSnackbar("Copied as cURL") }
         }
         val onImportCurl: () -> Unit = { showImportCurlDialog = true }
-        val onRequestSelected: (dev.skymansandy.kurlclient.db.SavedRequest) -> Unit = { saved ->
-            vm.loadSavedRequest(saved)
-            selectedNav = NavDestination.Workspace
+        val onRequestSelected: (SavedRequest) -> Unit = { saved ->
+            if (vm.hasUnsavedChanges) {
+                pendingRequest = saved
+                showDiscardDialog = true
+            } else {
+                vm.loadSavedRequest(saved)
+                selectedNav = NavDestination.Workspace
+            }
         }
         val onSaveChanges: () -> Unit = { vm.overwriteLoadedRequest() }
 
@@ -126,6 +167,7 @@ fun KurlAppScaffold() {
                 vm = vm,
                 collectionsVm = collectionsVm,
                 selectedNav = selectedNav,
+                hasUnsavedChanges = vm.hasUnsavedChanges,
                 snackbarHostState = snackbarHostState,
                 onNavSelect = { selectedNav = it },
                 onSave = { showSaveDialog = true },
@@ -138,6 +180,7 @@ fun KurlAppScaffold() {
                 vm = vm,
                 collectionsVm = collectionsVm,
                 selectedNav = selectedNav,
+                hasUnsavedChanges = vm.hasUnsavedChanges,
                 snackbarHostState = snackbarHostState,
                 onNavSelect = { selectedNav = it },
                 onSave = { showSaveDialog = true },
@@ -157,16 +200,17 @@ private fun CompactScaffold(
     vm: RequestViewModel,
     collectionsVm: CollectionsViewModel,
     selectedNav: NavDestination,
+    hasUnsavedChanges: Boolean,
     snackbarHostState: SnackbarHostState,
     onNavSelect: (NavDestination) -> Unit,
     onSave: () -> Unit,
     onCopyCurl: () -> Unit,
     onImportCurl: () -> Unit,
-    onRequestSelected: (dev.skymansandy.kurlclient.db.SavedRequest) -> Unit,
+    onRequestSelected: (SavedRequest) -> Unit,
     onSaveChanges: () -> Unit
 ) {
     Scaffold(
-        bottomBar = { KurlNavigationBar(selected = selectedNav, onSelect = onNavSelect) },
+        bottomBar = { KurlNavigationBar(selected = selectedNav, hasUnsavedChanges = hasUnsavedChanges, onSelect = onNavSelect) },
         snackbarHost = {
             SnackbarHost(snackbarHostState) { data ->
                 Snackbar(snackbarData = data)
@@ -249,12 +293,13 @@ private fun ExpandedScaffold(
     vm: RequestViewModel,
     collectionsVm: CollectionsViewModel,
     selectedNav: NavDestination,
+    hasUnsavedChanges: Boolean,
     snackbarHostState: SnackbarHostState,
     onNavSelect: (NavDestination) -> Unit,
     onSave: () -> Unit,
     onCopyCurl: () -> Unit,
     onImportCurl: () -> Unit,
-    onRequestSelected: (dev.skymansandy.kurlclient.db.SavedRequest) -> Unit,
+    onRequestSelected: (SavedRequest) -> Unit,
     onSaveChanges: () -> Unit
 ) {
     Scaffold(
@@ -265,7 +310,7 @@ private fun ExpandedScaffold(
         }
     ) { innerPadding ->
         Row(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
-            KurlNavigationRail(selected = selectedNav, onSelect = onNavSelect)
+            KurlNavigationRail(selected = selectedNav, hasUnsavedChanges = hasUnsavedChanges, onSelect = onNavSelect)
             VerticalDivider()
 
             when (selectedNav) {
@@ -341,6 +386,7 @@ private fun ExpandedScaffold(
 @Composable
 private fun KurlNavigationBar(
     selected: NavDestination,
+    hasUnsavedChanges: Boolean,
     onSelect: (NavDestination) -> Unit
 ) {
     NavigationBar {
@@ -348,7 +394,7 @@ private fun KurlNavigationBar(
             NavigationBarItem(
                 selected = selected == dest,
                 onClick = { onSelect(dest) },
-                icon = { NavIcon(dest) },
+                icon = { NavIcon(dest, showBadge = dest == NavDestination.Workspace && hasUnsavedChanges) },
                 label = { Text(dest.label) }
             )
         }
@@ -358,6 +404,7 @@ private fun KurlNavigationBar(
 @Composable
 private fun KurlNavigationRail(
     selected: NavDestination,
+    hasUnsavedChanges: Boolean,
     onSelect: (NavDestination) -> Unit
 ) {
     NavigationRail(modifier = Modifier.fillMaxHeight()) {
@@ -365,7 +412,7 @@ private fun KurlNavigationRail(
             NavigationRailItem(
                 selected = selected == dest,
                 onClick = { onSelect(dest) },
-                icon = { NavIcon(dest) },
+                icon = { NavIcon(dest, showBadge = dest == NavDestination.Workspace && hasUnsavedChanges) },
                 label = { Text(dest.label) }
             )
         }
@@ -373,9 +420,13 @@ private fun KurlNavigationRail(
 }
 
 @Composable
-private fun NavIcon(dest: NavDestination) {
-    when (dest) {
-        NavDestination.Workspace -> Icon(Icons.Default.Dashboard, contentDescription = dest.label)
-        NavDestination.Collections -> Icon(Icons.AutoMirrored.Filled.List, contentDescription = dest.label)
+private fun NavIcon(dest: NavDestination, showBadge: Boolean = false) {
+    BadgedBox(badge = {
+        if (showBadge) Badge(modifier = Modifier.size(8.dp))
+    }) {
+        when (dest) {
+            NavDestination.Workspace -> Icon(Icons.Default.Dashboard, contentDescription = dest.label)
+            NavDestination.Collections -> Icon(Icons.AutoMirrored.Filled.List, contentDescription = dest.label)
+        }
     }
 }

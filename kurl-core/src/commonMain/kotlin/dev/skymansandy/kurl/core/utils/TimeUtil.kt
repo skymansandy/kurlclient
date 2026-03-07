@@ -1,10 +1,4 @@
-package dev.skymansandy.kurlclient
-
-interface Platform {
-    val name: String
-}
-
-expect fun getPlatform(): Platform
+package dev.skymansandy.kurl.core.utils
 
 expect fun currentTimeMillis(): Long
 

@@ -1,8 +1,8 @@
 package dev.skymansandy.kurlclient
 
 import androidx.compose.ui.window.ComposeUIViewController
-import dev.skymansandy.kurlclient.db.AppDatabase
-import dev.skymansandy.kurlclient.db.createDatabaseDriver
+import dev.skymansandy.kurl.store.AppDatabase
+import dev.skymansandy.kurl.store.createDatabaseDriver
 import platform.UIKit.UIViewController
 
 fun MainViewController(): UIViewController {

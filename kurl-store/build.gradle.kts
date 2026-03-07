@@ -2,11 +2,12 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidMultiplatformLibrary)
     alias(libs.plugins.androidLint)
+    alias(libs.plugins.sqldelight)
 }
 
 kotlin {
     android {
-        namespace = "dev.skymansandy.kurlcore"
+        namespace = "dev.skymansandy.store"
         compileSdk {
             version = release(36) {
                 minorApiLevel = 1
@@ -29,7 +30,7 @@ kotlin {
         iosSimulatorArm64(),
     ).forEach { iosTarget ->
         iosTarget.binaries.framework {
-            baseName = "kurl-coreKit"
+            baseName = "kurl-storeKit"
             isStatic = true
         }
     }
@@ -40,7 +41,9 @@ kotlin {
         commonMain {
             dependencies {
                 implementation(libs.kotlin.stdlib)
-                implementation(libs.ktor.client.core)
+                implementation(libs.sqldelight.runtime)
+                implementation(libs.sqldelight.coroutines)
+                implementation(projects.kurlCore)
             }
         }
 
@@ -52,7 +55,7 @@ kotlin {
 
         androidMain {
             dependencies {
-                implementation(libs.ktor.client.android)
+                implementation(libs.sqldelight.android.driver)
             }
         }
 
@@ -66,12 +69,20 @@ kotlin {
 
         iosMain {
             dependencies {
-                implementation(libs.ktor.client.darwin)
+                implementation(libs.sqldelight.native.driver)
             }
         }
 
         jvmMain.dependencies {
-            implementation(libs.ktor.client.java)
+            implementation(libs.sqldelight.sqlite.driver)
+        }
+    }
+}
+
+sqldelight {
+    databases {
+        create("KurlDatabase") {
+            packageName.set("dev.skymansandy.kurlstore.db")
         }
     }
 }
