@@ -11,9 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.List
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationRail
@@ -36,21 +34,21 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import dev.skymansandy.kurlclient.ui.request.ImportCurlDialog
-import kotlinx.coroutines.launch
 import dev.skymansandy.kurlclient.ui.adaptive.WindowWidthClass
 import dev.skymansandy.kurlclient.ui.adaptive.toWindowWidthClass
 import dev.skymansandy.kurlclient.ui.collections.CollectionsScreen
 import dev.skymansandy.kurlclient.ui.collections.CollectionsViewModel
-import androidx.compose.ui.unit.dp
+import dev.skymansandy.kurlclient.ui.request.ImportCurlDialog
 import dev.skymansandy.kurlclient.ui.request.RequestPanel
 import dev.skymansandy.kurlclient.ui.request.SaveRequestDialog
 import dev.skymansandy.kurlclient.ui.request.UrlBar
 import dev.skymansandy.kurlclient.ui.response.ResponsePanel
+import kotlinx.coroutines.launch
 
 private enum class NavDestination(val label: String) {
-    New("New"), Collections("Collections"), History("History")
+    New("New"), Collections("Collections")
 }
 
 @Composable
@@ -239,7 +237,6 @@ private fun CompactScaffold(
                     onSaveChanges = onSaveChanges,
                     modifier = Modifier.fillMaxSize()
                 )
-                NavDestination.History -> HistoryPlaceholder()
             }
         }
     }
@@ -334,7 +331,6 @@ private fun ExpandedScaffold(
                     onSaveChanges = onSaveChanges,
                     modifier = Modifier.fillMaxSize()
                 )
-                NavDestination.History -> HistoryPlaceholder()
             }
         }
     }
@@ -381,16 +377,5 @@ private fun NavIcon(dest: NavDestination) {
     when (dest) {
         NavDestination.New -> Icon(Icons.Default.Add, contentDescription = dest.label)
         NavDestination.Collections -> Icon(Icons.Default.List, contentDescription = dest.label)
-        NavDestination.History -> Icon(Icons.Default.Search, contentDescription = dest.label)
-    }
-}
-
-// ── Placeholder screens ───────────────────────────────────────────────────────
-
-@Composable
-private fun HistoryPlaceholder() {
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = androidx.compose.ui.Alignment.Center) {
-        Text("History", style = MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }
