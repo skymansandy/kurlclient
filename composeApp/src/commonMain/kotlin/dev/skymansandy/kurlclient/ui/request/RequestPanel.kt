@@ -73,25 +73,28 @@ fun RequestPanel(
     onSave: () -> Unit,
     onCopyCurl: () -> Unit,
     onImportCurl: () -> Unit,
+    showUrlBar: Boolean = true,
     modifier: Modifier = Modifier
 ) {
     var selectedTab by remember { mutableIntStateOf(0) }
 
     Column(modifier = modifier) {
-        UrlBar(
-            method = method,
-            url = url,
-            isLoading = isLoading,
-            onMethodChange = onMethodChange,
-            onUrlChange = onUrlChange,
-            onSend = onSend,
-            onSave = onSave,
-            onCopyCurl = onCopyCurl,
-            onImportCurl = onImportCurl,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 12.dp, vertical = 10.dp)
-        )
+        if (showUrlBar) {
+            UrlBar(
+                method = method,
+                url = url,
+                isLoading = isLoading,
+                onMethodChange = onMethodChange,
+                onUrlChange = onUrlChange,
+                onSend = onSend,
+                onSave = onSave,
+                onCopyCurl = onCopyCurl,
+                onImportCurl = onImportCurl,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 12.dp, vertical = 10.dp)
+            )
+        }
 
         ScrollableTabRow(selectedTabIndex = selectedTab, edgePadding = 12.dp) {
             val activeParamCount = params.count { it.key.isNotBlank() }
@@ -159,7 +162,7 @@ private fun TabLabel(title: String, count: Int = 0, hasDot: Boolean = false) {
 // ── URL Bar ───────────────────────────────────────────────────────────────────
 
 @Composable
-private fun UrlBar(
+internal fun UrlBar(
     method: HttpMethod,
     url: String,
     isLoading: Boolean,
