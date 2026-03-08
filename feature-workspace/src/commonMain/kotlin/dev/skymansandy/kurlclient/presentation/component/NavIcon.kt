@@ -3,7 +3,7 @@ package dev.skymansandy.kurlclient.presentation.component
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
-import androidx.compose.material.icons.filled.Dashboard
+import androidx.compose.material.icons.filled.Games
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Icon
@@ -30,11 +30,11 @@ internal fun NavIcon(
     ) {
         Icon(
             contentDescription = when (dest) {
-                WorkspaceTab.Workspace -> stringResource(Res.string.tab_workspace)
+                WorkspaceTab.Playground -> stringResource(Res.string.tab_workspace)
                 WorkspaceTab.Collections -> stringResource(Res.string.tab_collections)
             },
             imageVector = when (dest) {
-                WorkspaceTab.Workspace -> Icons.Default.Dashboard
+                WorkspaceTab.Playground -> Icons.Default.Games
                 WorkspaceTab.Collections -> Icons.AutoMirrored.Filled.List
             },
         )

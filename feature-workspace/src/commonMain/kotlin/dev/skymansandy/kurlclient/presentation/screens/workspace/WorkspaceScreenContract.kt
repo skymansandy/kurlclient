@@ -9,7 +9,7 @@ import dev.skymansandy.kurlstore.db.SavedRequest
 internal class WorkspaceScreenContract {
 
     internal data class WorkspaceState(
-        val selectedTab: WorkspaceTab = WorkspaceTab.Workspace,
+        val selectedTab: WorkspaceTab = WorkspaceTab.Playground,
         val showDiscardDialog: Boolean = false,
         val pendingRequest: SavedRequest? = null,
         val requestToLoad: SavedRequest? = null,

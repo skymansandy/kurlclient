@@ -68,6 +68,7 @@
     <string name="msg_error_prefix">Error: %1$s</string>
 
     <!-- URL Bar -->
+    <string name="placeholder_request_name">Untitled request</string>
     <string name="placeholder_url">https://...</string>
     <string name="cd_more_actions">More actions</string>
     <string name="action_import_curl">Import from cURL</string>

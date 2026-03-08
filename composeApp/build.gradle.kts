@@ -11,6 +11,7 @@ plugins {
 kotlin {
     android {
         namespace = "com.example.namespace"
+        androidResources { enable = true }
         compileSdk { version = release(36) }
     }
 

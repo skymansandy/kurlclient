@@ -12,16 +12,23 @@ import dev.skymansandy.kurlstore.db.SavedRequest
 internal class PlaygroundScreenContract {
 
     data class PlaygroundState(
-        val url: String = "",
-        val method: HttpMethod = HttpMethod.GET,
+        val currentRequest: SavedRequest = SavedRequest(
+            id = 0L,
+            name = "",
+            folder_id = null,
+            url = "",
+            method = HttpMethod.GET.name,
+            headers = "",
+            params = "",
+            body = "",
+            created_at = 0L,
+        ),
+        val loadedRequest: SavedRequest? = null,
         val params: List<KeyValueEntry> = emptyList(),
         val headers: List<KeyValueEntry> = emptyList(),
-        val body: String = "",
         val isLoading: Boolean = false,
         val response: ResponseState? = null,
         val error: String? = null,
-        val loadedRequest: SavedRequest? = null,
-        val hasUnsavedChanges: Boolean = false,
         val saveSuccess: Boolean = false,
         val overwriteSuccess: Boolean = false,
         val allFolders: List<CollectionFolder> = emptyList(),
@@ -32,6 +39,18 @@ internal class PlaygroundScreenContract {
         val activeTab: Int = 0,
         val isEditingNewRequest: Boolean = false,
     ) : UiState {
+
+        val hasUnsavedChanges: Boolean
+            get() = when (val loaded = loadedRequest) {
+                null -> currentRequest.url.isNotBlank() || currentRequest.body.isNotBlank() ||
+                    currentRequest.headers.isNotBlank() || currentRequest.params.isNotBlank()
+                else -> currentRequest.name != loaded.name ||
+                    currentRequest.url != loaded.url ||
+                    currentRequest.method != loaded.method ||
+                    currentRequest.headers != loaded.headers ||
+                    currentRequest.params != loaded.params ||
+                    currentRequest.body != loaded.body
+            }
 
         data class ResponseState(
             val statusCode: Int? = null,
@@ -45,6 +64,7 @@ internal class PlaygroundScreenContract {
     }
 
     sealed interface PlaygroundEvent : UiEvent {
+        data class SetName(val value: String) : PlaygroundEvent
         data class SetUrl(val value: String) : PlaygroundEvent
         data class SetMethod(val value: HttpMethod) : PlaygroundEvent
         data class SetBody(val value: String) : PlaygroundEvent

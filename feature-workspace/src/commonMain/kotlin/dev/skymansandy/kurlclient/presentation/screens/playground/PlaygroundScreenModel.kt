@@ -56,78 +56,79 @@ internal class PlaygroundScreenModel(
 
     override fun onEvent(event: PlaygroundEvent) {
         when (event) {
+            is PlaygroundEvent.SetName -> setState {
+                copy(currentRequest = currentRequest.copy(name = event.value))
+            }
+
             is PlaygroundEvent.SetUrl -> setState {
-                copy(
-                    url = event.value,
-                    hasUnsavedChanges = true,
-                )
+                copy(currentRequest = currentRequest.copy(url = event.value))
             }
 
             is PlaygroundEvent.SetMethod -> setState {
-                copy(
-                    method = event.value,
-                    hasUnsavedChanges = true,
-                )
+                copy(currentRequest = currentRequest.copy(method = event.value.name))
             }
 
             is PlaygroundEvent.SetBody -> setState {
-                copy(
-                    body = event.value,
-                    hasUnsavedChanges = true,
-                )
+                copy(currentRequest = currentRequest.copy(body = event.value))
             }
 
             is PlaygroundEvent.UpdateParam -> setState {
+                val newParams = params.map {
+                    if (it.id == event.id) it.copy(
+                        key = event.key,
+                        value = event.value,
+                        enabled = event.enabled,
+                    ) else it
+                }
                 copy(
-                    params = params.map {
-                        if (it.id == event.id) it.copy(
-                            key = event.key,
-                            value = event.value,
-                            enabled = event.enabled,
-                        ) else it
-                    },
-                    hasUnsavedChanges = true,
+                    params = newParams,
+                    currentRequest = currentRequest.copy(params = newParams.serialize()),
                 )
             }
 
             is PlaygroundEvent.AddParam -> setState {
+                val newParams = params + KeyValueEntry(id = nextId++)
                 copy(
-                    params = params + KeyValueEntry(id = nextId++),
-                    hasUnsavedChanges = true,
+                    params = newParams,
+                    currentRequest = currentRequest.copy(params = newParams.serialize()),
                 )
             }
 
             is PlaygroundEvent.RemoveParam -> setState {
+                val newParams = params.filter { it.id != event.id }
                 copy(
-                    params = params.filter { it.id != event.id },
-                    hasUnsavedChanges = true,
+                    params = newParams,
+                    currentRequest = currentRequest.copy(params = newParams.serialize()),
                 )
             }
 
             is PlaygroundEvent.UpdateHeader -> setState {
+                val newHeaders = headers.map {
+                    if (it.id == event.id) it.copy(
+                        key = event.key,
+                        value = event.value,
+                        enabled = event.enabled,
+                    ) else it
+                }
                 copy(
-                    headers = headers.map {
-                        if (it.id == event.id) it.copy(
-                            key = event.key,
-                            value = event.value,
-                            enabled = event.enabled,
-                        ) else it
-                    },
-                    hasUnsavedChanges = true,
+                    headers = newHeaders,
+                    currentRequest = currentRequest.copy(headers = newHeaders.serialize()),
                 )
             }
 
             is PlaygroundEvent.AddHeader -> setState {
+                val newHeaders = headers + KeyValueEntry(id = nextId++)
                 copy(
-                    headers = headers + KeyValueEntry(id = nextId++),
-                    hasUnsavedChanges = true,
+                    headers = newHeaders,
+                    currentRequest = currentRequest.copy(headers = newHeaders.serialize()),
                 )
             }
 
             is PlaygroundEvent.RemoveHeader -> setState {
+                val newHeaders = headers.filter { it.id != event.id }
                 copy(
-                    headers = headers.filter { it.id != event.id },
-                    hasUnsavedChanges = true,
+                    headers = newHeaders,
+                    currentRequest = currentRequest.copy(headers = newHeaders.serialize()),
                 )
             }
 
@@ -169,7 +170,8 @@ internal class PlaygroundScreenModel(
     // Pure query — not a state mutation, so kept as a regular function
     fun buildCurlCommand(): String {
         val s = state.value
-        return buildCurlCommand(s.url, s.method, s.headers, s.params, s.body)
+        val method = runCatching { HttpMethod.valueOf(s.currentRequest.method) }.getOrDefault(HttpMethod.GET)
+        return buildCurlCommand(s.currentRequest.url, method, s.headers, s.params, s.currentRequest.body)
     }
 
     // Returns true on success, false if the command couldn't be parsed
@@ -183,11 +185,15 @@ internal class PlaygroundScreenModel(
                 .map { (k, v) -> KeyValueEntry(id = nextId++, key = k, value = v) }
                 .ifEmpty { listOf(KeyValueEntry(id = nextId++)) }
             copy(
-                url = parsed.url,
-                method = runCatching { HttpMethod.valueOf(parsed.method) }.getOrDefault(HttpMethod.GET),
+                currentRequest = currentRequest.copy(
+                    url = parsed.url,
+                    method = runCatching { HttpMethod.valueOf(parsed.method) }.getOrDefault(HttpMethod.GET).name,
+                    headers = h.serialize(),
+                    params = p.serialize(),
+                    body = parsed.body ?: "",
+                ),
                 headers = h,
                 params = p,
-                body = parsed.body ?: "",
                 response = null,
                 error = null,
             )
@@ -204,16 +210,17 @@ internal class PlaygroundScreenModel(
                     id = loaded.id,
                     name = name,
                     folderId = folderId,
-                    url = s.url,
-                    method = s.method.name,
-                    headers = s.headers.serialize(),
-                    params = s.params.serialize(),
-                    body = s.body,
+                    url = s.currentRequest.url,
+                    method = s.currentRequest.method,
+                    headers = s.currentRequest.headers,
+                    params = s.currentRequest.params,
+                    body = s.currentRequest.body,
                 )
                 setState {
+                    val saved = currentRequest.copy(id = loaded.id, name = name, folder_id = folderId)
                     copy(
-                        loadedRequest = loaded.copy(name = name, folder_id = folderId),
-                        hasUnsavedChanges = false,
+                        loadedRequest = saved,
+                        currentRequest = saved,
                         overwriteSuccess = true,
                     )
                 }
@@ -221,26 +228,17 @@ internal class PlaygroundScreenModel(
                 val newId = store.saveRequest(
                     name = name,
                     folderId = folderId,
-                    url = s.url,
-                    method = s.method.name,
-                    headers = s.headers.serialize(),
-                    params = s.params.serialize(),
-                    body = s.body,
+                    url = s.currentRequest.url,
+                    method = s.currentRequest.method,
+                    headers = s.currentRequest.headers,
+                    params = s.currentRequest.params,
+                    body = s.currentRequest.body,
                 )
                 setState {
+                    val saved = currentRequest.copy(id = newId, name = name, folder_id = folderId)
                     copy(
-                        loadedRequest = SavedRequest(
-                            id = newId,
-                            name = name,
-                            folder_id = folderId,
-                            url = s.url,
-                            method = s.method.name,
-                            headers = s.headers.serialize(),
-                            params = s.params.serialize(),
-                            body = s.body,
-                            created_at = 0L,
-                        ),
-                        hasUnsavedChanges = false,
+                        loadedRequest = saved,
+                        currentRequest = saved,
                         saveSuccess = true,
                     )
                 }
@@ -254,15 +252,18 @@ internal class PlaygroundScreenModel(
         viewModelScope.launch {
             store.updateRequest(
                 id = loaded.id,
-                name = loaded.name,
+                name = s.currentRequest.name.ifBlank { loaded.name },
                 folderId = loaded.folder_id,
-                url = s.url,
-                method = s.method.name,
-                headers = s.headers.serialize(),
-                params = s.params.serialize(),
-                body = s.body,
+                url = s.currentRequest.url,
+                method = s.currentRequest.method,
+                headers = s.currentRequest.headers,
+                params = s.currentRequest.params,
+                body = s.currentRequest.body,
             )
-            setState { copy(hasUnsavedChanges = false, overwriteSuccess = true) }
+            setState {
+                val saved = currentRequest.copy(id = loaded.id, name = loaded.name, folder_id = loaded.folder_id)
+                copy(loadedRequest = saved, currentRequest = saved, overwriteSuccess = true)
+            }
         }
     }
 
@@ -273,14 +274,11 @@ internal class PlaygroundScreenModel(
         setState {
             copy(
                 loadedRequest = saved,
-                url = saved.url,
-                method = runCatching { HttpMethod.valueOf(saved.method) }.getOrDefault(HttpMethod.GET),
+                currentRequest = saved,
                 headers = h.ifEmpty { listOf(KeyValueEntry(id = nextId++)) },
                 params = p.ifEmpty { listOf(KeyValueEntry(id = nextId++)) },
-                body = saved.body,
                 response = null,
                 error = null,
-                hasUnsavedChanges = false,
                 isEditingNewRequest = false,
             )
         }
@@ -298,15 +296,12 @@ internal class PlaygroundScreenModel(
         setState {
             copy(
                 loadedRequest = null,
+                currentRequest = PlaygroundState().currentRequest,
                 isEditingNewRequest = false,
-                url = "",
-                method = HttpMethod.GET,
                 params = listOf(KeyValueEntry(id = nextId++)),
                 headers = listOf(KeyValueEntry(id = nextId++)),
-                body = "",
                 response = null,
                 error = null,
-                hasUnsavedChanges = false,
                 activeTab = 0,
             )
         }
@@ -314,15 +309,15 @@ internal class PlaygroundScreenModel(
 
     private fun sendRequest() {
         val s = state.value
-        if (s.url.isBlank()) return
-        val url = if (!s.url.startsWith("http://", ignoreCase = true) && !s.url.startsWith(
-                "https://",
-                ignoreCase = true,
-            )
+        if (s.currentRequest.url.isBlank()) return
+        val url = if (!s.currentRequest.url.startsWith("http://", ignoreCase = true) &&
+            !s.currentRequest.url.startsWith("https://", ignoreCase = true)
         ) {
-            "https://${s.url}".also { setState { copy(url = it) } }
+            "https://${s.currentRequest.url}".also { newUrl ->
+                setState { copy(currentRequest = currentRequest.copy(url = newUrl)) }
+            }
         } else {
-            s.url
+            s.currentRequest.url
         }
         viewModelScope.launch {
             setState { copy(isLoading = true, error = null, activeTab = 1) }
@@ -330,14 +325,14 @@ internal class PlaygroundScreenModel(
                 val kurlResponse = engine.execute(
                     KurlRequest(
                         url = url,
-                        method = s.method.name,
+                        method = s.currentRequest.method,
                         headers = s.headers
                             .filter { it.enabled && it.key.isNotBlank() }
                             .associate { it.key to it.value },
                         queryParams = s.params
                             .filter { it.enabled && it.key.isNotBlank() }
                             .associate { it.key to it.value },
-                        body = s.body.ifBlank { null },
+                        body = s.currentRequest.body.ifBlank { null },
                     ),
                 )
                 setState {
