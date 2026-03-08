@@ -33,6 +33,16 @@
     <string name="msg_no_results">No results for "%1$s"</string>
     <string name="msg_no_saved_requests">No saved requests</string>
 
+    <!-- Playground Placeholder -->
+    <string name="msg_no_request_open">No request open</string>
+    <string name="msg_no_request_subtitle">Click below to start a new request</string>
+    <string name="action_new_request">New Request</string>
+
+    <!-- Save Request Dialog - Folder Browser -->
+    <string name="label_root">Root</string>
+    <string name="action_save_here">Save here</string>
+    <string name="msg_no_subfolders">No subfolders</string>
+
     <!-- Playground / Snackbars -->
     <string name="msg_request_saved">Request saved to collections</string>
     <string name="msg_changes_saved">Changes saved</string>
@@ -63,6 +73,8 @@
     <string name="action_import_curl">Import from cURL</string>
     <string name="action_copy_curl">Copy as cURL</string>
     <string name="cd_save_collection">Save to collection</string>
+    <string name="cd_close_playground">Close</string>
+    <string name="action_delete_request">Delete request</string>
     <string name="send">Send</string>
 
     <!-- Search Bar -->

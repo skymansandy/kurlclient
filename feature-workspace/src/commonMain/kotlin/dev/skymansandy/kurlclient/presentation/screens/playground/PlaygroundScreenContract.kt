@@ -28,7 +28,9 @@ internal class PlaygroundScreenContract {
         val folderPaths: Map<Long, String> = emptyMap(),
         val showSaveDialog: Boolean = false,
         val showImportCurlDialog: Boolean = false,
+        val showDiscardAndCloseDialog: Boolean = false,
         val activeTab: Int = 0,
+        val isEditingNewRequest: Boolean = false,
     ) : UiState {
 
         data class ResponseState(
@@ -64,6 +66,11 @@ internal class PlaygroundScreenContract {
         data object ShowImportCurlDialog : PlaygroundEvent
         data object HideImportCurlDialog : PlaygroundEvent
         data class SelectTab(val index: Int) : PlaygroundEvent
+        data object StartNewRequest : PlaygroundEvent
+        data object ClosePlayground : PlaygroundEvent
+        data object ConfirmClose : PlaygroundEvent
+        data object DismissCloseDialog : PlaygroundEvent
+        data object DeleteLoadedRequest : PlaygroundEvent
     }
 
     sealed interface PlaygroundEffect : UiEffect

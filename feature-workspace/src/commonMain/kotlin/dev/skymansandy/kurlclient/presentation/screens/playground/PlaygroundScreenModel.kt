@@ -149,6 +149,20 @@ internal class PlaygroundScreenModel(
             PlaygroundEvent.ShowImportCurlDialog -> setState { copy(showImportCurlDialog = true) }
             PlaygroundEvent.HideImportCurlDialog -> setState { copy(showImportCurlDialog = false) }
             is PlaygroundEvent.SelectTab -> setState { copy(activeTab = event.index) }
+            PlaygroundEvent.StartNewRequest -> setState { copy(isEditingNewRequest = true) }
+            PlaygroundEvent.ClosePlayground -> {
+                if (state.value.hasUnsavedChanges) {
+                    setState { copy(showDiscardAndCloseDialog = true) }
+                } else {
+                    resetToPlaceholder()
+                }
+            }
+            PlaygroundEvent.ConfirmClose -> {
+                setState { copy(showDiscardAndCloseDialog = false) }
+                resetToPlaceholder()
+            }
+            PlaygroundEvent.DismissCloseDialog -> setState { copy(showDiscardAndCloseDialog = false) }
+            PlaygroundEvent.DeleteLoadedRequest -> deleteLoadedRequest()
         }
     }
 
@@ -204,7 +218,7 @@ internal class PlaygroundScreenModel(
                     )
                 }
             } else {
-                store.saveRequest(
+                val newId = store.saveRequest(
                     name = name,
                     folderId = folderId,
                     url = s.url,
@@ -213,7 +227,23 @@ internal class PlaygroundScreenModel(
                     params = s.params.serialize(),
                     body = s.body,
                 )
-                setState { copy(hasUnsavedChanges = false, saveSuccess = true) }
+                setState {
+                    copy(
+                        loadedRequest = SavedRequest(
+                            id = newId,
+                            name = name,
+                            folder_id = folderId,
+                            url = s.url,
+                            method = s.method.name,
+                            headers = s.headers.serialize(),
+                            params = s.params.serialize(),
+                            body = s.body,
+                            created_at = 0L,
+                        ),
+                        hasUnsavedChanges = false,
+                        saveSuccess = true,
+                    )
+                }
             }
         }
     }
@@ -251,6 +281,33 @@ internal class PlaygroundScreenModel(
                 response = null,
                 error = null,
                 hasUnsavedChanges = false,
+                isEditingNewRequest = false,
+            )
+        }
+    }
+
+    private fun deleteLoadedRequest() {
+        val id = state.value.loadedRequest?.id ?: return
+        viewModelScope.launch {
+            store.deleteRequest(id)
+            resetToPlaceholder()
+        }
+    }
+
+    private fun resetToPlaceholder() {
+        setState {
+            copy(
+                loadedRequest = null,
+                isEditingNewRequest = false,
+                url = "",
+                method = HttpMethod.GET,
+                params = listOf(KeyValueEntry(id = nextId++)),
+                headers = listOf(KeyValueEntry(id = nextId++)),
+                body = "",
+                response = null,
+                error = null,
+                hasUnsavedChanges = false,
+                activeTab = 0,
             )
         }
     }

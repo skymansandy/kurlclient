@@ -12,8 +12,11 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.FolderOpen
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Save
+import androidx.compose.material.icons.filled.SaveAs
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
@@ -39,7 +42,9 @@ import dev.skymansandy.kurl.core.model.HttpMethod
 import dev.skymansandy.kurlclient.util.compose.methodColor
 import kurlclient.feature_workspace.generated.resources.Res
 import kurlclient.feature_workspace.generated.resources.action_copy_curl
+import kurlclient.feature_workspace.generated.resources.action_delete_request
 import kurlclient.feature_workspace.generated.resources.action_import_curl
+import kurlclient.feature_workspace.generated.resources.cd_close_playground
 import kurlclient.feature_workspace.generated.resources.cd_more_actions
 import kurlclient.feature_workspace.generated.resources.cd_save_collection
 import kurlclient.feature_workspace.generated.resources.placeholder_url
@@ -51,10 +56,14 @@ internal fun UrlBar(
     method: HttpMethod,
     url: String,
     isLoading: Boolean,
+    isNewRequest: Boolean,
+    hasUnsavedChanges: Boolean,
     onMethodChange: (HttpMethod) -> Unit,
     onUrlChange: (String) -> Unit,
     onSend: () -> Unit,
     onSave: () -> Unit,
+    onDelete: () -> Unit,
+    onClose: () -> Unit,
     onCopyCurl: () -> Unit,
     onImportCurl: () -> Unit,
     modifier: Modifier = Modifier,
@@ -62,12 +71,16 @@ internal fun UrlBar(
     var expanded by remember { mutableStateOf(false) }
     var moreMenuExpanded by remember { mutableStateOf(false) }
 
+    val showSave = isNewRequest || hasUnsavedChanges
+
     Row(
         modifier = modifier.height(48.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        Box(modifier = Modifier.wrapContentSize(Alignment.TopStart)) {
+        Box(
+            modifier = Modifier.wrapContentSize(Alignment.TopStart),
+        ) {
             Surface(
                 shape = RoundedCornerShape(6.dp),
                 color = methodColor(method),
@@ -120,36 +133,6 @@ internal fun UrlBar(
             modifier = Modifier.weight(1f).fillMaxSize(),
         )
 
-        // ⋮ More menu: cURL import / export
-        Box(modifier = Modifier.wrapContentSize(Alignment.TopStart)) {
-            IconButton(onClick = { moreMenuExpanded = true }) {
-                Icon(Icons.Default.MoreVert, contentDescription = stringResource(Res.string.cd_more_actions))
-            }
-            DropdownMenu(
-                expanded = moreMenuExpanded,
-                onDismissRequest = { moreMenuExpanded = false },
-            ) {
-                DropdownMenuItem(
-                    text = { Text(stringResource(Res.string.action_import_curl)) },
-                    onClick = { moreMenuExpanded = false; onImportCurl() },
-                )
-                DropdownMenuItem(
-                    text = { Text(stringResource(Res.string.action_copy_curl)) },
-                    onClick = { moreMenuExpanded = false; onCopyCurl() },
-                )
-            }
-        }
-
-        FilledTonalIconButton(
-            onClick = onSave,
-            enabled = !isLoading,
-        ) {
-            Icon(
-                imageVector = Icons.Default.FolderOpen,
-                contentDescription = stringResource(Res.string.cd_save_collection),
-            )
-        }
-
         Button(
             onClick = onSend,
             enabled = !isLoading,
@@ -163,6 +146,77 @@ internal fun UrlBar(
                 )
             } else {
                 Text(stringResource(Res.string.send))
+            }
+        }
+
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            if (showSave) {
+                FilledTonalIconButton(
+                    onClick = onSave,
+                    enabled = !isLoading,
+                ) {
+                    Icon(
+                        imageVector = if (isNewRequest) Icons.Default.SaveAs else Icons.Default.Save,
+                        contentDescription = stringResource(Res.string.cd_save_collection),
+                    )
+                }
+            }
+
+            // ⋮ More menu: cURL import / export / delete
+            Box(
+                modifier = Modifier.wrapContentSize(Alignment.TopStart),
+            ) {
+                IconButton(
+                    onClick = {
+                        moreMenuExpanded = true
+                    },
+                ) {
+                    Icon(
+                        Icons.Default.MoreVert,
+                        contentDescription = stringResource(Res.string.cd_more_actions),
+                    )
+                }
+
+                DropdownMenu(
+                    expanded = moreMenuExpanded,
+                    onDismissRequest = { moreMenuExpanded = false },
+                ) {
+                    DropdownMenuItem(
+                        text = { Text(stringResource(Res.string.action_import_curl)) },
+                        onClick = { moreMenuExpanded = false; onImportCurl() },
+                    )
+                    DropdownMenuItem(
+                        text = { Text(stringResource(Res.string.action_copy_curl)) },
+                        onClick = { moreMenuExpanded = false; onCopyCurl() },
+                    )
+                    if (!isNewRequest) {
+                        DropdownMenuItem(
+                            text = {
+                                Text(
+                                    text = stringResource(Res.string.action_delete_request),
+                                    color = MaterialTheme.colorScheme.error,
+                                )
+                            },
+                            leadingIcon = {
+                                Icon(
+                                    Icons.Default.Delete,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.error,
+                                )
+                            },
+                            onClick = { moreMenuExpanded = false; onDelete() },
+                        )
+                    }
+                }
+            }
+
+            IconButton(onClick = onClose) {
+                Icon(
+                    imageVector = Icons.Default.Close,
+                    contentDescription = stringResource(Res.string.cd_close_playground),
+                )
             }
         }
     }
