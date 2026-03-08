@@ -1,7 +1,6 @@
 package dev.skymansandy.kurlclient.presentation.screens.workspace
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Tab
@@ -18,12 +17,12 @@ import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import dev.skymansandy.kurlclient.presentation.screens.workspace.request.ImportCurlDialog
-import org.koin.compose.viewmodel.koinViewModel
 import dev.skymansandy.kurlclient.presentation.screens.workspace.request.RequestPanel
 import dev.skymansandy.kurlclient.presentation.screens.workspace.request.SaveRequestDialog
 import dev.skymansandy.kurlclient.presentation.screens.workspace.request.UrlBar
 import dev.skymansandy.kurlclient.presentation.screens.workspace.response.ResponsePanel
 import dev.skymansandy.kurlstore.db.CollectionFolder
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun WorkspaceScreen(

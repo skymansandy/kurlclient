@@ -1,5 +1,6 @@
 package dev.skymansandy.kurl.core.engine
 
+import dev.skymansandy.kurl.core.api.KurlEngine
 import dev.skymansandy.kurl.core.engine.network.buildNetworkInfo
 import dev.skymansandy.kurl.core.model.KurlRequest
 import dev.skymansandy.kurl.core.model.KurlResponse
@@ -11,10 +12,11 @@ import io.ktor.client.statement.bodyAsText
 import io.ktor.http.HttpMethod
 import kotlin.time.TimeSource
 
-class KurlEngine(
+internal class KurlEngineImpl(
     private val client: HttpClient,
-) {
-    suspend fun execute(request: KurlRequest): KurlResponse {
+): KurlEngine {
+
+    override suspend fun execute(request: KurlRequest): KurlResponse {
         val mark = TimeSource.Monotonic.markNow()
 
         val response = client.request(request.url) {
@@ -52,7 +54,7 @@ class KurlEngine(
         )
     }
 
-    fun close() {
+    override fun close() {
         client.close()
     }
 }
