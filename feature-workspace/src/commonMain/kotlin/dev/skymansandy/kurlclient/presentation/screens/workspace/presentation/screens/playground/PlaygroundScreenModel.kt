@@ -126,6 +126,11 @@ internal class PlaygroundScreenModel(
             is PlaygroundEvent.ClearOverwriteSuccess -> setState { copy(overwriteSuccess = false) }
             is PlaygroundEvent.LoadSavedRequest -> loadSavedRequest(event.saved)
             is PlaygroundEvent.SendRequest -> sendRequest()
+            PlaygroundEvent.ShowSaveDialog -> setState { copy(showSaveDialog = true) }
+            PlaygroundEvent.HideSaveDialog -> setState { copy(showSaveDialog = false) }
+            PlaygroundEvent.ShowImportCurlDialog -> setState { copy(showImportCurlDialog = true) }
+            PlaygroundEvent.HideImportCurlDialog -> setState { copy(showImportCurlDialog = false) }
+            is PlaygroundEvent.SelectTab -> setState { copy(activeTab = event.index) }
         }
     }
 
@@ -224,7 +229,7 @@ internal class PlaygroundScreenModel(
             s.url
         }
         viewModelScope.launch {
-            setState { copy(isLoading = true, error = null) }
+            setState { copy(isLoading = true, error = null, activeTab = 1) }
             try {
                 val kurlResponse = engine.execute(
                     KurlRequest(

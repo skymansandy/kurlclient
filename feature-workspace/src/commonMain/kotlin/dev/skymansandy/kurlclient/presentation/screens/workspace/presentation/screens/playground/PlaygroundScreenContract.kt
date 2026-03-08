@@ -23,7 +23,10 @@ data class PlaygroundState(
     val saveSuccess: Boolean = false,
     val overwriteSuccess: Boolean = false,
     val allFolders: List<CollectionFolder> = emptyList(),
-    val folderPaths: Map<Long, String> = emptyMap()
+    val folderPaths: Map<Long, String> = emptyMap(),
+    val showSaveDialog: Boolean = false,
+    val showImportCurlDialog: Boolean = false,
+    val activeTab: Int = 0,
 ) : UiState {
 
     data class ResponseState(
@@ -54,6 +57,11 @@ sealed interface PlaygroundEvent: UiEvent {
     data object ClearOverwriteSuccess : PlaygroundEvent
     data class LoadSavedRequest(val saved: SavedRequest) : PlaygroundEvent
     data object SendRequest : PlaygroundEvent
+    data object ShowSaveDialog : PlaygroundEvent
+    data object HideSaveDialog : PlaygroundEvent
+    data object ShowImportCurlDialog : PlaygroundEvent
+    data object HideImportCurlDialog : PlaygroundEvent
+    data class SelectTab(val index: Int) : PlaygroundEvent
 }
 
 sealed interface PlaygroundEffect : UiEffect
