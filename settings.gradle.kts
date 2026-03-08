@@ -33,3 +33,13 @@ plugins {
 }
 
 include(":composeApp")
+include(":androidApp")
+
+include(":kurl-core")
+include(":kurl-store")
+
+include(":presentation-base")
+
+include(":feature-workspace")
+
+include(":ui-json-viewer")
