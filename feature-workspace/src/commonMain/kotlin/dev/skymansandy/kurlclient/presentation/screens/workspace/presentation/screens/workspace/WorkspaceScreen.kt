@@ -22,21 +22,14 @@ import dev.skymansandy.kurlclient.presentation.screens.workspace.request.Request
 import dev.skymansandy.kurlclient.presentation.screens.workspace.request.SaveRequestDialog
 import dev.skymansandy.kurlclient.presentation.screens.workspace.request.UrlBar
 import dev.skymansandy.kurlclient.presentation.screens.workspace.response.ResponsePanel
-import dev.skymansandy.kurlstore.db.CollectionFolder
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun WorkspaceScreen(
-    allFolders: List<CollectionFolder>,
-    folderPaths: Map<Long, String>,
-    onSaveSuccess: () -> Unit,
-    onOverwriteSuccess: () -> Unit,
-    onCreateFolder: (name: String, parentId: Long?) -> Unit,
     onShowSnackbar: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val vm: WorkspaceViewModel = koinViewModel()
-
     val state by vm.state.collectAsStateWithLifecycle()
 
     var showSaveDialog by remember { mutableStateOf(false) }
@@ -46,14 +39,14 @@ fun WorkspaceScreen(
 
     LaunchedEffect(state.saveSuccess) {
         if (state.saveSuccess) {
-            onSaveSuccess()
+            onShowSnackbar("Request saved to collections")
             vm.onEvent(WorkspaceEvent.ClearSaveSuccess)
         }
     }
 
     LaunchedEffect(state.overwriteSuccess) {
         if (state.overwriteSuccess) {
-            onOverwriteSuccess()
+            onShowSnackbar("Changes saved")
             vm.onEvent(WorkspaceEvent.ClearOverwriteSuccess)
         }
     }
@@ -70,13 +63,15 @@ fun WorkspaceScreen(
     if (showSaveDialog) {
         SaveRequestDialog(
             initialName = if (state.url.isNotBlank()) state.url.substringAfterLast("/").take(40) else "Untitled",
-            folders = allFolders,
-            folderPaths = folderPaths,
+            folders = state.allFolders,
+            folderPaths = state.folderPaths,
             onSave = { name, folderId ->
                 vm.onEvent(WorkspaceEvent.SaveRequest(name, folderId))
                 showSaveDialog = false
             },
-            onCreateFolder = onCreateFolder,
+            onCreateFolder = { name, parentId ->
+                vm.onEvent(WorkspaceEvent.CreateFolder(name, parentId))
+            },
             onDismiss = { showSaveDialog = false }
         )
     }
@@ -102,10 +97,8 @@ fun WorkspaceScreen(
                 .padding(horizontal = 12.dp, vertical = 10.dp)
         )
         TabRow(selectedTabIndex = selectedTab) {
-            Tab(selected = selectedTab == 0, onClick = { selectedTab = 0 },
-                text = { Text("Request") })
-            Tab(selected = selectedTab == 1, onClick = { selectedTab = 1 },
-                text = { Text("Response") })
+            Tab(selected = selectedTab == 0, onClick = { selectedTab = 0 }, text = { Text("Request") })
+            Tab(selected = selectedTab == 1, onClick = { selectedTab = 1 }, text = { Text("Response") })
         }
         when (selectedTab) {
             0 -> RequestPanel(

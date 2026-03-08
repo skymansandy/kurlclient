@@ -6,6 +6,7 @@ import dev.skymansandy.kurl.core.model.NetworkInfo
 import dev.skymansandy.kurlclient.presentation.base.contract.UiEffect
 import dev.skymansandy.kurlclient.presentation.base.contract.UiEvent
 import dev.skymansandy.kurlclient.presentation.base.contract.UiState
+import dev.skymansandy.kurlstore.db.CollectionFolder
 import dev.skymansandy.kurlstore.db.SavedRequest
 
 data class WorkspaceState(
@@ -20,7 +21,9 @@ data class WorkspaceState(
     val loadedRequest: SavedRequest? = null,
     val hasUnsavedChanges: Boolean = false,
     val saveSuccess: Boolean = false,
-    val overwriteSuccess: Boolean = false
+    val overwriteSuccess: Boolean = false,
+    val allFolders: List<CollectionFolder> = emptyList(),
+    val folderPaths: Map<Long, String> = emptyMap()
 ) : UiState {
 
     data class ResponseState(
@@ -45,6 +48,7 @@ sealed interface WorkspaceEvent: UiEvent {
     data object AddHeader : WorkspaceEvent
     data class RemoveHeader(val id: Long) : WorkspaceEvent
     data class SaveRequest(val name: String, val folderId: Long?) : WorkspaceEvent
+    data class CreateFolder(val name: String, val parentId: Long?) : WorkspaceEvent
     data object ClearSaveSuccess : WorkspaceEvent
     data object OverwriteLoadedRequest : WorkspaceEvent
     data object ClearOverwriteSuccess : WorkspaceEvent

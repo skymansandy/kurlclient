@@ -30,7 +30,6 @@ data class CollectionsState(
 }
 
 sealed interface CollectionsEvent : UiEvent {
-    data object Refresh : CollectionsEvent
     data class ToggleFolder(val id: Long) : CollectionsEvent
     data class SetSearchQuery(val query: String) : CollectionsEvent
     data class CreateFolder(val name: String, val parentId: Long?) : CollectionsEvent

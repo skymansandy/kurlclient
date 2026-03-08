@@ -9,7 +9,8 @@ import dev.skymansandy.kurl.core.utils.buildCurlCommand
 import dev.skymansandy.kurl.core.utils.deserializeKeyValueEntries
 import dev.skymansandy.kurl.core.utils.parseCurlCommand
 import dev.skymansandy.kurl.core.utils.serialize
-import dev.skymansandy.kurl.store.CollectionRepository
+import dev.skymansandy.kurl.store.CollectionStore
+import kotlinx.coroutines.flow.combine
 import dev.skymansandy.kurlclient.presentation.base.MviViewModel
 import dev.skymansandy.kurlstore.db.SavedRequest
 import kotlinx.coroutines.launch
@@ -18,7 +19,7 @@ import org.koin.android.annotation.KoinViewModel
 @KoinViewModel
 internal class WorkspaceViewModel(
     private val engine: KurlEngine,
-    private val repo: CollectionRepository,
+    private val store: CollectionStore,
 ) : MviViewModel<WorkspaceState, WorkspaceEvent, WorkspaceEffect>() {
 
     private var nextId = 1L
@@ -31,6 +32,13 @@ internal class WorkspaceViewModel(
                 params = listOf(KeyValueEntry(id = nextId++)),
                 headers = listOf(KeyValueEntry(id = nextId++))
             )
+        }
+        viewModelScope.launch {
+            combine(store.folders, store.folderPaths) { folders, paths ->
+                folders to paths
+            }.collect { (folders, paths) ->
+                setState { copy(allFolders = folders, folderPaths = paths) }
+            }
         }
     }
 
@@ -112,6 +120,7 @@ internal class WorkspaceViewModel(
             }
 
             is WorkspaceEvent.SaveRequest -> saveRequest(event.name, event.folderId)
+            is WorkspaceEvent.CreateFolder -> viewModelScope.launch { store.createFolder(event.name, event.parentId) }
             is WorkspaceEvent.ClearSaveSuccess -> setState { copy(saveSuccess = false) }
             is WorkspaceEvent.OverwriteLoadedRequest -> overwriteLoadedRequest()
             is WorkspaceEvent.ClearOverwriteSuccess -> setState { copy(overwriteSuccess = false) }
@@ -152,7 +161,7 @@ internal class WorkspaceViewModel(
     private fun saveRequest(name: String, folderId: Long?) {
         val s = state.value
         viewModelScope.launch {
-            repo.saveRequest(
+            store.saveRequest(
                 name = name,
                 folderId = folderId,
                 url = s.url,
@@ -169,7 +178,7 @@ internal class WorkspaceViewModel(
         val s = state.value
         val loaded = s.loadedRequest ?: return
         viewModelScope.launch {
-            repo.updateRequest(
+            store.updateRequest(
                 id = loaded.id,
                 name = loaded.name,
                 folderId = loaded.folder_id,

@@ -1,25 +1,31 @@
 package dev.skymansandy.kurlclient.presentation.screens.collections.presentation.screens.collection
 
 import androidx.lifecycle.viewModelScope
-import dev.skymansandy.kurl.store.CollectionRepository
+import dev.skymansandy.kurl.store.CollectionStore
 import dev.skymansandy.kurlclient.presentation.base.MviViewModel
 import dev.skymansandy.kurlclient.presentation.screens.collections.presentation.screens.collection.CollectionsState.TreeItem
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import org.koin.android.annotation.KoinViewModel
 
 @KoinViewModel
-class CollectionsViewModel(private val repo: CollectionRepository) :
+internal class CollectionsViewModel(private val store: CollectionStore) :
     MviViewModel<CollectionsState, CollectionsEvent, CollectionsEffect>() {
 
     override fun createInitialState() = CollectionsState()
 
     init {
-        onEvent(CollectionsEvent.Refresh)
+        viewModelScope.launch {
+            combine(store.folders, store.requests, store.folderPaths) { folders, requests, paths ->
+                Triple(folders, requests, paths)
+            }.collect { (folders, requests, paths) ->
+                setState { copy(allFolders = folders, allRequests = requests, folderPaths = paths) }
+            }
+        }
     }
 
     override fun onEvent(event: CollectionsEvent) {
         when (event) {
-            is CollectionsEvent.Refresh -> refresh()
             is CollectionsEvent.ToggleFolder -> toggleFolder(event.id)
             is CollectionsEvent.SetSearchQuery -> setState { copy(searchQuery = event.query) }
             is CollectionsEvent.CreateFolder -> createFolder(event.name, event.parentId)
@@ -27,21 +33,6 @@ class CollectionsViewModel(private val repo: CollectionRepository) :
             is CollectionsEvent.MoveRequest -> moveRequest(event.id, event.newFolderId)
             is CollectionsEvent.DeleteFolder -> deleteFolder(event.id)
             is CollectionsEvent.DeleteRequest -> deleteRequest(event.id)
-        }
-    }
-
-    private fun refresh() {
-        viewModelScope.launch {
-            val folders = repo.getAllFolders()
-            val requests = repo.getAllRequests()
-            val paths = repo.buildFolderPaths(folders)
-            setState {
-                copy(
-                    allFolders = folders,
-                    allRequests = requests,
-                    folderPaths = paths
-                )
-            }
         }
     }
 
@@ -58,12 +49,7 @@ class CollectionsViewModel(private val repo: CollectionRepository) :
         return result
     }
 
-    private fun appendChildren(
-        s: CollectionsState,
-        parentId: Long?,
-        depth: Int,
-        result: MutableList<TreeItem>
-    ) {
+    private fun appendChildren(s: CollectionsState, parentId: Long?, depth: Int, result: MutableList<TreeItem>) {
         s.allFolders
             .filter { it.parent_id == parentId }
             .sortedBy { it.name }
@@ -85,12 +71,7 @@ class CollectionsViewModel(private val repo: CollectionRepository) :
         if (q.isBlank()) return buildTreeItems(s)
 
         val matchingIds = s.allRequests
-            .filter {
-                it.name.contains(q, ignoreCase = true) || it.url.contains(
-                    q,
-                    ignoreCase = true
-                )
-            }
+            .filter { it.name.contains(q, ignoreCase = true) || it.url.contains(q, ignoreCase = true) }
             .map { it.id }.toSet()
 
         val visibleFolderIds = mutableSetOf<Long>()
@@ -108,26 +89,15 @@ class CollectionsViewModel(private val repo: CollectionRepository) :
     }
 
     private fun appendFilteredChildren(
-        s: CollectionsState,
-        parentId: Long?,
-        depth: Int,
-        result: MutableList<TreeItem>,
-        matchingIds: Set<Long>,
-        visibleFolderIds: Set<Long>
+        s: CollectionsState, parentId: Long?, depth: Int,
+        result: MutableList<TreeItem>, matchingIds: Set<Long>, visibleFolderIds: Set<Long>
     ) {
         s.allFolders
             .filter { it.parent_id == parentId && it.id in visibleFolderIds }
             .sortedBy { it.name }
             .forEach { folder ->
                 result.add(TreeItem.Folder(folder, depth, isExpanded = true))
-                appendFilteredChildren(
-                    s,
-                    folder.id,
-                    depth + 1,
-                    result,
-                    matchingIds,
-                    visibleFolderIds
-                )
+                appendFilteredChildren(s, folder.id, depth + 1, result, matchingIds, visibleFolderIds)
             }
         s.allRequests
             .filter { it.folder_id == parentId && it.id in matchingIds }
@@ -139,18 +109,10 @@ class CollectionsViewModel(private val repo: CollectionRepository) :
 
     private fun createFolder(name: String, parentId: Long?) {
         viewModelScope.launch {
-            val newId = repo.createFolder(name, parentId)
-            val folders = repo.getAllFolders()
-            val requests = repo.getAllRequests()
-            val paths = repo.buildFolderPaths(folders)
+            val newId = store.createFolder(name, parentId)
             setState {
-                copy(
-                    allFolders = folders,
-                    allRequests = requests,
-                    folderPaths = paths,
-                    expandedFolderIds = expandedFolderIds
-                        .let { if (parentId != null) it + parentId else it } + newId
-                )
+                copy(expandedFolderIds = expandedFolderIds
+                    .let { if (parentId != null) it + parentId else it } + newId)
             }
         }
     }
@@ -158,40 +120,29 @@ class CollectionsViewModel(private val repo: CollectionRepository) :
     private fun isDescendantOf(s: CollectionsState, ancestorId: Long, folderId: Long?): Boolean {
         if (folderId == null) return false
         if (folderId == ancestorId) return true
-        val parent = s.allFolders.find { it.id == folderId }?.parent_id
-        return isDescendantOf(s, ancestorId, parent)
+        return isDescendantOf(s, ancestorId, s.allFolders.find { it.id == folderId }?.parent_id)
     }
 
     private fun moveFolder(id: Long, newParentId: Long?) {
         val s = state.value
         if (isDescendantOf(s, id, newParentId)) return
         if (s.allFolders.find { it.id == id }?.parent_id == newParentId) return
-        viewModelScope.launch {
-            repo.moveFolderTo(id, newParentId)
-            refresh()
-        }
+        viewModelScope.launch { store.moveFolderTo(id, newParentId) }
     }
 
     private fun moveRequest(id: Long, newFolderId: Long?) {
         if (state.value.allRequests.find { it.id == id }?.folder_id == newFolderId) return
-        viewModelScope.launch {
-            repo.moveRequestTo(id, newFolderId)
-            refresh()
-        }
+        viewModelScope.launch { store.moveRequestTo(id, newFolderId) }
     }
 
     private fun deleteFolder(id: Long) {
         viewModelScope.launch {
-            repo.deleteFolder(id)
+            store.deleteFolder(id)
             setState { copy(expandedFolderIds = expandedFolderIds - id) }
-            refresh()
         }
     }
 
     private fun deleteRequest(id: Long) {
-        viewModelScope.launch {
-            repo.deleteRequest(id)
-            refresh()
-        }
+        viewModelScope.launch { store.deleteRequest(id) }
     }
 }

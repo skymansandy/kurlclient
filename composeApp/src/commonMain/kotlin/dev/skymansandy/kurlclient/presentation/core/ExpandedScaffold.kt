@@ -18,24 +18,16 @@ import dev.skymansandy.kurlclient.navigation.NavDestination
 import dev.skymansandy.kurlclient.presentation.core.components.NavIcon
 import dev.skymansandy.kurlclient.presentation.screens.collections.presentation.screens.collection.CollectionsScreen
 import dev.skymansandy.kurlclient.presentation.screens.workspace.presentation.screens.workspace.WorkspaceScreen
-import dev.skymansandy.kurlstore.db.CollectionFolder
 import dev.skymansandy.kurlstore.db.SavedRequest
-
-// ── Desktop layout ────────────────────────────────────────────────────────────
 
 @Composable
 internal fun ExpandedScaffold(
     hasUnsavedChanges: Boolean,
     activeRequestId: Long?,
-    allFolders: List<CollectionFolder>,
-    folderPaths: Map<Long, String>,
     selectedNav: NavDestination,
     snackbarHostState: SnackbarHostState,
     onNavSelect: (NavDestination) -> Unit,
-    onSaveSuccess: () -> Unit,
-    onOverwriteSuccess: () -> Unit,
     onShowSnackbar: (String) -> Unit,
-    onCreateFolder: (name: String, parentId: Long?) -> Unit,
     onRequestSelected: (SavedRequest) -> Unit,
     onSaveChanges: () -> Unit
 ) {
@@ -51,11 +43,6 @@ internal fun ExpandedScaffold(
             VerticalDivider()
             when (selectedNav) {
                 NavDestination.Workspace -> WorkspaceScreen(
-                    allFolders = allFolders,
-                    folderPaths = folderPaths,
-                    onSaveSuccess = onSaveSuccess,
-                    onOverwriteSuccess = onOverwriteSuccess,
-                    onCreateFolder = onCreateFolder,
                     onShowSnackbar = onShowSnackbar,
                     modifier = Modifier.fillMaxSize()
                 )

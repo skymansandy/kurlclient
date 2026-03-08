@@ -43,7 +43,6 @@ kotlin {
             implementation(libs.material.icons.extended)
             implementation(projects.kurlCore)
             implementation(projects.kurlStore)
-            implementation(projects.presentationBase)
             implementation(projects.featureWorkspace)
             implementation(projects.featureCollections)
             implementation(libs.koin.core)
