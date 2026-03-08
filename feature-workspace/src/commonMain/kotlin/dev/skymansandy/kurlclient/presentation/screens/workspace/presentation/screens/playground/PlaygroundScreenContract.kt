@@ -1,4 +1,4 @@
-package dev.skymansandy.kurlclient.presentation.screens.workspace.presentation.screens.workspace
+package dev.skymansandy.kurlclient.presentation.screens.workspace.presentation.screens.playground
 
 import dev.skymansandy.kurl.core.model.HttpMethod
 import dev.skymansandy.kurl.core.model.KeyValueEntry
@@ -9,7 +9,7 @@ import dev.skymansandy.kurlclient.presentation.base.contract.UiState
 import dev.skymansandy.kurlstore.db.CollectionFolder
 import dev.skymansandy.kurlstore.db.SavedRequest
 
-data class WorkspaceState(
+data class PlaygroundState(
     val url: String = "",
     val method: HttpMethod = HttpMethod.GET,
     val params: List<KeyValueEntry> = emptyList(),
@@ -37,23 +37,23 @@ data class WorkspaceState(
     )
 }
 
-sealed interface WorkspaceEvent: UiEvent {
-    data class SetUrl(val value: String) : WorkspaceEvent
-    data class SetMethod(val value: HttpMethod) : WorkspaceEvent
-    data class SetBody(val value: String) : WorkspaceEvent
-    data class UpdateParam(val id: Long, val key: String, val value: String, val enabled: Boolean) : WorkspaceEvent
-    data object AddParam : WorkspaceEvent
-    data class RemoveParam(val id: Long) : WorkspaceEvent
-    data class UpdateHeader(val id: Long, val key: String, val value: String, val enabled: Boolean) : WorkspaceEvent
-    data object AddHeader : WorkspaceEvent
-    data class RemoveHeader(val id: Long) : WorkspaceEvent
-    data class SaveRequest(val name: String, val folderId: Long?) : WorkspaceEvent
-    data class CreateFolder(val name: String, val parentId: Long?) : WorkspaceEvent
-    data object ClearSaveSuccess : WorkspaceEvent
-    data object OverwriteLoadedRequest : WorkspaceEvent
-    data object ClearOverwriteSuccess : WorkspaceEvent
-    data class LoadSavedRequest(val saved: SavedRequest) : WorkspaceEvent
-    data object SendRequest : WorkspaceEvent
+sealed interface PlaygroundEvent: UiEvent {
+    data class SetUrl(val value: String) : PlaygroundEvent
+    data class SetMethod(val value: HttpMethod) : PlaygroundEvent
+    data class SetBody(val value: String) : PlaygroundEvent
+    data class UpdateParam(val id: Long, val key: String, val value: String, val enabled: Boolean) : PlaygroundEvent
+    data object AddParam : PlaygroundEvent
+    data class RemoveParam(val id: Long) : PlaygroundEvent
+    data class UpdateHeader(val id: Long, val key: String, val value: String, val enabled: Boolean) : PlaygroundEvent
+    data object AddHeader : PlaygroundEvent
+    data class RemoveHeader(val id: Long) : PlaygroundEvent
+    data class SaveRequest(val name: String, val folderId: Long?) : PlaygroundEvent
+    data class CreateFolder(val name: String, val parentId: Long?) : PlaygroundEvent
+    data object ClearSaveSuccess : PlaygroundEvent
+    data object OverwriteLoadedRequest : PlaygroundEvent
+    data object ClearOverwriteSuccess : PlaygroundEvent
+    data class LoadSavedRequest(val saved: SavedRequest) : PlaygroundEvent
+    data object SendRequest : PlaygroundEvent
 }
 
-sealed interface WorkspaceEffect : UiEffect
+sealed interface PlaygroundEffect : UiEffect

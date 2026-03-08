@@ -29,7 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import dev.skymansandy.kurl.core.model.NetworkInfo
-import dev.skymansandy.kurlclient.presentation.screens.workspace.presentation.screens.workspace.WorkspaceState.ResponseState
+import dev.skymansandy.kurlclient.presentation.screens.workspace.presentation.screens.playground.PlaygroundState.ResponseState
 import dev.skymansandy.ui.jsonviewer.ui.JsonViewer
 import kotlin.math.roundToInt
 

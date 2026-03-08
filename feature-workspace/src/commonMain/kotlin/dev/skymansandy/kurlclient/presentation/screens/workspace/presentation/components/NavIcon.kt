@@ -1,4 +1,4 @@
-package dev.skymansandy.kurlclient.presentation.core.components
+package dev.skymansandy.kurlclient.presentation.screens.workspace.presentation.components
 
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
@@ -10,11 +10,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import dev.skymansandy.kurlclient.navigation.NavDestination
+import dev.skymansandy.kurlclient.presentation.screens.workspace.presentation.screens.workspace.model.WorkspaceTab
 
 @Composable
 internal fun NavIcon(
-    dest: NavDestination,
+    dest: WorkspaceTab,
     showBadge: Boolean = false,
 ) {
     BadgedBox(
@@ -25,12 +25,12 @@ internal fun NavIcon(
         }
     ) {
         when (dest) {
-            NavDestination.Workspace -> Icon(
+            WorkspaceTab.Workspace -> Icon(
                 Icons.Default.Dashboard,
                 contentDescription = dest.label
             )
 
-            NavDestination.Collections -> Icon(
+            WorkspaceTab.Collections -> Icon(
                 Icons.AutoMirrored.Filled.List,
                 contentDescription = dest.label
             )

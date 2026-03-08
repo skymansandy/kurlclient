@@ -1,9 +1,9 @@
-package dev.skymansandy.kurlclient.presentation.screens.collections.presentation.screens.collection
+package dev.skymansandy.kurlclient.presentation.screens.workspace.presentation.screens.collections
 
 import androidx.lifecycle.viewModelScope
 import dev.skymansandy.kurl.store.CollectionStore
 import dev.skymansandy.kurlclient.presentation.base.MviViewModel
-import dev.skymansandy.kurlclient.presentation.screens.collections.presentation.screens.collection.CollectionsState.TreeItem
+import dev.skymansandy.kurlclient.presentation.screens.workspace.presentation.screens.collections.CollectionsState.TreeItem
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import org.koin.android.annotation.KoinViewModel

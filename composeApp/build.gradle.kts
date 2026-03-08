@@ -44,7 +44,6 @@ kotlin {
             implementation(projects.kurlCore)
             implementation(projects.kurlStore)
             implementation(projects.featureWorkspace)
-            implementation(projects.featureCollections)
             implementation(libs.koin.core)
             implementation(libs.koin.compose.viewmodel)
         }

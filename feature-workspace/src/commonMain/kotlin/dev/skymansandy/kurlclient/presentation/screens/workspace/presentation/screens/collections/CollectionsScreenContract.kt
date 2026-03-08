@@ -1,4 +1,4 @@
-package dev.skymansandy.kurlclient.presentation.screens.collections.presentation.screens.collection
+package dev.skymansandy.kurlclient.presentation.screens.workspace.presentation.screens.collections
 
 import dev.skymansandy.kurlclient.presentation.base.contract.UiEffect
 import dev.skymansandy.kurlclient.presentation.base.contract.UiEvent

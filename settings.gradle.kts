@@ -41,6 +41,5 @@ include(":kurl-store")
 include(":presentation-base")
 
 include(":feature-workspace")
-include(":feature-collections")
 
 include(":ui-json-viewer")

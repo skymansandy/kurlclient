@@ -1,4 +1,4 @@
-package dev.skymansandy.kurlclient.presentation.screens.workspace.presentation.screens.workspace
+package dev.skymansandy.kurlclient.presentation.screens.workspace.presentation.screens.playground
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -25,11 +25,11 @@ import dev.skymansandy.kurlclient.presentation.screens.workspace.response.Respon
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun WorkspaceScreen(
+fun PlaygroundScreen(
     onShowSnackbar: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val vm: WorkspaceViewModel = koinViewModel()
+    val vm: PlaygroundScreenModel = koinViewModel()
     val state by vm.state.collectAsStateWithLifecycle()
 
     var showSaveDialog by remember { mutableStateOf(false) }
@@ -40,14 +40,14 @@ fun WorkspaceScreen(
     LaunchedEffect(state.saveSuccess) {
         if (state.saveSuccess) {
             onShowSnackbar("Request saved to collections")
-            vm.onEvent(WorkspaceEvent.ClearSaveSuccess)
+            vm.onEvent(PlaygroundEvent.ClearSaveSuccess)
         }
     }
 
     LaunchedEffect(state.overwriteSuccess) {
         if (state.overwriteSuccess) {
             onShowSnackbar("Changes saved")
-            vm.onEvent(WorkspaceEvent.ClearOverwriteSuccess)
+            vm.onEvent(PlaygroundEvent.ClearOverwriteSuccess)
         }
     }
 
@@ -66,11 +66,11 @@ fun WorkspaceScreen(
             folders = state.allFolders,
             folderPaths = state.folderPaths,
             onSave = { name, folderId ->
-                vm.onEvent(WorkspaceEvent.SaveRequest(name, folderId))
+                vm.onEvent(PlaygroundEvent.SaveRequest(name, folderId))
                 showSaveDialog = false
             },
             onCreateFolder = { name, parentId ->
-                vm.onEvent(WorkspaceEvent.CreateFolder(name, parentId))
+                vm.onEvent(PlaygroundEvent.CreateFolder(name, parentId))
             },
             onDismiss = { showSaveDialog = false }
         )
@@ -86,9 +86,9 @@ fun WorkspaceScreen(
             method = state.method,
             url = state.url,
             isLoading = state.isLoading,
-            onMethodChange = { vm.onEvent(WorkspaceEvent.SetMethod(it)) },
-            onUrlChange = { vm.onEvent(WorkspaceEvent.SetUrl(it)) },
-            onSend = { vm.onEvent(WorkspaceEvent.SendRequest); selectedTab = 1 },
+            onMethodChange = { vm.onEvent(PlaygroundEvent.SetMethod(it)) },
+            onUrlChange = { vm.onEvent(PlaygroundEvent.SetUrl(it)) },
+            onSend = { vm.onEvent(PlaygroundEvent.SendRequest); selectedTab = 1 },
             onSave = { showSaveDialog = true },
             onCopyCurl = onCopyCurl,
             onImportCurl = { showImportCurlDialog = true },
@@ -108,16 +108,16 @@ fun WorkspaceScreen(
                 headers = state.headers,
                 body = state.body,
                 isLoading = state.isLoading,
-                onUrlChange = { vm.onEvent(WorkspaceEvent.SetUrl(it)) },
-                onMethodChange = { vm.onEvent(WorkspaceEvent.SetMethod(it)) },
-                onParamUpdate = { id, key, value, enabled -> vm.onEvent(WorkspaceEvent.UpdateParam(id, key, value, enabled)) },
-                onParamAdd = { vm.onEvent(WorkspaceEvent.AddParam) },
-                onParamRemove = { vm.onEvent(WorkspaceEvent.RemoveParam(it)) },
-                onHeaderUpdate = { id, key, value, enabled -> vm.onEvent(WorkspaceEvent.UpdateHeader(id, key, value, enabled)) },
-                onHeaderAdd = { vm.onEvent(WorkspaceEvent.AddHeader) },
-                onHeaderRemove = { vm.onEvent(WorkspaceEvent.RemoveHeader(it)) },
-                onBodyChange = { vm.onEvent(WorkspaceEvent.SetBody(it)) },
-                onSend = { vm.onEvent(WorkspaceEvent.SendRequest); selectedTab = 1 },
+                onUrlChange = { vm.onEvent(PlaygroundEvent.SetUrl(it)) },
+                onMethodChange = { vm.onEvent(PlaygroundEvent.SetMethod(it)) },
+                onParamUpdate = { id, key, value, enabled -> vm.onEvent(PlaygroundEvent.UpdateParam(id, key, value, enabled)) },
+                onParamAdd = { vm.onEvent(PlaygroundEvent.AddParam) },
+                onParamRemove = { vm.onEvent(PlaygroundEvent.RemoveParam(it)) },
+                onHeaderUpdate = { id, key, value, enabled -> vm.onEvent(PlaygroundEvent.UpdateHeader(id, key, value, enabled)) },
+                onHeaderAdd = { vm.onEvent(PlaygroundEvent.AddHeader) },
+                onHeaderRemove = { vm.onEvent(PlaygroundEvent.RemoveHeader(it)) },
+                onBodyChange = { vm.onEvent(PlaygroundEvent.SetBody(it)) },
+                onSend = { vm.onEvent(PlaygroundEvent.SendRequest); selectedTab = 1 },
                 onSave = { showSaveDialog = true },
                 onCopyCurl = onCopyCurl,
                 onImportCurl = { showImportCurlDialog = true },

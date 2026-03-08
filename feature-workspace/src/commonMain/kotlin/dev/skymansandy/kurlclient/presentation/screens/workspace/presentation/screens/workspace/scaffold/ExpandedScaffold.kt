@@ -1,4 +1,4 @@
-package dev.skymansandy.kurlclient.presentation.core
+package dev.skymansandy.kurlclient.presentation.screens.workspace.presentation.screens.workspace.scaffold
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -14,19 +14,19 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import dev.skymansandy.kurlclient.navigation.NavDestination
-import dev.skymansandy.kurlclient.presentation.core.components.NavIcon
-import dev.skymansandy.kurlclient.presentation.screens.collections.presentation.screens.collection.CollectionsScreen
-import dev.skymansandy.kurlclient.presentation.screens.workspace.presentation.screens.workspace.WorkspaceScreen
+import dev.skymansandy.kurlclient.presentation.screens.workspace.presentation.components.NavIcon
+import dev.skymansandy.kurlclient.presentation.screens.workspace.presentation.screens.collections.CollectionsScreen
+import dev.skymansandy.kurlclient.presentation.screens.workspace.presentation.screens.playground.PlaygroundScreen
+import dev.skymansandy.kurlclient.presentation.screens.workspace.presentation.screens.workspace.model.WorkspaceTab
 import dev.skymansandy.kurlstore.db.SavedRequest
 
 @Composable
 internal fun ExpandedScaffold(
     hasUnsavedChanges: Boolean,
     activeRequestId: Long?,
-    selectedNav: NavDestination,
+    selectedNav: WorkspaceTab,
     snackbarHostState: SnackbarHostState,
-    onNavSelect: (NavDestination) -> Unit,
+    onNavSelect: (WorkspaceTab) -> Unit,
     onShowSnackbar: (String) -> Unit,
     onRequestSelected: (SavedRequest) -> Unit,
     onSaveChanges: () -> Unit
@@ -42,12 +42,12 @@ internal fun ExpandedScaffold(
             )
             VerticalDivider()
             when (selectedNav) {
-                NavDestination.Workspace -> WorkspaceScreen(
+                WorkspaceTab.Workspace -> PlaygroundScreen(
                     onShowSnackbar = onShowSnackbar,
                     modifier = Modifier.fillMaxSize()
                 )
 
-                NavDestination.Collections -> CollectionsScreen(
+                WorkspaceTab.Collections -> CollectionsScreen(
                     activeRequestId = activeRequestId,
                     onRequestSelected = onRequestSelected,
                     onSaveChanges = onSaveChanges,
@@ -60,12 +60,12 @@ internal fun ExpandedScaffold(
 
 @Composable
 private fun KurlNavigationRail(
-    selected: NavDestination,
+    selected: WorkspaceTab,
     hasUnsavedChanges: Boolean,
-    onSelect: (NavDestination) -> Unit
+    onSelect: (WorkspaceTab) -> Unit
 ) {
     NavigationRail(modifier = Modifier.fillMaxHeight()) {
-        NavDestination.entries.forEach { dest ->
+        WorkspaceTab.entries.forEach { dest ->
             NavigationRailItem(
                 selected = selected == dest,
                 onClick = { onSelect(dest) },
@@ -73,7 +73,7 @@ private fun KurlNavigationRail(
                 icon = {
                     NavIcon(
                         dest,
-                        showBadge = dest == NavDestination.Workspace && hasUnsavedChanges
+                        showBadge = dest == WorkspaceTab.Workspace && hasUnsavedChanges
                     )
                 },
             )

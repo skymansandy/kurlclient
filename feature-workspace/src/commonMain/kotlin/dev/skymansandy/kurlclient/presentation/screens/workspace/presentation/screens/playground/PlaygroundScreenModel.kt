@@ -1,4 +1,4 @@
-package dev.skymansandy.kurlclient.presentation.screens.workspace.presentation.screens.workspace
+package dev.skymansandy.kurlclient.presentation.screens.workspace.presentation.screens.playground
 
 import androidx.lifecycle.viewModelScope
 import dev.skymansandy.kurl.core.api.KurlEngine
@@ -10,21 +10,21 @@ import dev.skymansandy.kurl.core.utils.deserializeKeyValueEntries
 import dev.skymansandy.kurl.core.utils.parseCurlCommand
 import dev.skymansandy.kurl.core.utils.serialize
 import dev.skymansandy.kurl.store.CollectionStore
-import kotlinx.coroutines.flow.combine
 import dev.skymansandy.kurlclient.presentation.base.MviViewModel
 import dev.skymansandy.kurlstore.db.SavedRequest
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import org.koin.android.annotation.KoinViewModel
 
 @KoinViewModel
-internal class WorkspaceViewModel(
+internal class PlaygroundScreenModel(
     private val engine: KurlEngine,
     private val store: CollectionStore,
-) : MviViewModel<WorkspaceState, WorkspaceEvent, WorkspaceEffect>() {
+) : MviViewModel<PlaygroundState, PlaygroundEvent, PlaygroundEffect>() {
 
     private var nextId = 1L
 
-    override fun createInitialState() = WorkspaceState()
+    override fun createInitialState() = PlaygroundState()
 
     init {
         setState {
@@ -42,30 +42,30 @@ internal class WorkspaceViewModel(
         }
     }
 
-    override fun onEvent(event: WorkspaceEvent) {
+    override fun onEvent(event: PlaygroundEvent) {
         when (event) {
-            is WorkspaceEvent.SetUrl -> setState {
+            is PlaygroundEvent.SetUrl -> setState {
                 copy(
                     url = event.value,
                     hasUnsavedChanges = true
                 )
             }
 
-            is WorkspaceEvent.SetMethod -> setState {
+            is PlaygroundEvent.SetMethod -> setState {
                 copy(
                     method = event.value,
                     hasUnsavedChanges = true
                 )
             }
 
-            is WorkspaceEvent.SetBody -> setState {
+            is PlaygroundEvent.SetBody -> setState {
                 copy(
                     body = event.value,
                     hasUnsavedChanges = true
                 )
             }
 
-            is WorkspaceEvent.UpdateParam -> setState {
+            is PlaygroundEvent.UpdateParam -> setState {
                 copy(
                     params = params.map {
                         if (it.id == event.id) it.copy(
@@ -78,21 +78,21 @@ internal class WorkspaceViewModel(
                 )
             }
 
-            is WorkspaceEvent.AddParam -> setState {
+            is PlaygroundEvent.AddParam -> setState {
                 copy(
                     params = params + KeyValueEntry(id = nextId++),
                     hasUnsavedChanges = true
                 )
             }
 
-            is WorkspaceEvent.RemoveParam -> setState {
+            is PlaygroundEvent.RemoveParam -> setState {
                 copy(
                     params = params.filter { it.id != event.id },
                     hasUnsavedChanges = true
                 )
             }
 
-            is WorkspaceEvent.UpdateHeader -> setState {
+            is PlaygroundEvent.UpdateHeader -> setState {
                 copy(
                     headers = headers.map {
                         if (it.id == event.id) it.copy(
@@ -105,27 +105,27 @@ internal class WorkspaceViewModel(
                 )
             }
 
-            is WorkspaceEvent.AddHeader -> setState {
+            is PlaygroundEvent.AddHeader -> setState {
                 copy(
                     headers = headers + KeyValueEntry(id = nextId++),
                     hasUnsavedChanges = true
                 )
             }
 
-            is WorkspaceEvent.RemoveHeader -> setState {
+            is PlaygroundEvent.RemoveHeader -> setState {
                 copy(
                     headers = headers.filter { it.id != event.id },
                     hasUnsavedChanges = true
                 )
             }
 
-            is WorkspaceEvent.SaveRequest -> saveRequest(event.name, event.folderId)
-            is WorkspaceEvent.CreateFolder -> viewModelScope.launch { store.createFolder(event.name, event.parentId) }
-            is WorkspaceEvent.ClearSaveSuccess -> setState { copy(saveSuccess = false) }
-            is WorkspaceEvent.OverwriteLoadedRequest -> overwriteLoadedRequest()
-            is WorkspaceEvent.ClearOverwriteSuccess -> setState { copy(overwriteSuccess = false) }
-            is WorkspaceEvent.LoadSavedRequest -> loadSavedRequest(event.saved)
-            is WorkspaceEvent.SendRequest -> sendRequest()
+            is PlaygroundEvent.SaveRequest -> saveRequest(event.name, event.folderId)
+            is PlaygroundEvent.CreateFolder -> viewModelScope.launch { store.createFolder(event.name, event.parentId) }
+            is PlaygroundEvent.ClearSaveSuccess -> setState { copy(saveSuccess = false) }
+            is PlaygroundEvent.OverwriteLoadedRequest -> overwriteLoadedRequest()
+            is PlaygroundEvent.ClearOverwriteSuccess -> setState { copy(overwriteSuccess = false) }
+            is PlaygroundEvent.LoadSavedRequest -> loadSavedRequest(event.saved)
+            is PlaygroundEvent.SendRequest -> sendRequest()
         }
     }
 
@@ -241,7 +241,7 @@ internal class WorkspaceViewModel(
                 )
                 setState {
                     copy(
-                        response = WorkspaceState.ResponseState(
+                        response = PlaygroundState.ResponseState(
                             statusCode = kurlResponse.statusCode,
                             statusText = kurlResponse.statusText,
                             timeMs = kurlResponse.timeMs,

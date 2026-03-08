@@ -1,4 +1,4 @@
-package dev.skymansandy.kurlclient.presentation.core.dialog
+package dev.skymansandy.kurlclient.presentation.screens.workspace.presentation.dialog
 
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
@@ -7,7 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 
 @Composable
-fun DiscardWorkspaceAlertDialog(
+internal fun DiscardWorkspaceAlertDialog(
     modifier: Modifier = Modifier,
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,

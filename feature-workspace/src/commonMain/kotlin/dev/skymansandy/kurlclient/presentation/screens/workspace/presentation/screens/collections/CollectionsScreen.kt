@@ -1,4 +1,4 @@
-package dev.skymansandy.kurlclient.presentation.screens.collections.presentation.screens.collection
+package dev.skymansandy.kurlclient.presentation.screens.workspace.presentation.screens.collections
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -68,7 +68,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.skymansandy.kurl.core.model.HttpMethod
 import dev.skymansandy.kurl.core.utils.formatRelativeTime
-import dev.skymansandy.kurlclient.presentation.screens.collections.presentation.screens.collection.CollectionsState.TreeItem
+import dev.skymansandy.kurlclient.presentation.screens.workspace.presentation.screens.collections.CollectionsState.TreeItem
 import dev.skymansandy.kurlstore.db.CollectionFolder
 import dev.skymansandy.kurlstore.db.SavedRequest
 import org.koin.compose.viewmodel.koinViewModel
@@ -195,6 +195,7 @@ fun CollectionsScreen(
                                 },
                                 onDelete = { vm.onEvent(CollectionsEvent.DeleteFolder(item.folder.id)) }
                             )
+
                             is TreeItem.Request -> RequestTreeRow(
                                 item = item,
                                 isActive = item.request.id == activeRequestId,
