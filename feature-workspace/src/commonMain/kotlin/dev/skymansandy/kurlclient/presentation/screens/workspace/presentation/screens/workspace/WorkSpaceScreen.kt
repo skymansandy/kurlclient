@@ -25,7 +25,7 @@ fun WorkSpaceScreen(
 ) {
     val workspaceCrossState = rememberWorkspaceCrossFeatureState()
 
-    var selectedNav by remember { mutableStateOf(WorkspaceTab.Workspace) }
+    var selectedTab by remember { mutableStateOf(WorkspaceTab.Workspace) }
     var pendingRequest by remember { mutableStateOf<SavedRequest?>(null) }
     var showDiscardDialog by remember { mutableStateOf(false) }
     val snackbarHostState = remember { SnackbarHostState() }
@@ -40,7 +40,7 @@ fun WorkSpaceScreen(
             showDiscardDialog = true
         } else {
             workspaceCrossState.onLoadSavedRequest(saved)
-            selectedNav = WorkspaceTab.Workspace
+            selectedTab = WorkspaceTab.Workspace
         }
     }
 
@@ -50,7 +50,7 @@ fun WorkSpaceScreen(
                 showDiscardDialog = false
                 pendingRequest?.let { workspaceCrossState.onLoadSavedRequest(it) }
                 pendingRequest = null
-                selectedNav = WorkspaceTab.Workspace
+                selectedTab = WorkspaceTab.Workspace
             },
             onDismiss = {
                 showDiscardDialog = false
@@ -65,9 +65,9 @@ fun WorkSpaceScreen(
             WindowWidthClass.Compact -> CompactScaffold(
                 hasUnsavedChanges = workspaceCrossState.hasUnsavedChanges,
                 activeRequestId = workspaceCrossState.loadedRequestId,
-                selectedNav = selectedNav,
+                selectedNav = selectedTab,
                 snackbarHostState = snackbarHostState,
-                onNavSelect = { selectedNav = it },
+                onNavSelect = { selectedTab = it },
                 onShowSnackbar = onShowSnackbar,
                 onRequestSelected = onRequestSelected,
                 onSaveChanges = workspaceCrossState.onOverwriteLoadedRequest
@@ -76,9 +76,9 @@ fun WorkSpaceScreen(
             else -> ExpandedScaffold(
                 hasUnsavedChanges = workspaceCrossState.hasUnsavedChanges,
                 activeRequestId = workspaceCrossState.loadedRequestId,
-                selectedNav = selectedNav,
+                selectedNav = selectedTab,
                 snackbarHostState = snackbarHostState,
-                onNavSelect = { selectedNav = it },
+                onNavSelect = { selectedTab = it },
                 onShowSnackbar = onShowSnackbar,
                 onRequestSelected = onRequestSelected,
                 onSaveChanges = workspaceCrossState.onOverwriteLoadedRequest
