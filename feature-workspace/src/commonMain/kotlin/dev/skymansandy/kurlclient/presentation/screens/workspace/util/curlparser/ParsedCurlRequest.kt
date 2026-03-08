@@ -1,9 +1,0 @@
-package dev.skymansandy.kurlclient.presentation.screens.workspace.util.curlparser
-
-data class ParsedCurlRequest(
-    val url: String,
-    val method: String,
-    val headers: List<Pair<String, String>>,
-    val params: List<Pair<String, String>>,
-    val body: String?
-)
