@@ -65,11 +65,8 @@ fun WorkSpaceScreen(
             )
 
             else -> ExpandedScaffold(
-                hasUnsavedChanges = playgroundState.hasUnsavedChanges,
                 activeRequestId = playgroundState.loadedRequest?.id,
-                selectedNav = state.selectedTab,
                 snackbarHostState = snackbarHostState,
-                onNavSelect = { vm.onEvent(WorkspaceEvent.SelectTab(it)) },
                 onShowSnackbar = onShowSnackbar,
                 onRequestSelected = { vm.onEvent(WorkspaceEvent.TryLoadRequest(it, playgroundState.hasUnsavedChanges)) },
                 onSaveChanges = { playgroundVm.onEvent(PlaygroundEvent.OverwriteLoadedRequest) }
