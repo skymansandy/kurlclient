@@ -51,7 +51,7 @@ internal fun SaveRequestDialog(
     folderPaths: Map<Long, String>,
     onSave: (name: String, folderId: Long?) -> Unit,
     onCreateFolder: (name: String, parentId: Long?) -> Unit,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
 ) {
     var name by remember { mutableStateOf(initialName) }
     var selectedFolderId by remember { mutableStateOf(initialFolderId) }
@@ -75,7 +75,7 @@ internal fun SaveRequestDialog(
             ) {
                 Text(
                     text = stringResource(Res.string.title_save_request),
-                    style = MaterialTheme.typography.titleLarge
+                    style = MaterialTheme.typography.titleLarge,
                 )
 
                 OutlinedTextField(
@@ -83,7 +83,7 @@ internal fun SaveRequestDialog(
                     onValueChange = { name = it },
                     label = { Text(stringResource(Res.string.hint_request_name)) },
                     singleLine = true,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 )
 
                 // Folder picker
@@ -91,7 +91,7 @@ internal fun SaveRequestDialog(
                     Text(
                         text = stringResource(Res.string.label_save_in_folder),
                         style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
 
                     Spacer(Modifier.height(4.dp))
@@ -117,14 +117,14 @@ internal fun SaveRequestDialog(
                         expanded = folderDropdownExpanded,
                         onDismissRequest = {
                             folderDropdownExpanded = false
-                        }
+                        },
                     ) {
                         DropdownMenuItem(
                             text = { Text(stringResource(Res.string.no_folder_root)) },
                             onClick = {
                                 selectedFolderId = null
                                 folderDropdownExpanded = false
-                            }
+                            },
                         )
 
                         folders.forEach { folder ->
@@ -133,7 +133,7 @@ internal fun SaveRequestDialog(
                                 onClick = {
                                     selectedFolderId = folder.id
                                     folderDropdownExpanded = false
-                                }
+                                },
                             )
                         }
                     }
@@ -147,7 +147,7 @@ internal fun SaveRequestDialog(
                         Text(
                             text = stringResource(Res.string.label_new_folder),
                             style = MaterialTheme.typography.labelMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
 
                         OutlinedTextField(
@@ -161,30 +161,30 @@ internal fun SaveRequestDialog(
                         // Parent folder for new folder
                         OutlinedButton(
                             onClick = { newFolderParentDropdownExpanded = true },
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier.fillMaxWidth(),
                         ) {
                             Text(
                                 text = newFolderParentId?.let { folderPaths[it] }
                                     ?: stringResource(Res.string.no_parent_root),
                                 modifier = Modifier.weight(1f),
-                                style = MaterialTheme.typography.bodyMedium
+                                style = MaterialTheme.typography.bodyMedium,
                             )
 
                             Icon(
                                 imageVector = Icons.Default.ArrowDropDown,
-                                contentDescription = null
+                                contentDescription = null,
                             )
                         }
                         DropdownMenu(
                             expanded = newFolderParentDropdownExpanded,
-                            onDismissRequest = { newFolderParentDropdownExpanded = false }
+                            onDismissRequest = { newFolderParentDropdownExpanded = false },
                         ) {
                             DropdownMenuItem(
                                 text = { Text(stringResource(Res.string.no_parent_root)) },
                                 onClick = {
                                     newFolderParentId = null
                                     newFolderParentDropdownExpanded = false
-                                }
+                                },
                             )
                             folders.forEach { folder ->
                                 DropdownMenuItem(
@@ -192,13 +192,13 @@ internal fun SaveRequestDialog(
                                     onClick = {
                                         newFolderParentId =
                                             folder.id; newFolderParentDropdownExpanded = false
-                                    }
+                                    },
                                 )
                             }
                         }
                         Row(
                             horizontalArrangement = Arrangement.End,
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier.fillMaxWidth(),
                         ) {
                             TextButton(
                                 onClick = {
@@ -246,7 +246,7 @@ internal fun SaveRequestDialog(
 
                     Button(
                         onClick = { onSave(name, selectedFolderId) },
-                        enabled = name.isNotBlank()
+                        enabled = name.isNotBlank(),
                     ) {
                         Text(stringResource(Res.string.save))
                     }

@@ -15,9 +15,9 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.skymansandy.kurlclient.presentation.dialog.ImportCurlDialog
+import dev.skymansandy.kurlclient.presentation.dialog.SaveRequestDialog
 import dev.skymansandy.kurlclient.presentation.screens.playground.PlaygroundScreenContract.PlaygroundEvent
 import dev.skymansandy.kurlclient.presentation.screens.playground.request.RequestPanel
-import dev.skymansandy.kurlclient.presentation.dialog.SaveRequestDialog
 import dev.skymansandy.kurlclient.presentation.screens.playground.response.ResponsePanel
 import kurlclient.feature_workspace.generated.resources.Res
 import kurlclient.feature_workspace.generated.resources.msg_changes_saved
@@ -31,7 +31,7 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 internal fun PlaygroundScreen(
     onShowSnackbar: (String) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val vm: PlaygroundScreenModel = koinViewModel()
     val state by vm.state.collectAsStateWithLifecycle()
@@ -61,7 +61,7 @@ internal fun PlaygroundScreen(
                 vm.importFromCurl(curlText)
                     .also { if (it) vm.onEvent(PlaygroundEvent.HideImportCurlDialog) }
             },
-            onDismiss = { vm.onEvent(PlaygroundEvent.HideImportCurlDialog) }
+            onDismiss = { vm.onEvent(PlaygroundEvent.HideImportCurlDialog) },
         )
     }
 
@@ -81,7 +81,7 @@ internal fun PlaygroundScreen(
             onCreateFolder = { name, parentId ->
                 vm.onEvent(PlaygroundEvent.CreateFolder(name, parentId))
             },
-            onDismiss = { vm.onEvent(PlaygroundEvent.HideSaveDialog) }
+            onDismiss = { vm.onEvent(PlaygroundEvent.HideSaveDialog) },
         )
     }
 
@@ -130,14 +130,14 @@ internal fun PlaygroundScreen(
                 body = state.body,
                 onParamUpdate = { id, key, value, enabled ->
                     vm.onEvent(
-                        PlaygroundEvent.UpdateParam(id, key, value, enabled)
+                        PlaygroundEvent.UpdateParam(id, key, value, enabled),
                     )
                 },
                 onParamAdd = { vm.onEvent(PlaygroundEvent.AddParam) },
                 onParamRemove = { vm.onEvent(PlaygroundEvent.RemoveParam(it)) },
                 onHeaderUpdate = { id, key, value, enabled ->
                     vm.onEvent(
-                        PlaygroundEvent.UpdateHeader(id, key, value, enabled)
+                        PlaygroundEvent.UpdateHeader(id, key, value, enabled),
                     )
                 },
                 onHeaderAdd = { vm.onEvent(PlaygroundEvent.AddHeader) },

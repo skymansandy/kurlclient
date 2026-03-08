@@ -47,7 +47,7 @@ internal fun RequestPanel(
     onHeaderAdd: () -> Unit,
     onHeaderRemove: (Long) -> Unit,
     onBodyChange: (String) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     var selectedTab by remember { mutableIntStateOf(0) }
 
@@ -77,9 +77,9 @@ internal fun RequestPanel(
                             },
                             hasDot = when (index) {
                                 0 -> activeParamCount > 0; 3 -> hasBody; else -> false
-                            }
+                            },
                         )
-                    }
+                    },
                 )
             }
         }

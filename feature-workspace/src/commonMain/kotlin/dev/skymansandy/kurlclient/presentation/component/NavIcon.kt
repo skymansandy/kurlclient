@@ -26,17 +26,17 @@ internal fun NavIcon(
             if (showBadge) {
                 Badge(modifier = Modifier.size(8.dp))
             }
-        }
+        },
     ) {
         Icon(
-            contentDescription = when(dest) {
+            contentDescription = when (dest) {
                 WorkspaceTab.Workspace -> stringResource(Res.string.tab_workspace)
                 WorkspaceTab.Collections -> stringResource(Res.string.tab_collections)
             },
             imageVector = when (dest) {
                 WorkspaceTab.Workspace -> Icons.Default.Dashboard
                 WorkspaceTab.Collections -> Icons.AutoMirrored.Filled.List
-            }
+            },
         )
     }
 }

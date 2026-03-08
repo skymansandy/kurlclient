@@ -31,30 +31,30 @@ internal fun CompactScaffold(
     onNavSelect: (WorkspaceTab) -> Unit,
     onShowSnackbar: (String) -> Unit,
     onRequestSelected: (SavedRequest) -> Unit,
-    onSaveChanges: () -> Unit
+    onSaveChanges: () -> Unit,
 ) {
     Scaffold(
         bottomBar = {
             KurlNavigationBar(
                 selected = selectedNav,
                 hasUnsavedChanges = hasUnsavedChanges,
-                onSelect = onNavSelect
+                onSelect = onNavSelect,
             )
         },
-        snackbarHost = { SnackbarHost(snackbarHostState) { Snackbar(snackbarData = it) } }
+        snackbarHost = { SnackbarHost(snackbarHostState) { Snackbar(snackbarData = it) } },
     ) { innerPadding ->
         Box(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
             when (selectedNav) {
                 WorkspaceTab.Workspace -> PlaygroundScreen(
                     onShowSnackbar = onShowSnackbar,
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier.fillMaxSize(),
                 )
 
                 WorkspaceTab.Collections -> CollectionsScreen(
                     activeRequestId = activeRequestId,
                     onRequestSelected = onRequestSelected,
                     onSaveChanges = onSaveChanges,
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier.fillMaxSize(),
                 )
             }
         }
@@ -65,7 +65,7 @@ internal fun CompactScaffold(
 private fun KurlNavigationBar(
     selected: WorkspaceTab,
     hasUnsavedChanges: Boolean,
-    onSelect: (WorkspaceTab) -> Unit
+    onSelect: (WorkspaceTab) -> Unit,
 ) {
     NavigationBar {
         WorkspaceTab.entries.forEach { dest ->
@@ -75,7 +75,7 @@ private fun KurlNavigationBar(
                 icon = {
                     NavIcon(
                         dest,
-                        showBadge = dest == WorkspaceTab.Workspace && hasUnsavedChanges
+                        showBadge = dest == WorkspaceTab.Workspace && hasUnsavedChanges,
                     )
                 },
                 label = {
@@ -84,10 +84,10 @@ private fun KurlNavigationBar(
                             when (dest) {
                                 WorkspaceTab.Workspace -> Res.string.tab_workspace
                                 WorkspaceTab.Collections -> Res.string.tab_collections
-                            }
-                        )
+                            },
+                        ),
                     )
-                }
+                },
             )
         }
     }

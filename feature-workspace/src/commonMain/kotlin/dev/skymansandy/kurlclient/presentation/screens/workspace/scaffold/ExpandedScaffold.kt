@@ -39,14 +39,14 @@ internal fun ExpandedScaffold(
     snackbarHostState: SnackbarHostState,
     onShowSnackbar: (String) -> Unit,
     onRequestSelected: (SavedRequest) -> Unit,
-    onSaveChanges: () -> Unit
+    onSaveChanges: () -> Unit,
 ) {
     Scaffold(
         snackbarHost = {
             SnackbarHost(snackbarHostState) {
                 Snackbar(snackbarData = it)
             }
-        }
+        },
     ) { innerPadding ->
 
         val density = LocalDensity.current
@@ -57,13 +57,13 @@ internal fun ExpandedScaffold(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .onSizeChanged { totalWidthPx = it.width }
+                .onSizeChanged { totalWidthPx = it.width },
         ) {
             CollectionsScreen(
                 activeRequestId = activeRequestId,
                 onRequestSelected = onRequestSelected,
                 onSaveChanges = onSaveChanges,
-                modifier = Modifier.width(panelWidth).fillMaxHeight()
+                modifier = Modifier.width(panelWidth).fillMaxHeight(),
             )
 
             DraggableDivider(
@@ -72,14 +72,14 @@ internal fun ExpandedScaffold(
                     panelWidth = (panelWidth + with(density) { deltaPx.toDp() })
                         .coerceIn(
                             PANEL_MIN_WIDTH,
-                            minOf(PANEL_MAX_WIDTH, maxWidthDp - PANEL_MIN_WIDTH)
+                            minOf(PANEL_MAX_WIDTH, maxWidthDp - PANEL_MIN_WIDTH),
                         )
-                }
+                },
             )
 
             PlaygroundScreen(
                 onShowSnackbar = onShowSnackbar,
-                modifier = Modifier.weight(1f).fillMaxHeight()
+                modifier = Modifier.weight(1f).fillMaxHeight(),
             )
         }
     }
@@ -95,8 +95,8 @@ private fun DraggableDivider(onDrag: (Float) -> Unit) {
             .resizeHorizontalCursor()
             .draggable(
                 orientation = Orientation.Horizontal,
-                state = rememberDraggableState { onDrag(it) }
-            )
+                state = rememberDraggableState { onDrag(it) },
+            ),
     ) {
         VerticalDivider()
     }

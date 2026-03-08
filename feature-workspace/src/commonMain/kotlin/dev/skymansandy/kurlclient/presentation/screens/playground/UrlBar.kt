@@ -57,7 +57,7 @@ internal fun UrlBar(
     onSave: () -> Unit,
     onCopyCurl: () -> Unit,
     onImportCurl: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     var expanded by remember { mutableStateOf(false) }
     var moreMenuExpanded by remember { mutableStateOf(false) }
@@ -65,19 +65,19 @@ internal fun UrlBar(
     Row(
         modifier = modifier.height(48.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         Box(modifier = Modifier.wrapContentSize(Alignment.TopStart)) {
             Surface(
                 shape = RoundedCornerShape(6.dp),
                 color = methodColor(method),
-                modifier = Modifier.clip(RoundedCornerShape(6.dp))
+                modifier = Modifier.clip(RoundedCornerShape(6.dp)),
             ) {
                 TextButton(onClick = { expanded = true }) {
                     Text(
                         text = method.name,
                         color = MaterialTheme.colorScheme.onPrimary,
-                        style = MaterialTheme.typography.labelLarge
+                        style = MaterialTheme.typography.labelLarge,
                     )
                 }
             }
@@ -85,7 +85,7 @@ internal fun UrlBar(
                 HttpMethod.entries.forEach { m ->
                     DropdownMenuItem(
                         text = { Text(m.name) },
-                        onClick = { onMethodChange(m); expanded = false }
+                        onClick = { onMethodChange(m); expanded = false },
                     )
                 }
             }
@@ -96,7 +96,7 @@ internal fun UrlBar(
             onValueChange = onUrlChange,
             singleLine = true,
             textStyle = MaterialTheme.typography.bodyMedium.copy(
-                color = MaterialTheme.colorScheme.onSurface
+                color = MaterialTheme.colorScheme.onSurface,
             ),
             cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
             decorationBox = { inner ->
@@ -105,19 +105,19 @@ internal fun UrlBar(
                         .fillMaxSize()
                         .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(6.dp))
                         .padding(horizontal = 12.dp),
-                    contentAlignment = Alignment.CenterStart
+                    contentAlignment = Alignment.CenterStart,
                 ) {
                     if (url.isEmpty()) {
                         Text(
                             stringResource(Res.string.placeholder_url),
                             style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
                     inner()
                 }
             },
-            modifier = Modifier.weight(1f).fillMaxSize()
+            modifier = Modifier.weight(1f).fillMaxSize(),
         )
 
         // ⋮ More menu: cURL import / export
@@ -127,22 +127,22 @@ internal fun UrlBar(
             }
             DropdownMenu(
                 expanded = moreMenuExpanded,
-                onDismissRequest = { moreMenuExpanded = false }
+                onDismissRequest = { moreMenuExpanded = false },
             ) {
                 DropdownMenuItem(
                     text = { Text(stringResource(Res.string.action_import_curl)) },
-                    onClick = { moreMenuExpanded = false; onImportCurl() }
+                    onClick = { moreMenuExpanded = false; onImportCurl() },
                 )
                 DropdownMenuItem(
                     text = { Text(stringResource(Res.string.action_copy_curl)) },
-                    onClick = { moreMenuExpanded = false; onCopyCurl() }
+                    onClick = { moreMenuExpanded = false; onCopyCurl() },
                 )
             }
         }
 
         FilledTonalIconButton(
             onClick = onSave,
-            enabled = !isLoading
+            enabled = !isLoading,
         ) {
             Icon(
                 imageVector = Icons.Default.FolderOpen,
@@ -153,7 +153,7 @@ internal fun UrlBar(
         Button(
             onClick = onSend,
             enabled = !isLoading,
-            shape = RoundedCornerShape(6.dp)
+            shape = RoundedCornerShape(6.dp),
         ) {
             if (isLoading) {
                 CircularProgressIndicator(

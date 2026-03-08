@@ -24,7 +24,7 @@ internal fun BodyTab(body: String, onBodyChange: (String) -> Unit) {
         onValueChange = onBodyChange,
         textStyle = MaterialTheme.typography.bodySmall.copy(
             color = MaterialTheme.colorScheme.onSurface,
-            fontFamily = FontFamily.Monospace
+            fontFamily = FontFamily.Monospace,
         ),
         cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
         decorationBox = { inner ->
@@ -32,19 +32,19 @@ internal fun BodyTab(body: String, onBodyChange: (String) -> Unit) {
                 modifier = Modifier
                     .fillMaxSize()
                     .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(6.dp))
-                    .padding(12.dp)
+                    .padding(12.dp),
             ) {
                 if (body.isEmpty()) {
                     Text(
                         text = stringResource(Res.string.placeholder_body),
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
 
                 inner()
             }
         },
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize(),
     )
 }

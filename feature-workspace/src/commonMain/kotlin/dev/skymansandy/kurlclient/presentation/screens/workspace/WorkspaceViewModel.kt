@@ -29,7 +29,7 @@ internal class WorkspaceViewModel : MviViewModel<WorkspaceState, WorkspaceEvent,
                     showDiscardDialog = false,
                     requestToLoad = pendingRequest,
                     pendingRequest = null,
-                    selectedTab = WorkspaceTab.Workspace
+                    selectedTab = WorkspaceTab.Workspace,
                 )
             }
 

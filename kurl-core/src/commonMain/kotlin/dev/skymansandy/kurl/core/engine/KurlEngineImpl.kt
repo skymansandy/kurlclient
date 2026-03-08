@@ -14,7 +14,7 @@ import kotlin.time.TimeSource
 
 internal class KurlEngineImpl(
     private val client: HttpClient,
-): KurlEngine {
+) : KurlEngine {
 
     override suspend fun execute(request: KurlRequest): KurlResponse {
         val mark = TimeSource.Monotonic.markNow()
@@ -50,7 +50,7 @@ internal class KurlEngineImpl(
             body = bodyText,
             timeMs = elapsedMs,
             sizeBytes = bodyText.encodeToByteArray().size.toLong(),
-            networkInfo = buildNetworkInfo(request.url, httpVersion)
+            networkInfo = buildNetworkInfo(request.url, httpVersion),
         )
     }
 

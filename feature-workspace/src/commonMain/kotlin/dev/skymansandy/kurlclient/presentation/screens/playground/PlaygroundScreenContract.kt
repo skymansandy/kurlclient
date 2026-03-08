@@ -38,11 +38,11 @@ internal class PlaygroundScreenContract {
             val sizeBytes: Long = 0,
             val body: String = "",
             val headers: Map<String, String> = emptyMap(),
-            val networkInfo: NetworkInfo? = null
+            val networkInfo: NetworkInfo? = null,
         )
     }
 
-    sealed interface PlaygroundEvent: UiEvent {
+    sealed interface PlaygroundEvent : UiEvent {
         data class SetUrl(val value: String) : PlaygroundEvent
         data class SetMethod(val value: HttpMethod) : PlaygroundEvent
         data class SetBody(val value: String) : PlaygroundEvent

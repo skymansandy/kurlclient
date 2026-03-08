@@ -49,7 +49,7 @@ internal fun FolderItem(
     isDropTarget: Boolean,
     onToggle: () -> Unit,
     onNewSubfolder: () -> Unit,
-    onDelete: () -> Unit
+    onDelete: () -> Unit,
 ) {
     var menuExpanded by remember { mutableStateOf(false) }
     val indent = (item.depth * 16).dp
@@ -67,7 +67,7 @@ internal fun FolderItem(
                         lineColor,
                         Offset(x, 0f),
                         Offset(x, size.height),
-                        strokeWidth = 1.5.dp.toPx()
+                        strokeWidth = 1.5.dp.toPx(),
                     )
                 }
             }
@@ -75,8 +75,8 @@ internal fun FolderItem(
                 if (isDropTarget) Modifier.border(
                     1.dp,
                     dropHighlight,
-                    MaterialTheme.shapes.extraSmall
-                ) else Modifier
+                    MaterialTheme.shapes.extraSmall,
+                ) else Modifier,
             )
             .then(if (isDropTarget) Modifier.background(dropHighlight.copy(alpha = 0.12f)) else Modifier)
             .clickable(onClick = onToggle)
@@ -89,14 +89,14 @@ internal fun FolderItem(
             contentDescription = if (item.isExpanded) stringResource(Res.string.cd_collapse)
             else stringResource(Res.string.cd_expand),
             modifier = Modifier.size(18.dp),
-            tint = MaterialTheme.colorScheme.onSurfaceVariant
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
         )
 
         Icon(
             imageVector = if (item.isExpanded) Icons.Default.FolderOpen else Icons.Default.Folder,
             contentDescription = null,
             modifier = Modifier.size(18.dp),
-            tint = MaterialTheme.colorScheme.primary
+            tint = MaterialTheme.colorScheme.primary,
         )
 
         Text(
@@ -104,7 +104,7 @@ internal fun FolderItem(
             style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier.weight(1f),
             maxLines = 1,
-            overflow = TextOverflow.Ellipsis
+            overflow = TextOverflow.Ellipsis,
         )
 
         Box {
@@ -130,7 +130,7 @@ internal fun FolderItem(
                         Icon(
                             Icons.Default.Add,
                             contentDescription = null,
-                            modifier = Modifier.size(16.dp)
+                            modifier = Modifier.size(16.dp),
                         )
                     },
                 )
@@ -147,7 +147,7 @@ internal fun FolderItem(
                             Icons.Default.Delete,
                             contentDescription = null,
                             modifier = Modifier.size(16.dp),
-                            tint = MaterialTheme.colorScheme.error
+                            tint = MaterialTheme.colorScheme.error,
                         )
                     },
                     onClick = {

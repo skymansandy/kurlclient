@@ -29,7 +29,7 @@ import org.jetbrains.compose.resources.stringResource
 internal fun CollectionsSearchBar(
     query: String,
     onQueryChange: (String) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     BasicTextField(
         modifier = modifier,

@@ -67,7 +67,7 @@ internal class CollectionsViewModel(private val store: KurlStore) :
         s: CollectionsState,
         parentId: Long?,
         depth: Int,
-        result: MutableList<TreeItem>
+        result: MutableList<TreeItem>,
     ) {
         s.allFolders
             .filter { it.parent_id == parentId }
@@ -94,7 +94,7 @@ internal class CollectionsViewModel(private val store: KurlStore) :
             .filter {
                 it.name.contains(q, ignoreCase = true) || it.url.contains(
                     q,
-                    ignoreCase = true
+                    ignoreCase = true,
                 )
             }
             .map { it.id }.toSet()
@@ -115,7 +115,7 @@ internal class CollectionsViewModel(private val store: KurlStore) :
 
     private fun appendFilteredChildren(
         s: CollectionsState, parentId: Long?, depth: Int,
-        result: MutableList<TreeItem>, matchingIds: Set<Long>, visibleFolderIds: Set<Long>
+        result: MutableList<TreeItem>, matchingIds: Set<Long>, visibleFolderIds: Set<Long>,
     ) {
         s.allFolders
             .filter { it.parent_id == parentId && it.id in visibleFolderIds }
@@ -128,7 +128,7 @@ internal class CollectionsViewModel(private val store: KurlStore) :
                     depth + 1,
                     result,
                     matchingIds,
-                    visibleFolderIds
+                    visibleFolderIds,
                 )
             }
 
@@ -190,7 +190,7 @@ internal class CollectionsViewModel(private val store: KurlStore) :
                 method = request.method,
                 headers = request.headers,
                 params = request.params,
-                body = request.body
+                body = request.body,
             )
         }
     }

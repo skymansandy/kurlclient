@@ -8,5 +8,5 @@ data class NetworkInfo(
     val cipherName: String? = null,
     val certificateCN: String? = null,
     val issuerCN: String? = null,
-    val validUntil: String? = null
+    val validUntil: String? = null,
 )

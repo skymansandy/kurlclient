@@ -23,7 +23,7 @@ internal actual fun buildNetworkInfo(requestUrl: String, httpVersion: String): N
         cipherName = ssl?.cipher,
         certificateCN = cn,
         issuerCN = issuer,
-        validUntil = validUntil
+        validUntil = validUntil,
     )
 }
 

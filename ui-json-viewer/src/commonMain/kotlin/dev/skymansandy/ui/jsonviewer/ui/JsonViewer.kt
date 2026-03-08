@@ -34,7 +34,7 @@ fun JsonViewer(
             style = MaterialTheme.typography.bodySmall,
             fontFamily = FontFamily.Monospace,
             color = MaterialTheme.colorScheme.onSurface,
-            modifier = modifier
+            modifier = modifier,
         )
         return
     }
@@ -53,15 +53,15 @@ fun JsonViewer(
                                 foldedIds - line.foldId
                             else
                                 foldedIds + line.foldId
-                        } else Modifier
+                        } else Modifier,
                     )
-                    .padding(start = (line.indent * 16 + 4).dp, top = 1.dp, bottom = 1.dp)
+                    .padding(start = (line.indent * 16 + 4).dp, top = 1.dp, bottom = 1.dp),
             ) {
                 Text(
                     text = if (line.foldId >= 0) if (line.folded) "▶ " else "▼ " else "  ",
                     fontSize = 9.sp,
                     color = cArrow,
-                    fontFamily = FontFamily.Monospace
+                    fontFamily = FontFamily.Monospace,
                 )
                 Text(text = line.text)
             }

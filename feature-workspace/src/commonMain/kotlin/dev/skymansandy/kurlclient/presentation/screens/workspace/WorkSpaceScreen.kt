@@ -47,7 +47,7 @@ fun WorkSpaceScreen(
     if (state.showDiscardDialog) {
         DiscardWorkspaceAlertDialog(
             onConfirm = { vm.onEvent(WorkspaceEvent.ConfirmDiscard) },
-            onDismiss = { vm.onEvent(WorkspaceEvent.DismissDiscard) }
+            onDismiss = { vm.onEvent(WorkspaceEvent.DismissDiscard) },
         )
     }
 
@@ -62,7 +62,7 @@ fun WorkSpaceScreen(
                 onNavSelect = { vm.onEvent(WorkspaceEvent.SelectTab(it)) },
                 onShowSnackbar = onShowSnackbar,
                 onRequestSelected = { vm.onEvent(WorkspaceEvent.TryLoadRequest(it, playgroundState.hasUnsavedChanges)) },
-                onSaveChanges = { playgroundVm.onEvent(PlaygroundEvent.OverwriteLoadedRequest) }
+                onSaveChanges = { playgroundVm.onEvent(PlaygroundEvent.OverwriteLoadedRequest) },
             )
 
             else -> ExpandedScaffold(
@@ -70,7 +70,7 @@ fun WorkSpaceScreen(
                 snackbarHostState = snackbarHostState,
                 onShowSnackbar = onShowSnackbar,
                 onRequestSelected = { vm.onEvent(WorkspaceEvent.TryLoadRequest(it, playgroundState.hasUnsavedChanges)) },
-                onSaveChanges = { playgroundVm.onEvent(PlaygroundEvent.OverwriteLoadedRequest) }
+                onSaveChanges = { playgroundVm.onEvent(PlaygroundEvent.OverwriteLoadedRequest) },
             )
         }
     }

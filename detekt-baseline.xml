@@ -1,0 +1,23 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>ComplexCondition:CurlUtils.kt$i &lt; s.length &amp;&amp; s[i] == '\\' &amp;&amp; i + 2 &lt; s.length &amp;&amp; s[i + 1] == '\'' &amp;&amp; s[i + 2] == '\''</ID>
+    <ID>CyclomaticComplexMethod:CollectionsScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable internal fun CollectionsScreen( activeRequestId: Long? = null, onRequestSelected: (SavedRequest) -&gt; Unit, onSaveChanges: () -&gt; Unit, modifier: Modifier = Modifier, )</ID>
+    <ID>CyclomaticComplexMethod:CurlUtils.kt$internal fun parseCurlCommand(raw: String): ParsedCurlRequest?</ID>
+    <ID>CyclomaticComplexMethod:CurlUtils.kt$private fun tokenize(s: String): List&lt;String&gt;</ID>
+    <ID>Filename:createDatabaseDriver.kt$dev.skymansandy.kurl.store.impl.data.db.createDatabaseDriver.kt</ID>
+    <ID>Filename:main.kt$dev.skymansandy.kurlclient.main.kt</ID>
+    <ID>FunctionNaming:ExampleUnitTest.kt$ExampleUnitTest$@Test fun addition_isCorrect()</ID>
+    <ID>FunctionNaming:MainViewController.kt$fun MainViewController(): UIViewController</ID>
+    <ID>LongMethod:CurlUtils.kt$internal fun parseCurlCommand(raw: String): ParsedCurlRequest?</ID>
+    <ID>LongMethod:PlaygroundScreenModel.kt$PlaygroundScreenModel$override fun onEvent(event: PlaygroundEvent)</ID>
+    <ID>LongMethod:RenderUtil.kt$private fun emit( node: JNode, indent: Int, out: MutableList&lt;Line&gt;, folded: Set&lt;Int&gt;, prefix: AnnotatedString?, suffix: String?, )</ID>
+    <ID>LongParameterList:KurlStore.kt$KurlStore$( id: Long, name: String, folderId: Long?, url: String, method: String, headers: String, params: String, body: String, )</ID>
+    <ID>MatchingDeclarationName:CapturingSslContext.kt$SslCapture</ID>
+    <ID>NoWildcardImports:ExampleInstrumentedTest.kt$import org.junit.Assert.*</ID>
+    <ID>NoWildcardImports:ExampleUnitTest.kt$import org.junit.Assert.*</ID>
+    <ID>WildcardImport:ExampleInstrumentedTest.kt$import org.junit.Assert.*</ID>
+    <ID>WildcardImport:ExampleUnitTest.kt$import org.junit.Assert.*</ID>
+  </CurrentIssues>
+</SmellBaseline>

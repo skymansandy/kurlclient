@@ -41,7 +41,7 @@ import kotlin.math.roundToInt
 internal fun ResponsePanel(
     response: ResponseState?,
     error: String?,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     var selectedTab by remember { mutableIntStateOf(0) }
 
@@ -58,7 +58,7 @@ internal fun ResponsePanel(
             error = error,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 12.dp, vertical = 10.dp)
+                .padding(horizontal = 12.dp, vertical = 10.dp),
         )
 
         TabRow(selectedTabIndex = selectedTab) {
@@ -77,9 +77,9 @@ internal fun ResponsePanel(
                             },
                             hasDot = when (index) {
                                 0 -> hasBody; 2 -> hasNetwork; else -> false
-                            }
+                            },
                         )
-                    }
+                    },
                 )
             }
         }
@@ -98,14 +98,14 @@ internal fun ResponsePanel(
 private fun TabLabel(title: String, count: Int = 0, hasDot: Boolean = false) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(4.dp),
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(if (count > 0) "$title ($count)" else title)
         if (hasDot) {
             Box(
                 modifier = Modifier
                     .size(6.dp)
-                    .background(MaterialTheme.colorScheme.primary, CircleShape)
+                    .background(MaterialTheme.colorScheme.primary, CircleShape),
             )
         }
     }
@@ -115,18 +115,18 @@ private fun TabLabel(title: String, count: Int = 0, hasDot: Boolean = false) {
 private fun ResponseStatusBar(
     response: ResponseState?,
     error: String?,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Row(
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(12.dp),
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         when {
             error != null -> Text(
                 text = stringResource(Res.string.msg_error_prefix, error),
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.error
+                color = MaterialTheme.colorScheme.error,
             )
 
             response != null -> {
@@ -135,26 +135,26 @@ private fun ResponseStatusBar(
                 Text(
                     text = response.statusText,
                     style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
 
                 Text(
                     text = "${response.timeMs} ms",
                     style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
 
                 Text(
                     text = formatSize(response.sizeBytes),
                     style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
 
             else -> Text(
                 text = stringResource(Res.string.msg_send_request_hint),
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
     }
@@ -174,7 +174,7 @@ private fun StatusBadge(code: Int) {
             text = code.toString(),
             style = MaterialTheme.typography.labelMedium,
             color = MaterialTheme.colorScheme.onPrimary,
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
         )
     }
 }

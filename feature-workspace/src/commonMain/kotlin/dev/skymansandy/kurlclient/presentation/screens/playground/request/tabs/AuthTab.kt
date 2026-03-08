@@ -17,7 +17,7 @@ internal fun AuthTab() {
         Text(
             stringResource(Res.string.msg_auth_config),
             style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
     }
 }

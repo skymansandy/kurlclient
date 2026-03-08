@@ -14,7 +14,7 @@ import javax.net.ssl.X509TrustManager
 internal data class SslCapture(
     val protocol: String?,
     val cipher: String?,
-    val chain: Array<X509Certificate>?
+    val chain: Array<X509Certificate>?,
 )
 
 internal val lastSslCapture = AtomicReference<SslCapture?>(null)
@@ -29,7 +29,7 @@ internal fun createCapturingSslContext(): SSLContext {
 }
 
 private class CapturingTrustManager(
-    private val delegate: X509TrustManager
+    private val delegate: X509TrustManager,
 ) : X509ExtendedTrustManager() {
 
     // Called by Java's HttpClient (uses SSLEngine, not SSLSocket)
@@ -40,8 +40,8 @@ private class CapturingTrustManager(
             SslCapture(
                 protocol = session?.protocol,
                 cipher = session?.cipherSuite,
-                chain = chain.map { it as X509Certificate }.toTypedArray()
-            )
+                chain = chain.map { it as X509Certificate }.toTypedArray(),
+            ),
         )
     }
 
@@ -54,8 +54,8 @@ private class CapturingTrustManager(
                 SslCapture(
                     protocol = session?.protocol,
                     cipher = session?.cipherSuite,
-                    chain = chain.map { it as X509Certificate }.toTypedArray()
-                )
+                    chain = chain.map { it as X509Certificate }.toTypedArray(),
+                ),
             )
         }
     }
