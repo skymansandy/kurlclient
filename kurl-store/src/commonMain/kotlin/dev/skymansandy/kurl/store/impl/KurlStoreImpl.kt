@@ -67,13 +67,12 @@ internal class KurlStoreImpl(
     override suspend fun saveRequest(
         name: String, folderId: Long?, url: String,
         method: String, headers: String, params: String, body: String,
-    ) {
-        withContext(Dispatchers.IO) {
-            db.collectionsQueries.insertRequest(
-                name = name, folder_id = folderId, url = url, method = method,
-                headers = headers, params = params, body = body, created_at = currentTimeMillis(),
-            )
-        }
+    ): Long = withContext(Dispatchers.IO) {
+        db.collectionsQueries.insertRequest(
+            name = name, folder_id = folderId, url = url, method = method,
+            headers = headers, params = params, body = body, created_at = currentTimeMillis(),
+        )
+        db.collectionsQueries.lastInsertedRowId().executeAsOne()
     }
 
     override suspend fun updateRequest(

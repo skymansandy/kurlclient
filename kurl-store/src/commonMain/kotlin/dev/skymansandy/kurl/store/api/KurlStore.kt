@@ -17,7 +17,7 @@ interface KurlStore {
     suspend fun saveRequest(
         name: String, folderId: Long?, url: String,
         method: String, headers: String, params: String, body: String,
-    )
+    ): Long
 
     suspend fun updateRequest(
         id: Long, name: String, folderId: Long?, url: String,

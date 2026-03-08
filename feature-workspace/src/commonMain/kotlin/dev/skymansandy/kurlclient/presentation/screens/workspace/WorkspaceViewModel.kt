@@ -20,7 +20,7 @@ internal class WorkspaceViewModel : MviViewModel<WorkspaceState, WorkspaceEvent,
                 if (event.hasUnsavedChanges) {
                     setState { copy(pendingRequest = event.saved, showDiscardDialog = true) }
                 } else {
-                    setState { copy(requestToLoad = event.saved, selectedTab = WorkspaceTab.Workspace) }
+                    setState { copy(requestToLoad = event.saved, selectedTab = WorkspaceTab.Playground) }
                 }
             }
 
@@ -29,7 +29,7 @@ internal class WorkspaceViewModel : MviViewModel<WorkspaceState, WorkspaceEvent,
                     showDiscardDialog = false,
                     requestToLoad = pendingRequest,
                     pendingRequest = null,
-                    selectedTab = WorkspaceTab.Workspace,
+                    selectedTab = WorkspaceTab.Playground,
                 )
             }
 

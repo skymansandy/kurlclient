@@ -1,4 +1,4 @@
-package dev.skymansandy.kurlclient.presentation.screens.playground
+package dev.skymansandy.kurlclient.presentation.screens.playground.component
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -11,16 +11,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.FolderOpen
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.FilledTonalIconButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -38,10 +32,6 @@ import androidx.compose.ui.unit.dp
 import dev.skymansandy.kurl.core.model.HttpMethod
 import dev.skymansandy.kurlclient.util.compose.methodColor
 import kurlclient.feature_workspace.generated.resources.Res
-import kurlclient.feature_workspace.generated.resources.action_copy_curl
-import kurlclient.feature_workspace.generated.resources.action_import_curl
-import kurlclient.feature_workspace.generated.resources.cd_more_actions
-import kurlclient.feature_workspace.generated.resources.cd_save_collection
 import kurlclient.feature_workspace.generated.resources.placeholder_url
 import kurlclient.feature_workspace.generated.resources.send
 import org.jetbrains.compose.resources.stringResource
@@ -51,23 +41,29 @@ internal fun UrlBar(
     method: HttpMethod,
     url: String,
     isLoading: Boolean,
+    isNewRequest: Boolean,
+    showSave: Boolean,
     onMethodChange: (HttpMethod) -> Unit,
     onUrlChange: (String) -> Unit,
     onSend: () -> Unit,
     onSave: () -> Unit,
+    onDelete: () -> Unit,
+    onClose: () -> Unit,
     onCopyCurl: () -> Unit,
     onImportCurl: () -> Unit,
+    showToolbarActions: Boolean = true,
     modifier: Modifier = Modifier,
 ) {
     var expanded by remember { mutableStateOf(false) }
-    var moreMenuExpanded by remember { mutableStateOf(false) }
 
     Row(
         modifier = modifier.height(48.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        Box(modifier = Modifier.wrapContentSize(Alignment.TopStart)) {
+        Box(
+            modifier = Modifier.wrapContentSize(Alignment.TopStart),
+        ) {
             Surface(
                 shape = RoundedCornerShape(6.dp),
                 color = methodColor(method),
@@ -120,36 +116,6 @@ internal fun UrlBar(
             modifier = Modifier.weight(1f).fillMaxSize(),
         )
 
-        // ⋮ More menu: cURL import / export
-        Box(modifier = Modifier.wrapContentSize(Alignment.TopStart)) {
-            IconButton(onClick = { moreMenuExpanded = true }) {
-                Icon(Icons.Default.MoreVert, contentDescription = stringResource(Res.string.cd_more_actions))
-            }
-            DropdownMenu(
-                expanded = moreMenuExpanded,
-                onDismissRequest = { moreMenuExpanded = false },
-            ) {
-                DropdownMenuItem(
-                    text = { Text(stringResource(Res.string.action_import_curl)) },
-                    onClick = { moreMenuExpanded = false; onImportCurl() },
-                )
-                DropdownMenuItem(
-                    text = { Text(stringResource(Res.string.action_copy_curl)) },
-                    onClick = { moreMenuExpanded = false; onCopyCurl() },
-                )
-            }
-        }
-
-        FilledTonalIconButton(
-            onClick = onSave,
-            enabled = !isLoading,
-        ) {
-            Icon(
-                imageVector = Icons.Default.FolderOpen,
-                contentDescription = stringResource(Res.string.cd_save_collection),
-            )
-        }
-
         Button(
             onClick = onSend,
             enabled = !isLoading,
@@ -164,6 +130,19 @@ internal fun UrlBar(
             } else {
                 Text(stringResource(Res.string.send))
             }
+        }
+
+        if (showToolbarActions) {
+            PlaygroundToolbarActions(
+                isLoading = isLoading,
+                isNewRequest = isNewRequest,
+                showSave = showSave,
+                onSave = onSave,
+                onDelete = onDelete,
+                onClose = onClose,
+                onImportCurl = onImportCurl,
+                onCopyCurl = onCopyCurl,
+            )
         }
     }
 }

@@ -45,7 +45,7 @@ internal fun CompactScaffold(
     ) { innerPadding ->
         Box(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
             when (selectedNav) {
-                WorkspaceTab.Workspace -> PlaygroundScreen(
+                WorkspaceTab.Playground -> PlaygroundScreen(
                     onShowSnackbar = onShowSnackbar,
                     modifier = Modifier.fillMaxSize(),
                 )
@@ -75,14 +75,14 @@ private fun KurlNavigationBar(
                 icon = {
                     NavIcon(
                         dest,
-                        showBadge = dest == WorkspaceTab.Workspace && hasUnsavedChanges,
+                        showBadge = dest == WorkspaceTab.Playground && hasUnsavedChanges,
                     )
                 },
                 label = {
                     Text(
                         stringResource(
                             when (dest) {
-                                WorkspaceTab.Workspace -> Res.string.tab_workspace
+                                WorkspaceTab.Playground -> Res.string.tab_workspace
                                 WorkspaceTab.Collections -> Res.string.tab_collections
                             },
                         ),

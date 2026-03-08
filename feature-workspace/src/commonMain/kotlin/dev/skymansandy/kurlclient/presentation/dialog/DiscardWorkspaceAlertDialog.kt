@@ -1,6 +1,7 @@
 package dev.skymansandy.kurlclient.presentation.dialog
 
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -22,19 +23,29 @@ internal fun DiscardWorkspaceAlertDialog(
         modifier = modifier,
         onDismissRequest = onDismiss,
         title = {
-            Text(stringResource(Res.string.title_discard_changes))
+            Text(
+                text = stringResource(Res.string.title_discard_changes),
+            )
         },
         text = {
-            Text(stringResource(Res.string.msg_discard_changes))
+            Text(
+                text = stringResource(Res.string.msg_discard_changes),
+            )
         },
         confirmButton = {
             TextButton(onClick = onConfirm) {
-                Text(stringResource(Res.string.discard))
+                Text(
+                    text = stringResource(Res.string.discard),
+                    color = MaterialTheme.colorScheme.error,
+                )
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text(stringResource(Res.string.cancel))
+                Text(
+                    text = stringResource(Res.string.cancel),
+                    color = MaterialTheme.colorScheme.error,
+                )
             }
         },
     )

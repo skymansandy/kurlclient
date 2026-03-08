@@ -45,7 +45,7 @@ internal fun RequestPanel(
     val state by vm.state.collectAsStateWithLifecycle()
     val params = state.params
     val headers = state.headers
-    val body = state.body
+    val body = state.currentRequest.body
     var selectedTab by remember { mutableIntStateOf(0) }
 
     val tabParams = stringResource(Res.string.tab_params)
