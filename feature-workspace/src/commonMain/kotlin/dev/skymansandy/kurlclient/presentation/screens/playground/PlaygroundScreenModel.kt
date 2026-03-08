@@ -36,11 +36,20 @@ internal class PlaygroundScreenModel(
                 headers = listOf(KeyValueEntry(id = nextId++))
             )
         }
+
         viewModelScope.launch {
-            combine(store.folders, store.folderPaths) { folders, paths ->
+            combine(
+                store.folders,
+                store.folderPaths
+            ) { folders, paths ->
                 folders to paths
             }.collect { (folders, paths) ->
-                setState { copy(allFolders = folders, folderPaths = paths) }
+                setState {
+                    copy(
+                        allFolders = folders,
+                        folderPaths = paths,
+                    )
+                }
             }
         }
     }
@@ -123,7 +132,13 @@ internal class PlaygroundScreenModel(
             }
 
             is PlaygroundEvent.SaveRequest -> saveRequest(event.name, event.folderId)
-            is PlaygroundEvent.CreateFolder -> viewModelScope.launch { store.createFolder(event.name, event.parentId) }
+            is PlaygroundEvent.CreateFolder -> viewModelScope.launch {
+                store.createFolder(
+                    event.name,
+                    event.parentId
+                )
+            }
+
             is PlaygroundEvent.ClearSaveSuccess -> setState { copy(saveSuccess = false) }
             is PlaygroundEvent.OverwriteLoadedRequest -> overwriteLoadedRequest()
             is PlaygroundEvent.ClearOverwriteSuccess -> setState { copy(overwriteSuccess = false) }
@@ -181,7 +196,13 @@ internal class PlaygroundScreenModel(
                     params = s.params.serialize(),
                     body = s.body
                 )
-                setState { copy(loadedRequest = loaded.copy(name = name, folder_id = folderId), hasUnsavedChanges = false, overwriteSuccess = true) }
+                setState {
+                    copy(
+                        loadedRequest = loaded.copy(name = name, folder_id = folderId),
+                        hasUnsavedChanges = false,
+                        overwriteSuccess = true
+                    )
+                }
             } else {
                 store.saveRequest(
                     name = name,

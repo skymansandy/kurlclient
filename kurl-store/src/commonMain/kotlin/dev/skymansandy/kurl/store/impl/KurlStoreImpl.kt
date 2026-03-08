@@ -27,21 +27,20 @@ internal class KurlStoreImpl(
         db.collectionsQueries.getAllFolders()
             .asFlow()
             .mapToList(Dispatchers.Default)
-            .stateIn(scope, SharingStarted.Companion.Eagerly, emptyList())
+            .stateIn(scope, SharingStarted.Eagerly, emptyList())
 
     override val requests: StateFlow<List<SavedRequest>> =
         db.collectionsQueries.getAllRequests()
             .asFlow()
             .mapToList(Dispatchers.Default)
-            .stateIn(scope, SharingStarted.Companion.Eagerly, emptyList())
+            .stateIn(scope, SharingStarted.Eagerly, emptyList())
 
     override val folderPaths: StateFlow<Map<Long, String>> =
         folders
             .map { buildFolderPathsMap(it) }
-            .stateIn(scope, SharingStarted.Companion.Eagerly, emptyMap())
+            .stateIn(scope, SharingStarted.Eagerly, emptyMap())
 
     // ── Folders ───────────────────────────────────────────────────────────────
-
     override suspend fun createFolder(name: String, parentId: Long?): Long =
         withContext(Dispatchers.IO) {
             db.collectionsQueries.insertFolder(
@@ -65,7 +64,6 @@ internal class KurlStoreImpl(
     }
 
     // ── Requests ──────────────────────────────────────────────────────────────
-
     override suspend fun saveRequest(
         name: String, folderId: Long?, url: String,
         method: String, headers: String, params: String, body: String
@@ -103,7 +101,6 @@ internal class KurlStoreImpl(
     }
 
     // ── Private helpers ───────────────────────────────────────────────────────
-
     private fun buildFolderPathsMap(folders: List<CollectionFolder>): Map<Long, String> {
         val folderMap = folders.associateBy { it.id }
         return folders.associate { folder ->

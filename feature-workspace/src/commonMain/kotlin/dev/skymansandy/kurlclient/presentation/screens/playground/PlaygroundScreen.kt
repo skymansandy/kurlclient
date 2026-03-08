@@ -14,11 +14,10 @@ import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import dev.skymansandy.kurlclient.presentation.dialog.ImportCurlDialog
 import dev.skymansandy.kurlclient.presentation.screens.playground.PlaygroundScreenContract.PlaygroundEvent
-import dev.skymansandy.kurlclient.presentation.screens.playground.request.ImportCurlDialog
 import dev.skymansandy.kurlclient.presentation.screens.playground.request.RequestPanel
-import dev.skymansandy.kurlclient.presentation.screens.playground.request.SaveRequestDialog
-import dev.skymansandy.kurlclient.presentation.screens.playground.request.UrlBar
+import dev.skymansandy.kurlclient.presentation.dialog.SaveRequestDialog
 import dev.skymansandy.kurlclient.presentation.screens.playground.response.ResponsePanel
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -48,7 +47,8 @@ internal fun PlaygroundScreen(
     if (state.showImportCurlDialog) {
         ImportCurlDialog(
             onImport = { curlText ->
-                vm.importFromCurl(curlText).also { if (it) vm.onEvent(PlaygroundEvent.HideImportCurlDialog) }
+                vm.importFromCurl(curlText)
+                    .also { if (it) vm.onEvent(PlaygroundEvent.HideImportCurlDialog) }
             },
             onDismiss = { vm.onEvent(PlaygroundEvent.HideImportCurlDialog) }
         )
@@ -57,7 +57,9 @@ internal fun PlaygroundScreen(
     if (state.showSaveDialog) {
         val loaded = state.loadedRequest
         SaveRequestDialog(
-            initialName = loaded?.name ?: if (state.url.isNotBlank()) state.url.substringAfterLast("/").take(40) else "Untitled",
+            initialName = loaded?.name
+                ?: if (state.url.isNotBlank()) state.url.substringAfterLast("/")
+                    .take(40) else "Untitled",
             initialFolderId = loaded?.folder_id,
             folders = state.allFolders,
             folderPaths = state.folderPaths,
@@ -90,40 +92,52 @@ internal fun PlaygroundScreen(
             onImportCurl = { vm.onEvent(PlaygroundEvent.ShowImportCurlDialog) },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 12.dp, vertical = 10.dp)
+                .padding(horizontal = 12.dp, vertical = 10.dp),
         )
-        TabRow(selectedTabIndex = state.activeTab) {
-            Tab(selected = state.activeTab == 0, onClick = { vm.onEvent(PlaygroundEvent.SelectTab(0)) }, text = { Text("Request") })
-            Tab(selected = state.activeTab == 1, onClick = { vm.onEvent(PlaygroundEvent.SelectTab(1)) }, text = { Text("Response") })
+
+        TabRow(
+            selectedTabIndex = state.activeTab,
+        ) {
+            Tab(
+                selected = state.activeTab == 0,
+                onClick = { vm.onEvent(PlaygroundEvent.SelectTab(0)) },
+                text = { Text("Request") },
+            )
+
+            Tab(
+                selected = state.activeTab == 1,
+                onClick = { vm.onEvent(PlaygroundEvent.SelectTab(1)) },
+                text = { Text("Response") },
+            )
         }
+
         when (state.activeTab) {
             0 -> RequestPanel(
-                url = state.url,
-                method = state.method,
+                modifier = Modifier.weight(1f).fillMaxWidth(),
                 params = state.params,
                 headers = state.headers,
                 body = state.body,
-                isLoading = state.isLoading,
-                onUrlChange = { vm.onEvent(PlaygroundEvent.SetUrl(it)) },
-                onMethodChange = { vm.onEvent(PlaygroundEvent.SetMethod(it)) },
-                onParamUpdate = { id, key, value, enabled -> vm.onEvent(PlaygroundEvent.UpdateParam(id, key, value, enabled)) },
+                onParamUpdate = { id, key, value, enabled ->
+                    vm.onEvent(
+                        PlaygroundEvent.UpdateParam(id, key, value, enabled)
+                    )
+                },
                 onParamAdd = { vm.onEvent(PlaygroundEvent.AddParam) },
                 onParamRemove = { vm.onEvent(PlaygroundEvent.RemoveParam(it)) },
-                onHeaderUpdate = { id, key, value, enabled -> vm.onEvent(PlaygroundEvent.UpdateHeader(id, key, value, enabled)) },
+                onHeaderUpdate = { id, key, value, enabled ->
+                    vm.onEvent(
+                        PlaygroundEvent.UpdateHeader(id, key, value, enabled)
+                    )
+                },
                 onHeaderAdd = { vm.onEvent(PlaygroundEvent.AddHeader) },
                 onHeaderRemove = { vm.onEvent(PlaygroundEvent.RemoveHeader(it)) },
                 onBodyChange = { vm.onEvent(PlaygroundEvent.SetBody(it)) },
-                onSend = { vm.onEvent(PlaygroundEvent.SendRequest) },
-                onSave = { vm.onEvent(PlaygroundEvent.ShowSaveDialog) },
-                onCopyCurl = onCopyCurl,
-                onImportCurl = { vm.onEvent(PlaygroundEvent.ShowImportCurlDialog) },
-                showUrlBar = false,
-                modifier = Modifier.weight(1f).fillMaxWidth()
             )
+
             else -> ResponsePanel(
+                modifier = Modifier.weight(1f).fillMaxWidth(),
                 response = state.response,
                 error = state.error,
-                modifier = Modifier.weight(1f).fillMaxWidth()
             )
         }
     }

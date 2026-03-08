@@ -1,7 +1,6 @@
 package dev.skymansandy.kurlclient.presentation.screens.playground.response
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,10 +9,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
@@ -26,11 +23,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
-import dev.skymansandy.kurl.core.model.NetworkInfo
 import dev.skymansandy.kurlclient.presentation.screens.playground.PlaygroundScreenContract.PlaygroundState.ResponseState
-import dev.skymansandy.ui.jsonviewer.ui.JsonViewer
+import dev.skymansandy.kurlclient.presentation.screens.playground.response.tabs.NetworkInfoTab
+import dev.skymansandy.kurlclient.presentation.screens.playground.response.tabs.ResponseBodyTab
+import dev.skymansandy.kurlclient.presentation.screens.playground.response.tabs.ResponseHeadersTab
 import kotlin.math.roundToInt
 
 private val RESPONSE_TABS = listOf("Body", "Headers", "Network")
@@ -43,7 +40,9 @@ internal fun ResponsePanel(
 ) {
     var selectedTab by remember { mutableIntStateOf(0) }
 
-    Column(modifier = modifier) {
+    Column(
+        modifier = modifier,
+    ) {
         ResponseStatusBar(
             response = response,
             error = error,
@@ -63,8 +62,12 @@ internal fun ResponsePanel(
                     text = {
                         TabLabel(
                             title = title,
-                            count = when (index) { 1 -> headerCount; else -> 0 },
-                            hasDot = when (index) { 0 -> hasBody; 2 -> hasNetwork; else -> false }
+                            count = when (index) {
+                                1 -> headerCount; else -> 0
+                            },
+                            hasDot = when (index) {
+                                0 -> hasBody; 2 -> hasNetwork; else -> false
+                            }
                         )
                     }
                 )
@@ -115,24 +118,29 @@ private fun ResponseStatusBar(
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.error
             )
+
             response != null -> {
                 StatusBadge(code = response.statusCode!!)
+
                 Text(
                     text = response.statusText,
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
+
                 Text(
                     text = "${response.timeMs} ms",
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
+
                 Text(
                     text = formatSize(response.sizeBytes),
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
+
             else -> Text(
                 text = "Send a request to see the response",
                 style = MaterialTheme.typography.bodySmall,
@@ -158,143 +166,6 @@ private fun StatusBadge(code: Int) {
             color = MaterialTheme.colorScheme.onPrimary,
             modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
         )
-    }
-}
-
-@Composable
-private fun ResponseBodyTab(body: String, error: String?) {
-    when {
-        error != null -> Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Text(error, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
-        }
-        body.isEmpty() -> Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Text(
-                "No response body",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        }
-        else -> {
-            val trimmed = body.trim()
-            if (trimmed.startsWith("{") || trimmed.startsWith("[")) {
-                JsonViewer(json = trimmed, modifier = Modifier.fillMaxSize())
-            } else {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(6.dp))
-                        .padding(12.dp)
-                        .verticalScroll(rememberScrollState())
-                        .horizontalScroll(rememberScrollState())
-                ) {
-                    Text(
-                        text = body,
-                        style = MaterialTheme.typography.bodySmall,
-                        fontFamily = FontFamily.Monospace,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun ResponseHeadersTab(headers: Map<String, String>) {
-    if (headers.isEmpty()) {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Text(
-                "No response headers",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        }
-    } else {
-        Column(
-            modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(4.dp)
-        ) {
-            headers.forEach { (key, value) ->
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Text(
-                        text = key,
-                        style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.weight(0.4f)
-                    )
-                    Text(
-                        text = value,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        modifier = Modifier.weight(0.6f)
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun NetworkInfoTab(networkInfo: NetworkInfo?) {
-    if (networkInfo == null) {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Text(
-                "No network info available",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        }
-        return
-    }
-
-    val rows = buildList {
-        networkInfo.httpVersion?.let { add("HTTP Version" to it) }
-        networkInfo.remoteAddress?.let { add("Remote Address" to it) }
-        networkInfo.localAddress?.let { add("Local Address" to it) }
-        networkInfo.tlsProtocol?.let { add("TLS Protocol" to it) }
-        networkInfo.cipherName?.let { add("Cipher Suite" to it) }
-        networkInfo.certificateCN?.let { add("Certificate CN" to it) }
-        networkInfo.issuerCN?.let { add("Issuer CN" to it) }
-        networkInfo.validUntil?.let { add("Valid Until" to it) }
-    }
-
-    if (rows.isEmpty()) {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Text(
-                "No network info available",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        }
-    } else {
-        Column(
-            modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(4.dp)
-        ) {
-            rows.forEach { (key, value) ->
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Text(
-                        text = key,
-                        style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.weight(0.4f)
-                    )
-                    Text(
-                        text = value,
-                        style = MaterialTheme.typography.bodySmall,
-                        fontFamily = FontFamily.Monospace,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        modifier = Modifier.weight(0.6f)
-                    )
-                }
-            }
-        }
     }
 }
 

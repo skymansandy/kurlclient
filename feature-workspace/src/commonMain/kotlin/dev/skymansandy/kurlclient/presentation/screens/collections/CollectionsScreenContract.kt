@@ -17,7 +17,6 @@ internal class CollectionsScreenContract {
     ) : UiState {
 
         sealed interface TreeItem {
-
             data class Folder(
                 val folder: CollectionFolder,
                 val depth: Int,

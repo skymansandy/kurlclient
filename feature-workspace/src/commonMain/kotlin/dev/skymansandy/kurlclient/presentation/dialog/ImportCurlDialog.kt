@@ -1,4 +1,4 @@
-package dev.skymansandy.kurlclient.presentation.screens.playground.request
+package dev.skymansandy.kurlclient.presentation.dialog
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -27,20 +27,28 @@ import androidx.compose.ui.window.Dialog
 @Composable
 internal fun ImportCurlDialog(
     onImport: (String) -> Boolean,   // returns false if parse failed
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
 ) {
     var text by remember { mutableStateOf("") }
     var parseError by remember { mutableStateOf(false) }
 
-    Dialog(onDismissRequest = onDismiss) {
-        Surface(shape = MaterialTheme.shapes.large, tonalElevation = 6.dp) {
+    Dialog(
+        onDismissRequest = onDismiss,
+    ) {
+        Surface(
+            shape = MaterialTheme.shapes.large,
+            tonalElevation = 6.dp,
+        ) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .then(Modifier.padding(24.dp)),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
-                Text("Import from cURL", style = MaterialTheme.typography.titleLarge)
+                Text(
+                    text = "Import from cURL",
+                    style = MaterialTheme.typography.titleLarge,
+                )
 
                 OutlinedTextField(
                     value = text,
@@ -49,7 +57,12 @@ internal fun ImportCurlDialog(
                     placeholder = { Text("curl 'https://...' -H 'Accept: ...'") },
                     isError = parseError,
                     supportingText = if (parseError) {
-                        { Text("Could not parse cURL command", color = MaterialTheme.colorScheme.error) }
+                        {
+                            Text(
+                                "Could not parse cURL command",
+                                color = MaterialTheme.colorScheme.error
+                            )
+                        }
                     } else null,
                     minLines = 4,
                     maxLines = 12,
@@ -65,14 +78,18 @@ internal fun ImportCurlDialog(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.End
                 ) {
-                    TextButton(onClick = onDismiss) { Text("Cancel") }
+                    TextButton(onClick = onDismiss) {
+                        Text("Cancel")
+                    }
+
                     Spacer(Modifier.width(8.dp))
+
                     Button(
+                        enabled = text.isNotBlank(),
                         onClick = {
                             if (onImport(text.trim())) onDismiss()
                             else parseError = true
                         },
-                        enabled = text.isNotBlank()
                     ) {
                         Text("Import")
                     }

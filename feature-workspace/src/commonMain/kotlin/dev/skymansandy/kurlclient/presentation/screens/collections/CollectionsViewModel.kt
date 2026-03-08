@@ -19,10 +19,20 @@ internal class CollectionsViewModel(private val store: KurlStore) :
 
     init {
         viewModelScope.launch {
-            combine(store.folders, store.requests, store.folderPaths) { folders, requests, paths ->
+            combine(
+                store.folders,
+                store.requests,
+                store.folderPaths,
+            ) { folders, requests, paths ->
                 Triple(folders, requests, paths)
             }.collect { (folders, requests, paths) ->
-                setState { copy(allFolders = folders, allRequests = requests, folderPaths = paths) }
+                setState {
+                    copy(
+                        allFolders = folders,
+                        allRequests = requests,
+                        folderPaths = paths,
+                    )
+                }
             }
         }
     }
@@ -53,7 +63,12 @@ internal class CollectionsViewModel(private val store: KurlStore) :
         return result
     }
 
-    private fun appendChildren(s: CollectionsState, parentId: Long?, depth: Int, result: MutableList<TreeItem>) {
+    private fun appendChildren(
+        s: CollectionsState,
+        parentId: Long?,
+        depth: Int,
+        result: MutableList<TreeItem>
+    ) {
         s.allFolders
             .filter { it.parent_id == parentId }
             .sortedBy { it.name }
@@ -62,6 +77,7 @@ internal class CollectionsViewModel(private val store: KurlStore) :
                 result.add(TreeItem.Folder(folder, depth, expanded))
                 if (expanded) appendChildren(s, folder.id, depth + 1, result)
             }
+
         s.allRequests
             .filter { it.folder_id == parentId }
             .sortedBy { it.name }
@@ -75,7 +91,12 @@ internal class CollectionsViewModel(private val store: KurlStore) :
         if (q.isBlank()) return buildTreeItems(s)
 
         val matchingIds = s.allRequests
-            .filter { it.name.contains(q, ignoreCase = true) || it.url.contains(q, ignoreCase = true) }
+            .filter {
+                it.name.contains(q, ignoreCase = true) || it.url.contains(
+                    q,
+                    ignoreCase = true
+                )
+            }
             .map { it.id }.toSet()
 
         val visibleFolderIds = mutableSetOf<Long>()
@@ -101,8 +122,16 @@ internal class CollectionsViewModel(private val store: KurlStore) :
             .sortedBy { it.name }
             .forEach { folder ->
                 result.add(TreeItem.Folder(folder, depth, isExpanded = true))
-                appendFilteredChildren(s, folder.id, depth + 1, result, matchingIds, visibleFolderIds)
+                appendFilteredChildren(
+                    s,
+                    folder.id,
+                    depth + 1,
+                    result,
+                    matchingIds,
+                    visibleFolderIds
+                )
             }
+
         s.allRequests
             .filter { it.folder_id == parentId && it.id in matchingIds }
             .sortedBy { it.name }
@@ -115,8 +144,9 @@ internal class CollectionsViewModel(private val store: KurlStore) :
         viewModelScope.launch {
             val newId = store.createFolder(name, parentId)
             setState {
-                copy(expandedFolderIds = expandedFolderIds
-                    .let { if (parentId != null) it + parentId else it } + newId)
+                copy(
+                    expandedFolderIds = expandedFolderIds
+                        .let { if (parentId != null) it + parentId else it } + newId)
             }
         }
     }

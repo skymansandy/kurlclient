@@ -42,8 +42,13 @@ internal fun ExpandedScaffold(
     onSaveChanges: () -> Unit
 ) {
     Scaffold(
-        snackbarHost = { SnackbarHost(snackbarHostState) { Snackbar(snackbarData = it) } }
+        snackbarHost = {
+            SnackbarHost(snackbarHostState) {
+                Snackbar(snackbarData = it)
+            }
+        }
     ) { innerPadding ->
+
         val density = LocalDensity.current
         var totalWidthPx by remember { mutableStateOf(0) }
         var panelWidth by remember { mutableStateOf(PANEL_DEFAULT_WIDTH) }
@@ -65,7 +70,10 @@ internal fun ExpandedScaffold(
                 onDrag = { deltaPx ->
                     val maxWidthDp = with(density) { totalWidthPx.toDp() }
                     panelWidth = (panelWidth + with(density) { deltaPx.toDp() })
-                        .coerceIn(PANEL_MIN_WIDTH, minOf(PANEL_MAX_WIDTH, maxWidthDp - PANEL_MIN_WIDTH))
+                        .coerceIn(
+                            PANEL_MIN_WIDTH,
+                            minOf(PANEL_MAX_WIDTH, maxWidthDp - PANEL_MIN_WIDTH)
+                        )
                 }
             )
 

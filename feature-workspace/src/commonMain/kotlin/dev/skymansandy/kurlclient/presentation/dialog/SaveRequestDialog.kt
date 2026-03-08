@@ -1,4 +1,4 @@
-package dev.skymansandy.kurlclient.presentation.screens.playground.request
+package dev.skymansandy.kurlclient.presentation.dialog
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -49,16 +49,21 @@ internal fun SaveRequestDialog(
     var newFolderParentDropdownExpanded by remember { mutableStateOf(false) }
     var newFolderParentId by remember { mutableStateOf<Long?>(null) }
 
-    Dialog(onDismissRequest = onDismiss) {
+    Dialog(
+        onDismissRequest = onDismiss,
+    ) {
         Surface(
             shape = MaterialTheme.shapes.large,
-            tonalElevation = 6.dp
+            tonalElevation = 6.dp,
         ) {
             Column(
                 modifier = Modifier.padding(24.dp).fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
-                Text("Save Request", style = MaterialTheme.typography.titleLarge)
+                Text(
+                    text = "Save Request",
+                    style = MaterialTheme.typography.titleLarge
+                )
 
                 OutlinedTextField(
                     value = name,
@@ -70,32 +75,51 @@ internal fun SaveRequestDialog(
 
                 // Folder picker
                 Column {
-                    Text("Save in folder", style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(
+                        text = "Save in folder",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+
                     Spacer(Modifier.height(4.dp))
+
                     OutlinedButton(
+                        modifier = Modifier.fillMaxWidth(),
                         onClick = { folderDropdownExpanded = true },
-                        modifier = Modifier.fillMaxWidth()
                     ) {
                         Text(
                             text = selectedFolderId?.let { folderPaths[it] } ?: "No folder (root)",
                             modifier = Modifier.weight(1f),
-                            style = MaterialTheme.typography.bodyMedium
+                            style = MaterialTheme.typography.bodyMedium,
                         )
-                        Icon(Icons.Default.ArrowDropDown, contentDescription = null)
+
+                        Icon(
+                            imageVector = Icons.Default.ArrowDropDown,
+                            contentDescription = null,
+                        )
                     }
+
                     DropdownMenu(
                         expanded = folderDropdownExpanded,
-                        onDismissRequest = { folderDropdownExpanded = false }
+                        onDismissRequest = {
+                            folderDropdownExpanded = false
+                        }
                     ) {
                         DropdownMenuItem(
                             text = { Text("No folder (root)") },
-                            onClick = { selectedFolderId = null; folderDropdownExpanded = false }
+                            onClick = {
+                                selectedFolderId = null
+                                folderDropdownExpanded = false
+                            }
                         )
+
                         folders.forEach { folder ->
                             DropdownMenuItem(
                                 text = { Text(folderPaths[folder.id] ?: folder.name) },
-                                onClick = { selectedFolderId = folder.id; folderDropdownExpanded = false }
+                                onClick = {
+                                    selectedFolderId = folder.id
+                                    folderDropdownExpanded = false
+                                }
                             )
                         }
                     }
@@ -103,27 +127,39 @@ internal fun SaveRequestDialog(
 
                 // New folder section
                 if (showNewFolderRow) {
-                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Text("New folder", style = MaterialTheme.typography.labelMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        Text(
+                            text = "New folder",
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+
                         OutlinedTextField(
                             value = newFolderName,
                             onValueChange = { newFolderName = it },
                             label = { Text("Folder name") },
                             singleLine = true,
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier.fillMaxWidth(),
                         )
+
                         // Parent folder for new folder
                         OutlinedButton(
                             onClick = { newFolderParentDropdownExpanded = true },
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             Text(
-                                text = newFolderParentId?.let { folderPaths[it] } ?: "No parent (root)",
+                                text = newFolderParentId?.let { folderPaths[it] }
+                                    ?: "No parent (root)",
                                 modifier = Modifier.weight(1f),
                                 style = MaterialTheme.typography.bodyMedium
                             )
-                            Icon(Icons.Default.ArrowDropDown, contentDescription = null)
+
+                            Icon(
+                                imageVector = Icons.Default.ArrowDropDown,
+                                contentDescription = null
+                            )
                         }
                         DropdownMenu(
                             expanded = newFolderParentDropdownExpanded,
@@ -131,21 +167,38 @@ internal fun SaveRequestDialog(
                         ) {
                             DropdownMenuItem(
                                 text = { Text("No parent (root)") },
-                                onClick = { newFolderParentId = null; newFolderParentDropdownExpanded = false }
+                                onClick = {
+                                    newFolderParentId = null
+                                    newFolderParentDropdownExpanded = false
+                                }
                             )
                             folders.forEach { folder ->
                                 DropdownMenuItem(
                                     text = { Text(folderPaths[folder.id] ?: folder.name) },
-                                    onClick = { newFolderParentId = folder.id; newFolderParentDropdownExpanded = false }
+                                    onClick = {
+                                        newFolderParentId =
+                                            folder.id; newFolderParentDropdownExpanded = false
+                                    }
                                 )
                             }
                         }
-                        Row(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()) {
-                            TextButton(onClick = { showNewFolderRow = false; newFolderName = "" }) {
+                        Row(
+                            horizontalArrangement = Arrangement.End,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            TextButton(
+                                onClick = {
+                                    showNewFolderRow = false
+                                    newFolderName = ""
+                                },
+                            ) {
                                 Text("Cancel")
                             }
+
                             Spacer(Modifier.width(8.dp))
+
                             Button(
+                                enabled = newFolderName.isNotBlank(),
                                 onClick = {
                                     if (newFolderName.isNotBlank()) {
                                         onCreateFolder(newFolderName, newFolderParentId)
@@ -153,14 +206,15 @@ internal fun SaveRequestDialog(
                                         newFolderName = ""
                                     }
                                 },
-                                enabled = newFolderName.isNotBlank()
                             ) {
                                 Text("Create")
                             }
                         }
                     }
                 } else {
-                    TextButton(onClick = { showNewFolderRow = true }) {
+                    TextButton(
+                        onClick = { showNewFolderRow = true },
+                    ) {
                         Text("+ New folder")
                     }
                 }
@@ -168,10 +222,14 @@ internal fun SaveRequestDialog(
                 // Action buttons
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End
+                    horizontalArrangement = Arrangement.End,
                 ) {
-                    TextButton(onClick = onDismiss) { Text("Cancel") }
+                    TextButton(onClick = onDismiss) {
+                        Text("Cancel")
+                    }
+
                     Spacer(Modifier.width(8.dp))
+
                     Button(
                         onClick = { onSave(name, selectedFolderId) },
                         enabled = name.isNotBlank()
