@@ -5,9 +5,9 @@ import dev.skymansandy.kurl.core.api.KurlEngine
 import dev.skymansandy.kurl.core.model.HttpMethod
 import dev.skymansandy.kurl.core.model.KeyValueEntry
 import dev.skymansandy.kurl.core.model.KurlRequest
-import dev.skymansandy.kurl.core.utils.buildCurlCommand
+import dev.skymansandy.kurlclient.presentation.screens.workspace.util.curlparser.buildCurlCommand
 import dev.skymansandy.kurl.core.utils.deserializeKeyValueEntries
-import dev.skymansandy.kurl.core.utils.parseCurlCommand
+import dev.skymansandy.kurlclient.presentation.screens.workspace.util.curlparser.parseCurlCommand
 import dev.skymansandy.kurl.core.utils.serialize
 import dev.skymansandy.kurl.store.CollectionStore
 import dev.skymansandy.kurlclient.presentation.base.MviViewModel

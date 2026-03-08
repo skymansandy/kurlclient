@@ -3,6 +3,7 @@ package dev.skymansandy.ui.jsonviewer.parser
 import dev.skymansandy.ui.jsonviewer.model.JNode
 
 internal class JsonParser(private val src: String) {
+
     private var pos = 0
     private var nextId = 0
 

@@ -1,4 +1,4 @@
-package dev.skymansandy.kurl.core.utils
+package dev.skymansandy.kurlclient.presentation.screens.workspace.util.curlparser
 
 internal fun String.escapeSingleQuotes(): String = replace("'", "'\\''")
 

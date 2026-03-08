@@ -7,7 +7,6 @@ internal actual fun createHttpClient(): HttpClient = HttpClient(Darwin) {
     engine {
         configureSession {
             // HTTP/2 is enabled by default in NSURLSession
-            // Nothing extra needed — iOS handles it automatically
         }
     }
 }

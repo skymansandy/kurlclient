@@ -7,7 +7,12 @@ import okhttp3.Protocol
 internal actual fun createHttpClient(): HttpClient = HttpClient(OkHttp) {
     engine {
         config {
-            protocols(listOf(Protocol.HTTP_2, Protocol.HTTP_1_1))
+            protocols(
+                listOf(
+                    Protocol.HTTP_2,
+                    Protocol.HTTP_1_1,
+                )
+            )
         }
     }
 }

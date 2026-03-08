@@ -1,4 +1,4 @@
-package dev.skymansandy.kurl.core.model
+package dev.skymansandy.kurlclient.presentation.screens.workspace.util.curlparser
 
 data class ParsedCurlRequest(
     val url: String,

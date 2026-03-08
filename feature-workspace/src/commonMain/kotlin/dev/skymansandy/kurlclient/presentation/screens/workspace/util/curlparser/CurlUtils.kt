@@ -1,8 +1,7 @@
-package dev.skymansandy.kurl.core.utils
+package dev.skymansandy.kurlclient.presentation.screens.workspace.util.curlparser
 
 import dev.skymansandy.kurl.core.model.HttpMethod
 import dev.skymansandy.kurl.core.model.KeyValueEntry
-import dev.skymansandy.kurl.core.model.ParsedCurlRequest
 
 fun buildCurlCommand(
     url: String,
