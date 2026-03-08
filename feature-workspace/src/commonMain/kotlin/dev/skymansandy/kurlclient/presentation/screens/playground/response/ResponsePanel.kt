@@ -24,7 +24,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.skymansandy.kurlclient.presentation.screens.playground.PlaygroundScreenContract.PlaygroundState.ResponseState
+import dev.skymansandy.kurlclient.presentation.screens.playground.PlaygroundScreenModel
 import dev.skymansandy.kurlclient.presentation.screens.playground.response.tabs.NetworkInfoTab
 import dev.skymansandy.kurlclient.presentation.screens.playground.response.tabs.ResponseBodyTab
 import dev.skymansandy.kurlclient.presentation.screens.playground.response.tabs.ResponseHeadersTab
@@ -39,10 +41,12 @@ import kotlin.math.roundToInt
 
 @Composable
 internal fun ResponsePanel(
-    response: ResponseState?,
-    error: String?,
+    vm: PlaygroundScreenModel,
     modifier: Modifier = Modifier,
 ) {
+    val state by vm.state.collectAsStateWithLifecycle()
+    val response = state.response
+    val error = state.error
     var selectedTab by remember { mutableIntStateOf(0) }
 
     val tabBody = stringResource(Res.string.tab_body)
@@ -61,7 +65,10 @@ internal fun ResponsePanel(
                 .padding(horizontal = 12.dp, vertical = 10.dp),
         )
 
-        TabRow(selectedTabIndex = selectedTab) {
+        TabRow(
+            selectedTabIndex = selectedTab,
+        ) {
+
             val headerCount = response?.headers?.size ?: 0
             val hasBody = response?.body?.isNotBlank() == true
             val hasNetwork = response?.networkInfo != null
@@ -73,10 +80,13 @@ internal fun ResponsePanel(
                         TabLabel(
                             title = title,
                             count = when (index) {
-                                1 -> headerCount; else -> 0
+                                1 -> headerCount
+                                else -> 0
                             },
                             hasDot = when (index) {
-                                0 -> hasBody; 2 -> hasNetwork; else -> false
+                                0 -> hasBody
+                                2 -> hasNetwork
+                                else -> false
                             },
                         )
                     },

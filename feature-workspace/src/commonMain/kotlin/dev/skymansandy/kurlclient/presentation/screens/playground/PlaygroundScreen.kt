@@ -123,33 +123,8 @@ internal fun PlaygroundScreen(
         }
 
         when (state.activeTab) {
-            0 -> RequestPanel(
-                modifier = Modifier.weight(1f).fillMaxWidth(),
-                params = state.params,
-                headers = state.headers,
-                body = state.body,
-                onParamUpdate = { id, key, value, enabled ->
-                    vm.onEvent(
-                        PlaygroundEvent.UpdateParam(id, key, value, enabled),
-                    )
-                },
-                onParamAdd = { vm.onEvent(PlaygroundEvent.AddParam) },
-                onParamRemove = { vm.onEvent(PlaygroundEvent.RemoveParam(it)) },
-                onHeaderUpdate = { id, key, value, enabled ->
-                    vm.onEvent(
-                        PlaygroundEvent.UpdateHeader(id, key, value, enabled),
-                    )
-                },
-                onHeaderAdd = { vm.onEvent(PlaygroundEvent.AddHeader) },
-                onHeaderRemove = { vm.onEvent(PlaygroundEvent.RemoveHeader(it)) },
-                onBodyChange = { vm.onEvent(PlaygroundEvent.SetBody(it)) },
-            )
-
-            else -> ResponsePanel(
-                modifier = Modifier.weight(1f).fillMaxWidth(),
-                response = state.response,
-                error = state.error,
-            )
+            0 -> RequestPanel(vm = vm, modifier = Modifier.weight(1f).fillMaxWidth())
+            else -> ResponsePanel(vm = vm, modifier = Modifier.weight(1f).fillMaxWidth())
         }
     }
 }

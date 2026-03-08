@@ -21,7 +21,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import dev.skymansandy.kurl.core.model.KeyValueEntry
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import dev.skymansandy.kurlclient.presentation.screens.playground.PlaygroundScreenContract.PlaygroundEvent
+import dev.skymansandy.kurlclient.presentation.screens.playground.PlaygroundScreenModel
 import dev.skymansandy.kurlclient.presentation.screens.playground.request.tabs.AuthTab
 import dev.skymansandy.kurlclient.presentation.screens.playground.request.tabs.BodyTab
 import dev.skymansandy.kurlclient.presentation.screens.playground.request.tabs.KeyValueEditorTab
@@ -37,18 +39,13 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun RequestPanel(
-    params: List<KeyValueEntry>,
-    headers: List<KeyValueEntry>,
-    body: String,
-    onParamUpdate: (Long, String, String, Boolean) -> Unit,
-    onParamAdd: () -> Unit,
-    onParamRemove: (Long) -> Unit,
-    onHeaderUpdate: (Long, String, String, Boolean) -> Unit,
-    onHeaderAdd: () -> Unit,
-    onHeaderRemove: (Long) -> Unit,
-    onBodyChange: (String) -> Unit,
     modifier: Modifier = Modifier,
+    vm: PlaygroundScreenModel,
 ) {
+    val state by vm.state.collectAsStateWithLifecycle()
+    val params = state.params
+    val headers = state.headers
+    val body = state.body
     var selectedTab by remember { mutableIntStateOf(0) }
 
     val tabParams = stringResource(Res.string.tab_params)
@@ -88,18 +85,22 @@ internal fun RequestPanel(
             when (selectedTab) {
                 0 -> KeyValueEditorTab(
                     entries = params,
-                    onUpdate = onParamUpdate,
-                    onAdd = onParamAdd,
-                    onRemove = onParamRemove,
+                    onUpdate = { id, key, value, enabled ->
+                        vm.onEvent(PlaygroundEvent.UpdateParam(id, key, value, enabled))
+                    },
+                    onAdd = { vm.onEvent(PlaygroundEvent.AddParam) },
+                    onRemove = { vm.onEvent(PlaygroundEvent.RemoveParam(it)) },
                     keyPlaceholder = stringResource(Res.string.placeholder_param_key),
                     valuePlaceholder = stringResource(Res.string.placeholder_value),
                 )
 
                 1 -> KeyValueEditorTab(
                     entries = headers,
-                    onUpdate = onHeaderUpdate,
-                    onAdd = onHeaderAdd,
-                    onRemove = onHeaderRemove,
+                    onUpdate = { id, key, value, enabled ->
+                        vm.onEvent(PlaygroundEvent.UpdateHeader(id, key, value, enabled))
+                    },
+                    onAdd = { vm.onEvent(PlaygroundEvent.AddHeader) },
+                    onRemove = { vm.onEvent(PlaygroundEvent.RemoveHeader(it)) },
                     keyPlaceholder = stringResource(Res.string.placeholder_header_key),
                     valuePlaceholder = stringResource(Res.string.placeholder_value),
                 )
@@ -108,7 +109,7 @@ internal fun RequestPanel(
 
                 3 -> BodyTab(
                     body = body,
-                    onBodyChange = onBodyChange,
+                    onBodyChange = { vm.onEvent(PlaygroundEvent.SetBody(it)) },
                 )
             }
         }

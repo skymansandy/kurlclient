@@ -19,7 +19,8 @@ import dev.skymansandy.ui.jsonviewer.ui.JsonViewer
 
 @Composable
 internal fun ResponseBodyTab(
-    body: String, error: String?,
+    body: String,
+    error: String?,
 ) {
     when {
         error != null -> Box(
