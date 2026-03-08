@@ -4,4 +4,88 @@
     <string name="discard">Discard</string>
     <string name="confirm">Confirm</string>
     <string name="cancel">Cancel</string>
+
+    <!-- Save Request Dialog -->
+    <string name="title_save_request">Save Request</string>
+    <string name="hint_request_name">Request name</string>
+    <string name="label_save_in_folder">Save in folder</string>
+    <string name="no_folder_root">No folder (root)</string>
+    <string name="label_new_folder">New folder</string>
+    <string name="hint_folder_name">Folder name</string>
+    <string name="no_parent_root">No parent (root)</string>
+    <string name="action_new_folder">+ New folder</string>
+    <string name="save">Save</string>
+    <string name="create">Create</string>
+
+    <!-- New Folder Dialog -->
+    <string name="title_new_folder">New Folder</string>
+
+    <!-- Import cURL Dialog -->
+    <string name="title_import_curl">Import from cURL</string>
+    <string name="hint_paste_curl">Paste cURL command</string>
+    <string name="placeholder_curl_command">curl \'https://...\' -H \'Accept: ...\'</string>
+    <string name="error_parse_curl">Could not parse cURL command</string>
+    <string name="import">Import</string>
+
+    <!-- Collections Screen -->
+    <string name="title_collections">Collections</string>
+    <string name="cd_new_folder">New folder</string>
+    <string name="msg_no_results">No results for "%1$s"</string>
+    <string name="msg_no_saved_requests">No saved requests</string>
+
+    <!-- Playground / Snackbars -->
+    <string name="msg_request_saved">Request saved to collections</string>
+    <string name="msg_changes_saved">Changes saved</string>
+    <string name="msg_copied_as_curl">Copied as cURL</string>
+
+    <!-- Workspace Tabs -->
+    <string name="tab_workspace">Workspace</string>
+    <string name="tab_collections">Collections</string>
+
+    <!-- Playground Tabs -->
+    <string name="tab_request">Request</string>
+    <string name="tab_response">Response</string>
+
+    <!-- Request Panel Tabs -->
+    <string name="tab_params">Params</string>
+    <string name="tab_headers">Headers</string>
+    <string name="tab_auth">Auth</string>
+    <string name="tab_body">Body</string>
+
+    <!-- Response Panel -->
+    <string name="tab_network">Network</string>
+    <string name="msg_send_request_hint">Send a request to see the response</string>
+    <string name="msg_error_prefix">Error: %1$s</string>
+
+    <!-- URL Bar -->
+    <string name="placeholder_url">https://...</string>
+    <string name="cd_more_actions">More actions</string>
+    <string name="action_import_curl">Import from cURL</string>
+    <string name="action_copy_curl">Copy as cURL</string>
+    <string name="cd_save_collection">Save to collection</string>
+    <string name="send">Send</string>
+
+    <!-- Search Bar -->
+    <string name="hint_search_requests">Search requests…</string>
+    <string name="cd_clear_search">Clear search</string>
+
+    <!-- Folder Item -->
+    <string name="cd_folder_options">Folder options</string>
+    <string name="action_new_subfolder">New subfolder</string>
+    <string name="delete">Delete</string>
+    <string name="cd_collapse">Collapse</string>
+    <string name="cd_expand">Expand</string>
+
+    <!-- Request Item -->
+    <string name="cd_request_options">Request options</string>
+    <string name="load">Load</string>
+    <string name="action_save_changes">Save changes</string>
+    <string name="duplicate">Duplicate</string>
+
+    <!-- Request/Body Tabs -->
+    <string name="placeholder_param_key">param</string>
+    <string name="placeholder_header_key">Header</string>
+    <string name="placeholder_value">value</string>
+    <string name="msg_auth_config">Auth configuration</string>
+    <string name="placeholder_body">Request body (JSON, XML, raw...)</string>
 </resources>

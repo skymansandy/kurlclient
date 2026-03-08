@@ -23,6 +23,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import kurlclient.feature_workspace.generated.resources.Res
+import kurlclient.feature_workspace.generated.resources.cancel
+import kurlclient.feature_workspace.generated.resources.error_parse_curl
+import kurlclient.feature_workspace.generated.resources.hint_paste_curl
+import kurlclient.feature_workspace.generated.resources.import
+import kurlclient.feature_workspace.generated.resources.placeholder_curl_command
+import kurlclient.feature_workspace.generated.resources.title_import_curl
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun ImportCurlDialog(
@@ -46,20 +54,20 @@ internal fun ImportCurlDialog(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
                 Text(
-                    text = "Import from cURL",
+                    text = stringResource(Res.string.title_import_curl),
                     style = MaterialTheme.typography.titleLarge,
                 )
 
                 OutlinedTextField(
                     value = text,
                     onValueChange = { text = it; parseError = false },
-                    label = { Text("Paste cURL command") },
-                    placeholder = { Text("curl 'https://...' -H 'Accept: ...'") },
+                    label = { Text(stringResource(Res.string.hint_paste_curl)) },
+                    placeholder = { Text(stringResource(Res.string.placeholder_curl_command)) },
                     isError = parseError,
                     supportingText = if (parseError) {
                         {
                             Text(
-                                "Could not parse cURL command",
+                                stringResource(Res.string.error_parse_curl),
                                 color = MaterialTheme.colorScheme.error
                             )
                         }
@@ -79,7 +87,7 @@ internal fun ImportCurlDialog(
                     horizontalArrangement = Arrangement.End
                 ) {
                     TextButton(onClick = onDismiss) {
-                        Text("Cancel")
+                        Text(stringResource(Res.string.cancel))
                     }
 
                     Spacer(Modifier.width(8.dp))
@@ -91,7 +99,7 @@ internal fun ImportCurlDialog(
                             else parseError = true
                         },
                     ) {
-                        Text("Import")
+                        Text(stringResource(Res.string.import))
                     }
                 }
             }

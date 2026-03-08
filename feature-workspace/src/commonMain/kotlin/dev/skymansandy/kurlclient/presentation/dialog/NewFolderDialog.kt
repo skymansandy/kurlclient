@@ -21,6 +21,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import kurlclient.feature_workspace.generated.resources.Res
+import kurlclient.feature_workspace.generated.resources.cancel
+import kurlclient.feature_workspace.generated.resources.create
+import kurlclient.feature_workspace.generated.resources.hint_folder_name
+import kurlclient.feature_workspace.generated.resources.title_new_folder
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun NewFolderDialog(
@@ -43,14 +49,14 @@ internal fun NewFolderDialog(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
                 Text(
-                    text = "New Folder",
+                    text = stringResource(Res.string.title_new_folder),
                     style = MaterialTheme.typography.titleLarge,
                 )
 
                 OutlinedTextField(
                     value = name,
                     onValueChange = { name = it },
-                    label = { Text("Folder name") },
+                    label = { Text(stringResource(Res.string.hint_folder_name)) },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
                 )
@@ -62,7 +68,7 @@ internal fun NewFolderDialog(
                     TextButton(
                         onClick = onDismiss,
                     ) {
-                        Text("Cancel")
+                        Text(stringResource(Res.string.cancel))
                     }
 
                     Spacer(Modifier.width(8.dp))
@@ -73,7 +79,7 @@ internal fun NewFolderDialog(
                             onCreate(name, parentId)
                         },
                     ) {
-                        Text("Create")
+                        Text(stringResource(Res.string.create))
                     }
                 }
             }

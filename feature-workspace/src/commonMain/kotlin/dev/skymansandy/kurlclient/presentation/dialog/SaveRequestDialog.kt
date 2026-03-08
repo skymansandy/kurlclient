@@ -29,6 +29,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import dev.skymansandy.kurlstore.db.CollectionFolder
+import kurlclient.feature_workspace.generated.resources.Res
+import kurlclient.feature_workspace.generated.resources.action_new_folder
+import kurlclient.feature_workspace.generated.resources.cancel
+import kurlclient.feature_workspace.generated.resources.create
+import kurlclient.feature_workspace.generated.resources.hint_folder_name
+import kurlclient.feature_workspace.generated.resources.hint_request_name
+import kurlclient.feature_workspace.generated.resources.label_new_folder
+import kurlclient.feature_workspace.generated.resources.label_save_in_folder
+import kurlclient.feature_workspace.generated.resources.no_folder_root
+import kurlclient.feature_workspace.generated.resources.no_parent_root
+import kurlclient.feature_workspace.generated.resources.save
+import kurlclient.feature_workspace.generated.resources.title_save_request
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun SaveRequestDialog(
@@ -61,14 +74,14 @@ internal fun SaveRequestDialog(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
                 Text(
-                    text = "Save Request",
+                    text = stringResource(Res.string.title_save_request),
                     style = MaterialTheme.typography.titleLarge
                 )
 
                 OutlinedTextField(
                     value = name,
                     onValueChange = { name = it },
-                    label = { Text("Request name") },
+                    label = { Text(stringResource(Res.string.hint_request_name)) },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -76,7 +89,7 @@ internal fun SaveRequestDialog(
                 // Folder picker
                 Column {
                     Text(
-                        text = "Save in folder",
+                        text = stringResource(Res.string.label_save_in_folder),
                         style = MaterialTheme.typography.labelMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -88,7 +101,8 @@ internal fun SaveRequestDialog(
                         onClick = { folderDropdownExpanded = true },
                     ) {
                         Text(
-                            text = selectedFolderId?.let { folderPaths[it] } ?: "No folder (root)",
+                            text = selectedFolderId?.let { folderPaths[it] }
+                                ?: stringResource(Res.string.no_folder_root),
                             modifier = Modifier.weight(1f),
                             style = MaterialTheme.typography.bodyMedium,
                         )
@@ -106,7 +120,7 @@ internal fun SaveRequestDialog(
                         }
                     ) {
                         DropdownMenuItem(
-                            text = { Text("No folder (root)") },
+                            text = { Text(stringResource(Res.string.no_folder_root)) },
                             onClick = {
                                 selectedFolderId = null
                                 folderDropdownExpanded = false
@@ -131,7 +145,7 @@ internal fun SaveRequestDialog(
                         verticalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
                         Text(
-                            text = "New folder",
+                            text = stringResource(Res.string.label_new_folder),
                             style = MaterialTheme.typography.labelMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -139,7 +153,7 @@ internal fun SaveRequestDialog(
                         OutlinedTextField(
                             value = newFolderName,
                             onValueChange = { newFolderName = it },
-                            label = { Text("Folder name") },
+                            label = { Text(stringResource(Res.string.hint_folder_name)) },
                             singleLine = true,
                             modifier = Modifier.fillMaxWidth(),
                         )
@@ -151,7 +165,7 @@ internal fun SaveRequestDialog(
                         ) {
                             Text(
                                 text = newFolderParentId?.let { folderPaths[it] }
-                                    ?: "No parent (root)",
+                                    ?: stringResource(Res.string.no_parent_root),
                                 modifier = Modifier.weight(1f),
                                 style = MaterialTheme.typography.bodyMedium
                             )
@@ -166,7 +180,7 @@ internal fun SaveRequestDialog(
                             onDismissRequest = { newFolderParentDropdownExpanded = false }
                         ) {
                             DropdownMenuItem(
-                                text = { Text("No parent (root)") },
+                                text = { Text(stringResource(Res.string.no_parent_root)) },
                                 onClick = {
                                     newFolderParentId = null
                                     newFolderParentDropdownExpanded = false
@@ -192,7 +206,7 @@ internal fun SaveRequestDialog(
                                     newFolderName = ""
                                 },
                             ) {
-                                Text("Cancel")
+                                Text(stringResource(Res.string.cancel))
                             }
 
                             Spacer(Modifier.width(8.dp))
@@ -207,7 +221,7 @@ internal fun SaveRequestDialog(
                                     }
                                 },
                             ) {
-                                Text("Create")
+                                Text(stringResource(Res.string.create))
                             }
                         }
                     }
@@ -215,7 +229,7 @@ internal fun SaveRequestDialog(
                     TextButton(
                         onClick = { showNewFolderRow = true },
                     ) {
-                        Text("+ New folder")
+                        Text(stringResource(Res.string.action_new_folder))
                     }
                 }
 
@@ -225,7 +239,7 @@ internal fun SaveRequestDialog(
                     horizontalArrangement = Arrangement.End,
                 ) {
                     TextButton(onClick = onDismiss) {
-                        Text("Cancel")
+                        Text(stringResource(Res.string.cancel))
                     }
 
                     Spacer(Modifier.width(8.dp))
@@ -234,7 +248,7 @@ internal fun SaveRequestDialog(
                         onClick = { onSave(name, selectedFolderId) },
                         enabled = name.isNotBlank()
                     ) {
-                        Text("Save")
+                        Text(stringResource(Res.string.save))
                     }
                 }
             }

@@ -19,6 +19,13 @@ import dev.skymansandy.kurlclient.presentation.screens.playground.PlaygroundScre
 import dev.skymansandy.kurlclient.presentation.screens.playground.request.RequestPanel
 import dev.skymansandy.kurlclient.presentation.dialog.SaveRequestDialog
 import dev.skymansandy.kurlclient.presentation.screens.playground.response.ResponsePanel
+import kurlclient.feature_workspace.generated.resources.Res
+import kurlclient.feature_workspace.generated.resources.msg_changes_saved
+import kurlclient.feature_workspace.generated.resources.msg_copied_as_curl
+import kurlclient.feature_workspace.generated.resources.msg_request_saved
+import kurlclient.feature_workspace.generated.resources.tab_request
+import kurlclient.feature_workspace.generated.resources.tab_response
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -30,16 +37,20 @@ internal fun PlaygroundScreen(
     val state by vm.state.collectAsStateWithLifecycle()
     val clipboard = LocalClipboardManager.current
 
+    val msgRequestSaved = stringResource(Res.string.msg_request_saved)
+    val msgChangesSaved = stringResource(Res.string.msg_changes_saved)
+    val msgCopiedAsCurl = stringResource(Res.string.msg_copied_as_curl)
+
     LaunchedEffect(state.saveSuccess) {
         if (state.saveSuccess) {
-            onShowSnackbar("Request saved to collections")
+            onShowSnackbar(msgRequestSaved)
             vm.onEvent(PlaygroundEvent.ClearSaveSuccess)
         }
     }
 
     LaunchedEffect(state.overwriteSuccess) {
         if (state.overwriteSuccess) {
-            onShowSnackbar("Changes saved")
+            onShowSnackbar(msgChangesSaved)
             vm.onEvent(PlaygroundEvent.ClearOverwriteSuccess)
         }
     }
@@ -76,7 +87,7 @@ internal fun PlaygroundScreen(
 
     val onCopyCurl: () -> Unit = {
         clipboard.setText(AnnotatedString(vm.buildCurlCommand()))
-        onShowSnackbar("Copied as cURL")
+        onShowSnackbar(msgCopiedAsCurl)
     }
 
     Column(modifier = modifier) {
@@ -101,13 +112,13 @@ internal fun PlaygroundScreen(
             Tab(
                 selected = state.activeTab == 0,
                 onClick = { vm.onEvent(PlaygroundEvent.SelectTab(0)) },
-                text = { Text("Request") },
+                text = { Text(stringResource(Res.string.tab_request)) },
             )
 
             Tab(
                 selected = state.activeTab == 1,
                 onClick = { vm.onEvent(PlaygroundEvent.SelectTab(1)) },
-                text = { Text("Response") },
+                text = { Text(stringResource(Res.string.tab_response)) },
             )
         }
 

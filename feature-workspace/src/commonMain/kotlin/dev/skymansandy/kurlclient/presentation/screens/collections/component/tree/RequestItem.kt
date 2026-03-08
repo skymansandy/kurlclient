@@ -34,6 +34,13 @@ import androidx.compose.ui.unit.dp
 import dev.skymansandy.kurl.core.model.HttpMethod
 import dev.skymansandy.kurl.core.utils.formatRelativeTime
 import dev.skymansandy.kurlclient.presentation.screens.collections.CollectionsScreenContract.CollectionsState.TreeItem
+import kurlclient.feature_workspace.generated.resources.Res
+import kurlclient.feature_workspace.generated.resources.action_save_changes
+import kurlclient.feature_workspace.generated.resources.cd_request_options
+import kurlclient.feature_workspace.generated.resources.delete
+import kurlclient.feature_workspace.generated.resources.duplicate
+import kurlclient.feature_workspace.generated.resources.load
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun RequestItem(
@@ -122,7 +129,7 @@ internal fun RequestItem(
             ) {
                 Icon(
                     imageVector = Icons.Default.MoreVert,
-                    contentDescription = "Request options",
+                    contentDescription = stringResource(Res.string.cd_request_options),
                     modifier = Modifier.size(16.dp),
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -133,7 +140,7 @@ internal fun RequestItem(
                 onDismissRequest = { menuExpanded = false },
             ) {
                 DropdownMenuItem(
-                    text = { Text("Load") },
+                    text = { Text(stringResource(Res.string.load)) },
                     onClick = {
                         menuExpanded = false
                         onLoad()
@@ -142,7 +149,7 @@ internal fun RequestItem(
 
                 if (isActive) {
                     DropdownMenuItem(
-                        text = { Text("Save changes") },
+                        text = { Text(stringResource(Res.string.action_save_changes)) },
                         onClick = {
                             menuExpanded = false
                             onSaveChanges()
@@ -151,7 +158,7 @@ internal fun RequestItem(
                 }
 
                 DropdownMenuItem(
-                    text = { Text("Duplicate") },
+                    text = { Text(stringResource(Res.string.duplicate)) },
                     leadingIcon = {
                         Icon(
                             Icons.Default.ContentCopy,
@@ -168,7 +175,7 @@ internal fun RequestItem(
                 DropdownMenuItem(
                     text = {
                         Text(
-                            text = "Delete",
+                            text = stringResource(Res.string.delete),
                             color = MaterialTheme.colorScheme.error,
                         )
                     },

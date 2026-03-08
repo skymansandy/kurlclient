@@ -20,6 +20,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.unit.dp
+import kurlclient.feature_workspace.generated.resources.Res
+import kurlclient.feature_workspace.generated.resources.cd_clear_search
+import kurlclient.feature_workspace.generated.resources.hint_search_requests
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun CollectionsSearchBar(
@@ -60,7 +64,7 @@ internal fun CollectionsSearchBar(
                 ) {
                     if (query.isEmpty()) {
                         Text(
-                            "Search requests…",
+                            stringResource(Res.string.hint_search_requests),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
@@ -75,7 +79,7 @@ internal fun CollectionsSearchBar(
                     ) {
                         Icon(
                             imageVector = Icons.Default.Close,
-                            contentDescription = "Clear search",
+                            contentDescription = stringResource(Res.string.cd_clear_search),
                             modifier = Modifier.size(14.dp),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         )

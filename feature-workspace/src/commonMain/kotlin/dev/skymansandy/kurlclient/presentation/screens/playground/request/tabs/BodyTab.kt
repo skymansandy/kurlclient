@@ -13,6 +13,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
+import kurlclient.feature_workspace.generated.resources.Res
+import kurlclient.feature_workspace.generated.resources.placeholder_body
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun BodyTab(body: String, onBodyChange: (String) -> Unit) {
@@ -33,7 +36,7 @@ internal fun BodyTab(body: String, onBodyChange: (String) -> Unit) {
             ) {
                 if (body.isEmpty()) {
                     Text(
-                        text = "Request body (JSON, XML, raw...)",
+                        text = stringResource(Res.string.placeholder_body),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )

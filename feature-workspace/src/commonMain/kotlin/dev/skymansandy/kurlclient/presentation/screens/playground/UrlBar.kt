@@ -37,6 +37,14 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.unit.dp
 import dev.skymansandy.kurl.core.model.HttpMethod
 import dev.skymansandy.kurlclient.util.compose.methodColor
+import kurlclient.feature_workspace.generated.resources.Res
+import kurlclient.feature_workspace.generated.resources.action_copy_curl
+import kurlclient.feature_workspace.generated.resources.action_import_curl
+import kurlclient.feature_workspace.generated.resources.cd_more_actions
+import kurlclient.feature_workspace.generated.resources.cd_save_collection
+import kurlclient.feature_workspace.generated.resources.placeholder_url
+import kurlclient.feature_workspace.generated.resources.send
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun UrlBar(
@@ -101,7 +109,7 @@ internal fun UrlBar(
                 ) {
                     if (url.isEmpty()) {
                         Text(
-                            "https://...",
+                            stringResource(Res.string.placeholder_url),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -115,18 +123,18 @@ internal fun UrlBar(
         // ⋮ More menu: cURL import / export
         Box(modifier = Modifier.wrapContentSize(Alignment.TopStart)) {
             IconButton(onClick = { moreMenuExpanded = true }) {
-                Icon(Icons.Default.MoreVert, contentDescription = "More actions")
+                Icon(Icons.Default.MoreVert, contentDescription = stringResource(Res.string.cd_more_actions))
             }
             DropdownMenu(
                 expanded = moreMenuExpanded,
                 onDismissRequest = { moreMenuExpanded = false }
             ) {
                 DropdownMenuItem(
-                    text = { Text("Import from cURL") },
+                    text = { Text(stringResource(Res.string.action_import_curl)) },
                     onClick = { moreMenuExpanded = false; onImportCurl() }
                 )
                 DropdownMenuItem(
-                    text = { Text("Copy as cURL") },
+                    text = { Text(stringResource(Res.string.action_copy_curl)) },
                     onClick = { moreMenuExpanded = false; onCopyCurl() }
                 )
             }
@@ -138,7 +146,7 @@ internal fun UrlBar(
         ) {
             Icon(
                 imageVector = Icons.Default.FolderOpen,
-                contentDescription = "Save to collection",
+                contentDescription = stringResource(Res.string.cd_save_collection),
             )
         }
 
@@ -154,9 +162,8 @@ internal fun UrlBar(
                     color = MaterialTheme.colorScheme.onPrimary,
                 )
             } else {
-                Text("Send")
+                Text(stringResource(Res.string.send))
             }
         }
     }
 }
-

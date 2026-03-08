@@ -25,8 +25,15 @@ import dev.skymansandy.kurl.core.model.KeyValueEntry
 import dev.skymansandy.kurlclient.presentation.screens.playground.request.tabs.AuthTab
 import dev.skymansandy.kurlclient.presentation.screens.playground.request.tabs.BodyTab
 import dev.skymansandy.kurlclient.presentation.screens.playground.request.tabs.KeyValueEditorTab
-
-private val REQUEST_TABS = listOf("Params", "Headers", "Auth", "Body")
+import kurlclient.feature_workspace.generated.resources.Res
+import kurlclient.feature_workspace.generated.resources.placeholder_header_key
+import kurlclient.feature_workspace.generated.resources.placeholder_param_key
+import kurlclient.feature_workspace.generated.resources.placeholder_value
+import kurlclient.feature_workspace.generated.resources.tab_auth
+import kurlclient.feature_workspace.generated.resources.tab_body
+import kurlclient.feature_workspace.generated.resources.tab_headers
+import kurlclient.feature_workspace.generated.resources.tab_params
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun RequestPanel(
@@ -44,6 +51,12 @@ internal fun RequestPanel(
 ) {
     var selectedTab by remember { mutableIntStateOf(0) }
 
+    val tabParams = stringResource(Res.string.tab_params)
+    val tabHeaders = stringResource(Res.string.tab_headers)
+    val tabAuth = stringResource(Res.string.tab_auth)
+    val tabBody = stringResource(Res.string.tab_body)
+    val requestTabs = listOf(tabParams, tabHeaders, tabAuth, tabBody)
+
     Column(modifier = modifier) {
         ScrollableTabRow(
             selectedTabIndex = selectedTab,
@@ -52,7 +65,7 @@ internal fun RequestPanel(
             val activeParamCount = params.count { it.key.isNotBlank() }
             val activeHeaderCount = headers.count { it.key.isNotBlank() }
             val hasBody = body.isNotBlank()
-            REQUEST_TABS.forEachIndexed { index, title ->
+            requestTabs.forEachIndexed { index, title ->
                 Tab(
                     selected = selectedTab == index,
                     onClick = { selectedTab = index },
@@ -78,8 +91,8 @@ internal fun RequestPanel(
                     onUpdate = onParamUpdate,
                     onAdd = onParamAdd,
                     onRemove = onParamRemove,
-                    keyPlaceholder = "param",
-                    valuePlaceholder = "value",
+                    keyPlaceholder = stringResource(Res.string.placeholder_param_key),
+                    valuePlaceholder = stringResource(Res.string.placeholder_value),
                 )
 
                 1 -> KeyValueEditorTab(
@@ -87,8 +100,8 @@ internal fun RequestPanel(
                     onUpdate = onHeaderUpdate,
                     onAdd = onHeaderAdd,
                     onRemove = onHeaderRemove,
-                    keyPlaceholder = "Header",
-                    valuePlaceholder = "value",
+                    keyPlaceholder = stringResource(Res.string.placeholder_header_key),
+                    valuePlaceholder = stringResource(Res.string.placeholder_value),
                 )
 
                 2 -> AuthTab()

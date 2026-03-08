@@ -1,6 +1,6 @@
 package dev.skymansandy.kurlclient.presentation.screens.workspace.model
 
-internal enum class WorkspaceTab(val label: String) {
-    Workspace("Workspace"),
-    Collections("Collections"),
+internal enum class WorkspaceTab {
+    Workspace,
+    Collections,
 }

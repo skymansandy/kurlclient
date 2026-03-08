@@ -28,9 +28,14 @@ import dev.skymansandy.kurlclient.presentation.screens.playground.PlaygroundScre
 import dev.skymansandy.kurlclient.presentation.screens.playground.response.tabs.NetworkInfoTab
 import dev.skymansandy.kurlclient.presentation.screens.playground.response.tabs.ResponseBodyTab
 import dev.skymansandy.kurlclient.presentation.screens.playground.response.tabs.ResponseHeadersTab
+import kurlclient.feature_workspace.generated.resources.Res
+import kurlclient.feature_workspace.generated.resources.msg_error_prefix
+import kurlclient.feature_workspace.generated.resources.msg_send_request_hint
+import kurlclient.feature_workspace.generated.resources.tab_body
+import kurlclient.feature_workspace.generated.resources.tab_headers
+import kurlclient.feature_workspace.generated.resources.tab_network
+import org.jetbrains.compose.resources.stringResource
 import kotlin.math.roundToInt
-
-private val RESPONSE_TABS = listOf("Body", "Headers", "Network")
 
 @Composable
 internal fun ResponsePanel(
@@ -39,6 +44,11 @@ internal fun ResponsePanel(
     modifier: Modifier = Modifier
 ) {
     var selectedTab by remember { mutableIntStateOf(0) }
+
+    val tabBody = stringResource(Res.string.tab_body)
+    val tabHeaders = stringResource(Res.string.tab_headers)
+    val tabNetwork = stringResource(Res.string.tab_network)
+    val responseTabs = listOf(tabBody, tabHeaders, tabNetwork)
 
     Column(
         modifier = modifier,
@@ -55,7 +65,7 @@ internal fun ResponsePanel(
             val headerCount = response?.headers?.size ?: 0
             val hasBody = response?.body?.isNotBlank() == true
             val hasNetwork = response?.networkInfo != null
-            RESPONSE_TABS.forEachIndexed { index, title ->
+            responseTabs.forEachIndexed { index, title ->
                 Tab(
                     selected = selectedTab == index,
                     onClick = { selectedTab = index },
@@ -114,7 +124,7 @@ private fun ResponseStatusBar(
     ) {
         when {
             error != null -> Text(
-                text = "Error: $error",
+                text = stringResource(Res.string.msg_error_prefix, error),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.error
             )
@@ -142,7 +152,7 @@ private fun ResponseStatusBar(
             }
 
             else -> Text(
-                text = "Send a request to see the response",
+                text = stringResource(Res.string.msg_send_request_hint),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )

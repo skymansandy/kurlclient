@@ -35,6 +35,13 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import dev.skymansandy.kurlclient.presentation.screens.collections.CollectionsScreenContract.CollectionsState.TreeItem
+import kurlclient.feature_workspace.generated.resources.Res
+import kurlclient.feature_workspace.generated.resources.action_new_subfolder
+import kurlclient.feature_workspace.generated.resources.cd_collapse
+import kurlclient.feature_workspace.generated.resources.cd_expand
+import kurlclient.feature_workspace.generated.resources.cd_folder_options
+import kurlclient.feature_workspace.generated.resources.delete
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun FolderItem(
@@ -79,7 +86,8 @@ internal fun FolderItem(
     ) {
         Icon(
             imageVector = if (item.isExpanded) Icons.Default.ArrowDropDown else Icons.Default.ArrowRight,
-            contentDescription = if (item.isExpanded) "Collapse" else "Expand",
+            contentDescription = if (item.isExpanded) stringResource(Res.string.cd_collapse)
+            else stringResource(Res.string.cd_expand),
             modifier = Modifier.size(18.dp),
             tint = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -106,7 +114,7 @@ internal fun FolderItem(
             ) {
                 Icon(
                     imageVector = Icons.Default.MoreVert,
-                    contentDescription = "Folder options",
+                    contentDescription = stringResource(Res.string.cd_folder_options),
                     modifier = Modifier.size(16.dp),
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -116,7 +124,7 @@ internal fun FolderItem(
                 onDismissRequest = { menuExpanded = false },
             ) {
                 DropdownMenuItem(
-                    text = { Text("New subfolder") },
+                    text = { Text(stringResource(Res.string.action_new_subfolder)) },
                     onClick = { menuExpanded = false; onNewSubfolder() },
                     leadingIcon = {
                         Icon(
@@ -130,7 +138,7 @@ internal fun FolderItem(
                 DropdownMenuItem(
                     text = {
                         Text(
-                            text = "Delete",
+                            text = stringResource(Res.string.delete),
                             color = MaterialTheme.colorScheme.error,
                         )
                     },

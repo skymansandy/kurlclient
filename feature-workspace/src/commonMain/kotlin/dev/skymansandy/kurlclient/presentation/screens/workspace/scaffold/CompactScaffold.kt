@@ -17,6 +17,10 @@ import dev.skymansandy.kurlclient.presentation.screens.collections.CollectionsSc
 import dev.skymansandy.kurlclient.presentation.screens.playground.PlaygroundScreen
 import dev.skymansandy.kurlclient.presentation.screens.workspace.model.WorkspaceTab
 import dev.skymansandy.kurlstore.db.SavedRequest
+import kurlclient.feature_workspace.generated.resources.Res
+import kurlclient.feature_workspace.generated.resources.tab_collections
+import kurlclient.feature_workspace.generated.resources.tab_workspace
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun CompactScaffold(
@@ -74,7 +78,16 @@ private fun KurlNavigationBar(
                         showBadge = dest == WorkspaceTab.Workspace && hasUnsavedChanges
                     )
                 },
-                label = { Text(dest.label) }
+                label = {
+                    Text(
+                        stringResource(
+                            when (dest) {
+                                WorkspaceTab.Workspace -> Res.string.tab_workspace
+                                WorkspaceTab.Collections -> Res.string.tab_collections
+                            }
+                        )
+                    )
+                }
             )
         }
     }

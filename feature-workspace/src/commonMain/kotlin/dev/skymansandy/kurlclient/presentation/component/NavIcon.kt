@@ -11,6 +11,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import dev.skymansandy.kurlclient.presentation.screens.workspace.model.WorkspaceTab
+import kurlclient.feature_workspace.generated.resources.Res
+import kurlclient.feature_workspace.generated.resources.tab_collections
+import kurlclient.feature_workspace.generated.resources.tab_workspace
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun NavIcon(
@@ -25,7 +29,10 @@ internal fun NavIcon(
         }
     ) {
         Icon(
-            contentDescription = dest.label,
+            contentDescription = when(dest) {
+                WorkspaceTab.Workspace -> stringResource(Res.string.tab_workspace)
+                WorkspaceTab.Collections -> stringResource(Res.string.tab_collections)
+            },
             imageVector = when (dest) {
                 WorkspaceTab.Workspace -> Icons.Default.Dashboard
                 WorkspaceTab.Collections -> Icons.AutoMirrored.Filled.List

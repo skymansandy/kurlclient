@@ -39,6 +39,12 @@ import dev.skymansandy.kurlclient.presentation.screens.collections.component.tre
 import dev.skymansandy.kurlclient.presentation.dialog.NewFolderDialog
 import dev.skymansandy.kurlclient.presentation.screens.collections.component.tree.RequestItem
 import dev.skymansandy.kurlstore.db.SavedRequest
+import kurlclient.feature_workspace.generated.resources.Res
+import kurlclient.feature_workspace.generated.resources.cd_new_folder
+import kurlclient.feature_workspace.generated.resources.msg_no_results
+import kurlclient.feature_workspace.generated.resources.msg_no_saved_requests
+import kurlclient.feature_workspace.generated.resources.title_collections
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -72,7 +78,7 @@ internal fun CollectionsScreen(
         TopAppBar(
             title = {
                 Text(
-                    text = "Collections",
+                    text = stringResource(Res.string.title_collections),
                     style = MaterialTheme.typography.titleMedium,
                 )
             },
@@ -83,7 +89,7 @@ internal fun CollectionsScreen(
                         showNewFolderDialog = true
                     },
                 ) {
-                    Icon(Icons.Default.Add, contentDescription = "New folder")
+                    Icon(Icons.Default.Add, contentDescription = stringResource(Res.string.cd_new_folder))
                 }
             }
         )
@@ -104,7 +110,8 @@ internal fun CollectionsScreen(
                 contentAlignment = Alignment.Center,
             ) {
                 Text(
-                    text = if (isSearching) "No results for \"${state.searchQuery}\"" else "No saved requests",
+                    text = if (isSearching) stringResource(Res.string.msg_no_results, state.searchQuery)
+                    else stringResource(Res.string.msg_no_saved_requests),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
