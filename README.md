@@ -6,11 +6,17 @@ A cross-platform HTTP client built with **Kotlin Multiplatform** and **Compose M
 
 ## Samples
 
-| Android | iOS | Desktop |
-|:---:|:---:|:---:|
-| ![Android](docs/sample/android.gif) | ![iOS](docs/sample/ios.gif) | ![Desktop](docs/sample/desktop.gif) |
+| Android |
+|:---:|
+| ![Android](docs/sample/android.gif) |
 
----
+| iOS |
+|:---:|
+| ![iOS](docs/sample/ios.gif) |
+
+| Desktop |
+|:---:|
+| ![Desktop](docs/sample/desktop.gif) |
 
 ## Features
 
