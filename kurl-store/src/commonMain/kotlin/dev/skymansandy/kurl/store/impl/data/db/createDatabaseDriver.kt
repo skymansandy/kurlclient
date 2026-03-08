@@ -1,4 +1,4 @@
-package dev.skymansandy.kurl.store
+package dev.skymansandy.kurl.store.impl.data.db
 
 import app.cash.sqldelight.db.SqlDriver
 

@@ -9,7 +9,7 @@ import dev.skymansandy.kurlclient.presentation.screens.workspace.util.curlparser
 import dev.skymansandy.kurl.core.utils.deserializeKeyValueEntries
 import dev.skymansandy.kurlclient.presentation.screens.workspace.util.curlparser.parseCurlCommand
 import dev.skymansandy.kurl.core.utils.serialize
-import dev.skymansandy.kurl.store.CollectionStore
+import dev.skymansandy.kurl.store.api.KurlStore
 import dev.skymansandy.kurlclient.presentation.base.MviViewModel
 import dev.skymansandy.kurlstore.db.SavedRequest
 import kotlinx.coroutines.flow.combine
@@ -19,7 +19,7 @@ import org.koin.android.annotation.KoinViewModel
 @KoinViewModel
 internal class PlaygroundScreenModel(
     private val engine: KurlEngine,
-    private val store: CollectionStore,
+    private val store: KurlStore,
 ) : MviViewModel<PlaygroundState, PlaygroundEvent, PlaygroundEffect>() {
 
     private var nextId = 1L

@@ -1,7 +1,7 @@
 package dev.skymansandy.kurlclient.presentation.screens.workspace.presentation.screens.collections
 
 import androidx.lifecycle.viewModelScope
-import dev.skymansandy.kurl.store.CollectionStore
+import dev.skymansandy.kurl.store.api.KurlStore
 import dev.skymansandy.kurlclient.presentation.base.MviViewModel
 import dev.skymansandy.kurlclient.presentation.screens.workspace.presentation.screens.collections.CollectionsState.TreeItem
 import kotlinx.coroutines.flow.combine
@@ -9,7 +9,7 @@ import kotlinx.coroutines.launch
 import org.koin.android.annotation.KoinViewModel
 
 @KoinViewModel
-internal class CollectionsViewModel(private val store: CollectionStore) :
+internal class CollectionsViewModel(private val store: KurlStore) :
     MviViewModel<CollectionsState, CollectionsEvent, CollectionsEffect>() {
 
     override fun createInitialState() = CollectionsState()

@@ -1,4 +1,4 @@
-package dev.skymansandy.kurl.store
+package dev.skymansandy.kurl.store.impl.data.db
 
 import android.content.Context
 import androidx.sqlite.db.SupportSQLiteDatabase

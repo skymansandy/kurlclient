@@ -1,10 +1,11 @@
-package dev.skymansandy.kurl.store
+package dev.skymansandy.kurl.store.api
 
 import dev.skymansandy.kurlstore.db.CollectionFolder
 import dev.skymansandy.kurlstore.db.SavedRequest
 import kotlinx.coroutines.flow.StateFlow
 
-interface CollectionStore {
+interface KurlStore {
+
     val folders: StateFlow<List<CollectionFolder>>
     val requests: StateFlow<List<SavedRequest>>
     val folderPaths: StateFlow<Map<Long, String>>
