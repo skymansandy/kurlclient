@@ -1,4 +1,4 @@
-package dev.skymansandy.kurl.core
+package dev.skymansandy.kurl.core.engine.network
 
 import dev.skymansandy.kurl.core.model.NetworkInfo
 

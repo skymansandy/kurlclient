@@ -1,4 +1,4 @@
-package dev.skymansandy.kurl.core
+package dev.skymansandy.kurl.core.engine.network
 
 import java.net.Socket
 import java.security.KeyStore
@@ -6,6 +6,7 @@ import java.security.cert.X509Certificate
 import java.util.concurrent.atomic.AtomicReference
 import javax.net.ssl.SSLContext
 import javax.net.ssl.SSLEngine
+import javax.net.ssl.SSLSocket
 import javax.net.ssl.TrustManagerFactory
 import javax.net.ssl.X509ExtendedTrustManager
 import javax.net.ssl.X509TrustManager
@@ -47,7 +48,7 @@ private class CapturingTrustManager(
     // Called by legacy socket-based HTTPS (Android engine, OkHttp, etc.)
     override fun checkServerTrusted(chain: Array<out X509Certificate>, authType: String, socket: Socket) {
         delegate.checkServerTrusted(chain, authType)
-        if (socket is javax.net.ssl.SSLSocket) {
+        if (socket is SSLSocket) {
             val session = socket.session
             lastSslCapture.set(
                 SslCapture(

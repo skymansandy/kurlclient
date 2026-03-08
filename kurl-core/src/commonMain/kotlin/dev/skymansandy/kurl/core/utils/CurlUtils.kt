@@ -2,16 +2,7 @@ package dev.skymansandy.kurl.core.utils
 
 import dev.skymansandy.kurl.core.model.HttpMethod
 import dev.skymansandy.kurl.core.model.KeyValueEntry
-
-data class ParsedCurlRequest(
-    val url: String,
-    val method: String,
-    val headers: List<Pair<String, String>>,
-    val params: List<Pair<String, String>>,
-    val body: String?
-)
-
-// ── Export ────────────────────────────────────────────────────────────────────
+import dev.skymansandy.kurl.core.model.ParsedCurlRequest
 
 fun buildCurlCommand(
     url: String,
@@ -46,8 +37,6 @@ fun buildCurlCommand(
     }
 }
 
-// ── Import ────────────────────────────────────────────────────────────────────
-
 fun parseCurlCommand(raw: String): ParsedCurlRequest? {
     // Normalise: strip line continuation, collapse whitespace
     val command = raw.trim()
@@ -69,6 +58,7 @@ fun parseCurlCommand(raw: String): ParsedCurlRequest? {
                 method = tokens.getOrNull(++i)
                 i++
             }
+
             "-H", "--header" -> {
                 tokens.getOrNull(++i)?.let { hdr ->
                     val colon = hdr.indexOf(':')
@@ -78,15 +68,18 @@ fun parseCurlCommand(raw: String): ParsedCurlRequest? {
                 }
                 i++
             }
+
             "-d", "--data", "--data-raw", "--data-binary" -> {
                 body = tokens.getOrNull(++i)
                 i++
             }
+
             "--data-urlencode" -> {
                 // treat as body for simplicity
                 body = tokens.getOrNull(++i)
                 i++
             }
+
             "--url" -> {
                 url = tokens.getOrNull(++i)
                 i++
@@ -103,6 +96,7 @@ fun parseCurlCommand(raw: String): ParsedCurlRequest? {
             "-G", "--get" -> {
                 i++
             }
+
             else -> {
                 val t = tokens[i]
                 // Positional URL (not a flag, and no URL captured yet)
@@ -151,13 +145,18 @@ private fun tokenize(s: String): List<String> {
     while (i < s.length) {
         when (val c = s[i]) {
             ' ', '\t' -> {
-                if (buf.isNotEmpty()) { tokens += buf.toString(); buf.clear() }
+                if (buf.isNotEmpty()) {
+                    tokens += buf.toString(); buf.clear()
+                }
                 i++
             }
+
             '\'' -> {
                 // Single-quoted: literal content, handle bash '\'' idiom
                 i++
-                while (i < s.length && s[i] != '\'') { buf.append(s[i++]) }
+                while (i < s.length && s[i] != '\'') {
+                    buf.append(s[i++])
+                }
                 i++ // skip closing '
                 // Handle '\'' (end quote, escaped single quote, reopen quote)
                 if (i < s.length && s[i] == '\\' && i + 2 < s.length && s[i + 1] == '\'' && s[i + 2] == '\'') {
@@ -165,14 +164,17 @@ private fun tokenize(s: String): List<String> {
                     i += 3
                 }
             }
+
             '"' -> {
                 i++
                 while (i < s.length && s[i] != '"') {
                     if (s[i] == '\\' && i + 1 < s.length) {
                         i++
-                        buf.append(when (s[i]) {
-                            'n' -> '\n'; 't' -> '\t'; 'r' -> '\r'; else -> s[i]
-                        })
+                        buf.append(
+                            when (s[i]) {
+                                'n' -> '\n'; 't' -> '\t'; 'r' -> '\r'; else -> s[i]
+                            }
+                        )
                     } else {
                         buf.append(s[i])
                     }
@@ -180,41 +182,19 @@ private fun tokenize(s: String): List<String> {
                 }
                 i++ // skip closing "
             }
+
             '\\' -> {
-                if (i + 1 < s.length) { i++; buf.append(s[i]) }
+                if (i + 1 < s.length) {
+                    i++; buf.append(s[i])
+                }
                 i++
             }
-            else -> { buf.append(c); i++ }
+
+            else -> {
+                buf.append(c); i++
+            }
         }
     }
     if (buf.isNotEmpty()) tokens += buf.toString()
     return tokens
-}
-
-// ── Helpers ───────────────────────────────────────────────────────────────────
-
-private fun String.escapeSingleQuotes(): String = replace("'", "'\\''")
-
-private fun String.urlEncode(): String = buildString {
-    this@urlEncode.forEach { c ->
-        when {
-            c.isLetterOrDigit() || c in "-._~" -> append(c)
-            else -> append('%').append(c.code.toString(16).padStart(2, '0').uppercase())
-        }
-    }
-}
-
-private fun String.urlDecode(): String = buildString {
-    var i = 0
-    while (i < this@urlDecode.length) {
-        if (this@urlDecode[i] == '%' && i + 2 < this@urlDecode.length) {
-            val hex = this@urlDecode.substring(i + 1, i + 3)
-            hex.toIntOrNull(16)?.let { append(it.toChar()) } ?: append('%')
-            i += 3
-        } else if (this@urlDecode[i] == '+') {
-            append(' '); i++
-        } else {
-            append(this@urlDecode[i++])
-        }
-    }
 }

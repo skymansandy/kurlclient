@@ -5,7 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import dev.skymansandy.kurl.core.KurlEngine
+import dev.skymansandy.kurl.core.engine.KurlEngine
 import dev.skymansandy.kurl.core.model.HttpMethod
 import dev.skymansandy.kurl.core.model.KeyValueEntry
 import dev.skymansandy.kurl.core.model.KurlRequest
