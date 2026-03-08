@@ -33,6 +33,7 @@ import dev.skymansandy.kurlstore.db.CollectionFolder
 @Composable
 fun SaveRequestDialog(
     initialName: String,
+    initialFolderId: Long? = null,
     folders: List<CollectionFolder>,
     folderPaths: Map<Long, String>,
     onSave: (name: String, folderId: Long?) -> Unit,
@@ -40,7 +41,7 @@ fun SaveRequestDialog(
     onDismiss: () -> Unit
 ) {
     var name by remember { mutableStateOf(initialName) }
-    var selectedFolderId by remember { mutableStateOf<Long?>(null) }
+    var selectedFolderId by remember { mutableStateOf<Long?>(initialFolderId) }
     var folderDropdownExpanded by remember { mutableStateOf(false) }
 
     var showNewFolderRow by remember { mutableStateOf(false) }

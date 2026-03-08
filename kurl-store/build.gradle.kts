@@ -104,6 +104,7 @@ sqldelight {
     databases {
         create("KurlDatabase") {
             packageName.set("dev.skymansandy.kurlstore.db")
+            schemaOutputDirectory.set(file("src/commonMain/sqldelight/databases"))
         }
     }
 }

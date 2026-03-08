@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -23,6 +22,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ArrowRight
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.FolderOpen
@@ -36,7 +36,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -69,7 +68,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.skymansandy.kurl.core.model.HttpMethod
 import dev.skymansandy.kurl.core.utils.formatRelativeTime
 import dev.skymansandy.kurlclient.presentation.screens.workspace.presentation.screens.collections.CollectionsState.TreeItem
-import dev.skymansandy.kurlstore.db.CollectionFolder
 import dev.skymansandy.kurlstore.db.SavedRequest
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -202,6 +200,7 @@ fun CollectionsScreen(
                                 highlightQuery = state.searchQuery,
                                 onLoad = { onRequestSelected(item.request) },
                                 onSaveChanges = onSaveChanges,
+                                onDuplicate = { vm.onEvent(CollectionsEvent.DuplicateRequest(item.request.id)) },
                                 onDelete = { vm.onEvent(CollectionsEvent.DeleteRequest(item.request.id)) }
                             )
                         }
@@ -213,8 +212,6 @@ fun CollectionsScreen(
 
     if (showNewFolderDialog) {
         NewFolderDialog(
-            allFolders = state.allFolders,
-            folderPaths = state.folderPaths,
             fixedParentId = newFolderParentId,
             onDismiss = { showNewFolderDialog = false },
             onCreate = { name, parentId ->
@@ -424,6 +421,7 @@ private fun RequestTreeRow(
     highlightQuery: String = "",
     onLoad: () -> Unit,
     onSaveChanges: () -> Unit,
+    onDuplicate: () -> Unit,
     onDelete: () -> Unit
 ) {
     var menuExpanded by remember { mutableStateOf(false) }
@@ -506,6 +504,17 @@ private fun RequestTreeRow(
                     )
                 }
                 DropdownMenuItem(
+                    text = { Text("Duplicate") },
+                    leadingIcon = {
+                        Icon(
+                            Icons.Default.ContentCopy,
+                            contentDescription = null,
+                            modifier = Modifier.size(16.dp)
+                        )
+                    },
+                    onClick = { menuExpanded = false; onDuplicate() }
+                )
+                DropdownMenuItem(
                     text = { Text("Delete", color = MaterialTheme.colorScheme.error) },
                     leadingIcon = {
                         Icon(
@@ -526,15 +535,12 @@ private fun RequestTreeRow(
 
 @Composable
 private fun NewFolderDialog(
-    allFolders: List<CollectionFolder>,
-    folderPaths: Map<Long, String>,
     fixedParentId: Long?,
     onDismiss: () -> Unit,
     onCreate: (name: String, parentId: Long?) -> Unit
 ) {
     var name by remember { mutableStateOf("") }
     var parentId by remember { mutableStateOf<Long?>(fixedParentId) }
-    var dropdownExpanded by remember { mutableStateOf(false) }
 
     Dialog(onDismissRequest = onDismiss) {
         Surface(shape = MaterialTheme.shapes.large, tonalElevation = 6.dp) {
@@ -551,43 +557,6 @@ private fun NewFolderDialog(
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
                 )
-
-                if (fixedParentId == null) {
-                    Column {
-                        Text(
-                            "Parent folder",
-                            style = MaterialTheme.typography.labelMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                        Spacer(Modifier.height(4.dp))
-                        OutlinedButton(
-                            onClick = { dropdownExpanded = true },
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            Text(
-                                text = parentId?.let { folderPaths[it] } ?: "No parent (root)",
-                                modifier = Modifier.weight(1f),
-                                style = MaterialTheme.typography.bodyMedium
-                            )
-                            Icon(Icons.Default.ArrowDropDown, contentDescription = null)
-                        }
-                        DropdownMenu(
-                            expanded = dropdownExpanded,
-                            onDismissRequest = { dropdownExpanded = false }
-                        ) {
-                            DropdownMenuItem(
-                                text = { Text("No parent (root)") },
-                                onClick = { parentId = null; dropdownExpanded = false }
-                            )
-                            allFolders.forEach { folder ->
-                                DropdownMenuItem(
-                                    text = { Text(folderPaths[folder.id] ?: folder.name) },
-                                    onClick = { parentId = folder.id; dropdownExpanded = false }
-                                )
-                            }
-                        }
-                    }
-                }
 
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
                     TextButton(onClick = onDismiss) { Text("Cancel") }

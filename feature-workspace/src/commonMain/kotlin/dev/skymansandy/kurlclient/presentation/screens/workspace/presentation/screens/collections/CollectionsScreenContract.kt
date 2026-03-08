@@ -37,6 +37,7 @@ sealed interface CollectionsEvent : UiEvent {
     data class MoveRequest(val id: Long, val newFolderId: Long?) : CollectionsEvent
     data class DeleteFolder(val id: Long) : CollectionsEvent
     data class DeleteRequest(val id: Long) : CollectionsEvent
+    data class DuplicateRequest(val id: Long) : CollectionsEvent
 }
 
 sealed interface CollectionsEffect : UiEffect

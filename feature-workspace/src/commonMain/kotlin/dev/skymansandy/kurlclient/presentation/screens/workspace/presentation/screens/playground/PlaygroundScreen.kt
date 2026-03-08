@@ -54,8 +54,10 @@ fun PlaygroundScreen(
     }
 
     if (state.showSaveDialog) {
+        val loaded = state.loadedRequest
         SaveRequestDialog(
-            initialName = if (state.url.isNotBlank()) state.url.substringAfterLast("/").take(40) else "Untitled",
+            initialName = loaded?.name ?: if (state.url.isNotBlank()) state.url.substringAfterLast("/").take(40) else "Untitled",
+            initialFolderId = loaded?.folder_id,
             folders = state.allFolders,
             folderPaths = state.folderPaths,
             onSave = { name, folderId ->

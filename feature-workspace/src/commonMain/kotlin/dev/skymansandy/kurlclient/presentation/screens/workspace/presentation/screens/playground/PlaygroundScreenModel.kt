@@ -165,17 +165,32 @@ internal class PlaygroundScreenModel(
 
     private fun saveRequest(name: String, folderId: Long?) {
         val s = state.value
+        val loaded = s.loadedRequest
         viewModelScope.launch {
-            store.saveRequest(
-                name = name,
-                folderId = folderId,
-                url = s.url,
-                method = s.method.name,
-                headers = s.headers.serialize(),
-                params = s.params.serialize(),
-                body = s.body
-            )
-            setState { copy(hasUnsavedChanges = false, saveSuccess = true) }
+            if (loaded != null) {
+                store.updateRequest(
+                    id = loaded.id,
+                    name = name,
+                    folderId = folderId,
+                    url = s.url,
+                    method = s.method.name,
+                    headers = s.headers.serialize(),
+                    params = s.params.serialize(),
+                    body = s.body
+                )
+                setState { copy(loadedRequest = loaded.copy(name = name, folder_id = folderId), hasUnsavedChanges = false, overwriteSuccess = true) }
+            } else {
+                store.saveRequest(
+                    name = name,
+                    folderId = folderId,
+                    url = s.url,
+                    method = s.method.name,
+                    headers = s.headers.serialize(),
+                    params = s.params.serialize(),
+                    body = s.body
+                )
+                setState { copy(hasUnsavedChanges = false, saveSuccess = true) }
+            }
         }
     }
 

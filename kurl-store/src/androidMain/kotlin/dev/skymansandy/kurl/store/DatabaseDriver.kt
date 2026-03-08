@@ -1,6 +1,7 @@
 package dev.skymansandy.kurl.store
 
 import android.content.Context
+import androidx.sqlite.db.SupportSQLiteDatabase
 import app.cash.sqldelight.db.SqlDriver
 import app.cash.sqldelight.driver.android.AndroidSqliteDriver
 import dev.skymansandy.kurlstore.db.KurlDatabase
@@ -12,4 +13,13 @@ fun initAndroidContext(context: Context) {
 }
 
 actual fun createDatabaseDriver(): SqlDriver =
-    AndroidSqliteDriver(KurlDatabase.Companion.Schema, appContext, "kurl.db")
+    AndroidSqliteDriver(
+        schema = KurlDatabase.Companion.Schema,
+        context = appContext,
+        name = "kurl.db",
+        callback = object : AndroidSqliteDriver.Callback(KurlDatabase.Companion.Schema) {
+            override fun onOpen(db: SupportSQLiteDatabase) {
+                db.execSQL("PRAGMA foreign_keys = ON")
+            }
+        }
+    )

@@ -33,6 +33,7 @@ internal class CollectionsViewModel(private val store: CollectionStore) :
             is CollectionsEvent.MoveRequest -> moveRequest(event.id, event.newFolderId)
             is CollectionsEvent.DeleteFolder -> deleteFolder(event.id)
             is CollectionsEvent.DeleteRequest -> deleteRequest(event.id)
+            is CollectionsEvent.DuplicateRequest -> duplicateRequest(event.id)
         }
     }
 
@@ -144,5 +145,20 @@ internal class CollectionsViewModel(private val store: CollectionStore) :
 
     private fun deleteRequest(id: Long) {
         viewModelScope.launch { store.deleteRequest(id) }
+    }
+
+    private fun duplicateRequest(id: Long) {
+        val request = state.value.allRequests.find { it.id == id } ?: return
+        viewModelScope.launch {
+            store.saveRequest(
+                name = "Copy of ${request.name}",
+                folderId = request.folder_id,
+                url = request.url,
+                method = request.method,
+                headers = request.headers,
+                params = request.params,
+                body = request.body
+            )
+        }
     }
 }

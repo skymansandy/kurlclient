@@ -1,14 +1,14 @@
 CREATE TABLE IF NOT EXISTS CollectionFolder (
     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
-    parent_id INTEGER,
+    parent_id INTEGER REFERENCES CollectionFolder(id) ON DELETE CASCADE,
     created_at INTEGER NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS SavedRequest (
     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
-    folder_id INTEGER,
+    folder_id INTEGER REFERENCES CollectionFolder(id) ON DELETE CASCADE,
     url TEXT NOT NULL,
     method TEXT NOT NULL,
     headers TEXT NOT NULL,
@@ -66,3 +66,8 @@ WHERE id = :id;
 
 deleteRequest:
 DELETE FROM SavedRequest WHERE id = :id;
+
+duplicateRequest:
+INSERT INTO SavedRequest (name, folder_id, url, method, headers, params, body, created_at)
+SELECT name || ' (copy)', folder_id, url, method, headers, params, body, :created_at
+FROM SavedRequest WHERE id = :id;
