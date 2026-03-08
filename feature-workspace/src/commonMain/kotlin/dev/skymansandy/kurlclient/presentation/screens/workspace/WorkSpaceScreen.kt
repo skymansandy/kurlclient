@@ -12,8 +12,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.skymansandy.kurlclient.presentation.adaptive.WindowWidthClass
 import dev.skymansandy.kurlclient.presentation.adaptive.toWindowWidthClass
 import dev.skymansandy.kurlclient.presentation.dialog.DiscardWorkspaceAlertDialog
-import dev.skymansandy.kurlclient.presentation.screens.playground.PlaygroundEvent
+import dev.skymansandy.kurlclient.presentation.screens.playground.PlaygroundScreenContract.PlaygroundEvent
 import dev.skymansandy.kurlclient.presentation.screens.playground.PlaygroundScreenModel
+import dev.skymansandy.kurlclient.presentation.screens.workspace.WorkspaceScreenContract.WorkspaceEvent
 import dev.skymansandy.kurlclient.presentation.screens.workspace.scaffold.CompactScaffold
 import dev.skymansandy.kurlclient.presentation.screens.workspace.scaffold.ExpandedScaffold
 import kotlinx.coroutines.launch

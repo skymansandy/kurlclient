@@ -1,0 +1,7 @@
+<resources>
+    <string name="title_discard_changes">Discard changes?</string>
+    <string name="msg_discard_changes">You have unsaved changes. Opening another request will discard them.</string>
+    <string name="discard">Discard</string>
+    <string name="confirm">Confirm</string>
+    <string name="cancel">Cancel</string>
+</resources>

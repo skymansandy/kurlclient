@@ -11,7 +11,7 @@ fun App() {
     KurlTheme {
 
         // For now only 1 screen
-        // TODO setup jetbrains navigation3
+        // TODO setup KMP navigation3
         WorkSpaceScreen(
             modifier = Modifier.fillMaxSize(),
         )

@@ -24,16 +24,12 @@ internal fun NavIcon(
             }
         }
     ) {
-        when (dest) {
-            WorkspaceTab.Workspace -> Icon(
-                Icons.Default.Dashboard,
-                contentDescription = dest.label
-            )
-
-            WorkspaceTab.Collections -> Icon(
-                Icons.AutoMirrored.Filled.List,
-                contentDescription = dest.label
-            )
-        }
+        Icon(
+            contentDescription = dest.label,
+            imageVector = when (dest) {
+                WorkspaceTab.Workspace -> Icons.Default.Dashboard
+                WorkspaceTab.Collections -> Icons.AutoMirrored.Filled.List
+            }
+        )
     }
 }

@@ -25,7 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 
 @Composable
-fun ImportCurlDialog(
+internal fun ImportCurlDialog(
     onImport: (String) -> Boolean,   // returns false if parse failed
     onDismiss: () -> Unit
 ) {

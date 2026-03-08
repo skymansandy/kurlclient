@@ -31,7 +31,7 @@ import androidx.compose.ui.window.Dialog
 import dev.skymansandy.kurlstore.db.CollectionFolder
 
 @Composable
-fun SaveRequestDialog(
+internal fun SaveRequestDialog(
     initialName: String,
     initialFolderId: Long? = null,
     folders: List<CollectionFolder>,
@@ -41,7 +41,7 @@ fun SaveRequestDialog(
     onDismiss: () -> Unit
 ) {
     var name by remember { mutableStateOf(initialName) }
-    var selectedFolderId by remember { mutableStateOf<Long?>(initialFolderId) }
+    var selectedFolderId by remember { mutableStateOf(initialFolderId) }
     var folderDropdownExpanded by remember { mutableStateOf(false) }
 
     var showNewFolderRow by remember { mutableStateOf(false) }

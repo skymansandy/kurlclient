@@ -14,6 +14,7 @@ import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import dev.skymansandy.kurlclient.presentation.screens.playground.PlaygroundScreenContract.PlaygroundEvent
 import dev.skymansandy.kurlclient.presentation.screens.playground.request.ImportCurlDialog
 import dev.skymansandy.kurlclient.presentation.screens.playground.request.RequestPanel
 import dev.skymansandy.kurlclient.presentation.screens.playground.request.SaveRequestDialog
@@ -22,7 +23,7 @@ import dev.skymansandy.kurlclient.presentation.screens.playground.response.Respo
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun PlaygroundScreen(
+internal fun PlaygroundScreen(
     onShowSnackbar: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {

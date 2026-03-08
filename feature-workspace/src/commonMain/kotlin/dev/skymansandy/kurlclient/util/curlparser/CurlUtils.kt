@@ -3,7 +3,7 @@ package dev.skymansandy.kurlclient.util.curlparser
 import dev.skymansandy.kurl.core.model.HttpMethod
 import dev.skymansandy.kurl.core.model.KeyValueEntry
 
-fun buildCurlCommand(
+internal fun buildCurlCommand(
     url: String,
     method: HttpMethod,
     headers: List<KeyValueEntry>,
@@ -36,7 +36,7 @@ fun buildCurlCommand(
     }
 }
 
-fun parseCurlCommand(raw: String): ParsedCurlRequest? {
+internal fun parseCurlCommand(raw: String): ParsedCurlRequest? {
     // Normalise: strip line continuation, collapse whitespace
     val command = raw.trim()
         .replace(Regex("\\\\\r?\n\\s*"), " ")

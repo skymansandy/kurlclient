@@ -67,13 +67,14 @@ import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.skymansandy.kurl.core.model.HttpMethod
 import dev.skymansandy.kurl.core.utils.formatRelativeTime
-import dev.skymansandy.kurlclient.presentation.screens.collections.CollectionsState.TreeItem
+import dev.skymansandy.kurlclient.presentation.screens.collections.CollectionsScreenContract.CollectionsEvent
+import dev.skymansandy.kurlclient.presentation.screens.collections.CollectionsScreenContract.CollectionsState.TreeItem
 import dev.skymansandy.kurlstore.db.SavedRequest
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CollectionsScreen(
+internal fun CollectionsScreen(
     activeRequestId: Long? = null,
     onRequestSelected: (SavedRequest) -> Unit,
     onSaveChanges: () -> Unit,

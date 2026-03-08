@@ -1,6 +1,6 @@
 package dev.skymansandy.kurlclient.util.curlparser
 
-data class ParsedCurlRequest(
+internal data class ParsedCurlRequest(
     val url: String,
     val method: String,
     val headers: List<Pair<String, String>>,

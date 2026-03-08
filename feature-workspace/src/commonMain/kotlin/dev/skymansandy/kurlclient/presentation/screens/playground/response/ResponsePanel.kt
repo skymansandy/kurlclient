@@ -29,14 +29,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import dev.skymansandy.kurl.core.model.NetworkInfo
-import dev.skymansandy.kurlclient.presentation.screens.playground.PlaygroundState.ResponseState
+import dev.skymansandy.kurlclient.presentation.screens.playground.PlaygroundScreenContract.PlaygroundState.ResponseState
 import dev.skymansandy.ui.jsonviewer.ui.JsonViewer
 import kotlin.math.roundToInt
 
 private val RESPONSE_TABS = listOf("Body", "Headers", "Network")
 
 @Composable
-fun ResponsePanel(
+internal fun ResponsePanel(
     response: ResponseState?,
     error: String?,
     modifier: Modifier = Modifier

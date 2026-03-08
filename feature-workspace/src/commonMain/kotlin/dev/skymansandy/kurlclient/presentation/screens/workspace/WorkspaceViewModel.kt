@@ -1,6 +1,9 @@
 package dev.skymansandy.kurlclient.presentation.screens.workspace
 
 import dev.skymansandy.kurlclient.presentation.base.MviViewModel
+import dev.skymansandy.kurlclient.presentation.screens.workspace.WorkspaceScreenContract.WorkspaceEffect
+import dev.skymansandy.kurlclient.presentation.screens.workspace.WorkspaceScreenContract.WorkspaceEvent
+import dev.skymansandy.kurlclient.presentation.screens.workspace.WorkspaceScreenContract.WorkspaceState
 import dev.skymansandy.kurlclient.presentation.screens.workspace.model.WorkspaceTab
 import org.koin.android.annotation.KoinViewModel
 

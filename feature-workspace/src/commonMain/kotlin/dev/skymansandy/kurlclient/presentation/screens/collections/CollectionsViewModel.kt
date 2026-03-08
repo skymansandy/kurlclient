@@ -3,7 +3,10 @@ package dev.skymansandy.kurlclient.presentation.screens.collections
 import androidx.lifecycle.viewModelScope
 import dev.skymansandy.kurl.store.api.KurlStore
 import dev.skymansandy.kurlclient.presentation.base.MviViewModel
-import dev.skymansandy.kurlclient.presentation.screens.collections.CollectionsState.TreeItem
+import dev.skymansandy.kurlclient.presentation.screens.collections.CollectionsScreenContract.CollectionsEffect
+import dev.skymansandy.kurlclient.presentation.screens.collections.CollectionsScreenContract.CollectionsEvent
+import dev.skymansandy.kurlclient.presentation.screens.collections.CollectionsScreenContract.CollectionsState
+import dev.skymansandy.kurlclient.presentation.screens.collections.CollectionsScreenContract.CollectionsState.TreeItem
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import org.koin.android.annotation.KoinViewModel

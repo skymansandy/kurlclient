@@ -54,7 +54,7 @@ import dev.skymansandy.kurl.core.model.KeyValueEntry
 private val REQUEST_TABS = listOf("Params", "Headers", "Auth", "Body")
 
 @Composable
-fun RequestPanel(
+internal fun RequestPanel(
     url: String,
     method: HttpMethod,
     params: List<KeyValueEntry>,
