@@ -38,6 +38,8 @@ include(":androidApp")
 include(":kurl-core")
 include(":kurl-store")
 
+include(":presentation-base")
+
 include(":feature-workspace")
 include(":feature-collections")
 

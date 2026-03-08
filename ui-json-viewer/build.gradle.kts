@@ -53,4 +53,8 @@ kotlin {
             }
         }
     }
+
+    compilerOptions {
+        freeCompilerArgs.add("-Xexplicit-backing-fields")
+    }
 }

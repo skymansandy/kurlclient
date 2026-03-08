@@ -79,6 +79,10 @@ kotlin {
             implementation(libs.ktor.client.java)
         }
     }
+
+    compilerOptions {
+        freeCompilerArgs.add("-Xexplicit-backing-fields")
+    }
 }
 
 dependencies {

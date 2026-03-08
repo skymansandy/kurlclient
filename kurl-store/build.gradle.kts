@@ -82,6 +82,10 @@ kotlin {
             implementation(libs.sqldelight.sqlite.driver)
         }
     }
+
+    compilerOptions {
+        freeCompilerArgs.add("-Xexplicit-backing-fields")
+    }
 }
 
 dependencies {

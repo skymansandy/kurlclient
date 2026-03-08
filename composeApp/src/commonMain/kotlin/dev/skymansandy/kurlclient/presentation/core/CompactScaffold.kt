@@ -14,8 +14,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import dev.skymansandy.kurlclient.navigation.NavDestination
 import dev.skymansandy.kurlclient.presentation.core.components.NavIcon
-import dev.skymansandy.kurlclient.presentation.screens.collections.CollectionsScreen
-import dev.skymansandy.kurlclient.presentation.screens.workspace.WorkspaceScreen
+import dev.skymansandy.kurlclient.presentation.screens.collections.presentation.screens.collection.CollectionsScreen
+import dev.skymansandy.kurlclient.presentation.screens.workspace.presentation.screens.workspace.WorkspaceScreen
 import dev.skymansandy.kurlstore.db.CollectionFolder
 import dev.skymansandy.kurlstore.db.SavedRequest
 

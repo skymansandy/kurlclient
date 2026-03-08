@@ -1,4 +1,4 @@
-package dev.skymansandy.kurlclient.presentation.screens.collections
+package dev.skymansandy.kurlclient.presentation.screens.collections.presentation.screens.collection
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -65,21 +65,25 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.skymansandy.kurl.core.model.HttpMethod
-import org.koin.compose.viewmodel.koinViewModel
 import dev.skymansandy.kurl.core.utils.formatRelativeTime
+import dev.skymansandy.kurlclient.presentation.screens.collections.presentation.screens.collection.CollectionsState.TreeItem
 import dev.skymansandy.kurlstore.db.CollectionFolder
 import dev.skymansandy.kurlstore.db.SavedRequest
+import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CollectionsScreen(
-    vm: CollectionsViewModel = koinViewModel(),
     activeRequestId: Long? = null,
     onRequestSelected: (SavedRequest) -> Unit,
     onSaveChanges: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val vm: CollectionsViewModel = koinViewModel()
+    val state by vm.state.collectAsStateWithLifecycle()
+
     var showNewFolderDialog by remember { mutableStateOf(false) }
     var newFolderParentId by remember { mutableStateOf<Long?>(null) }
 
@@ -88,11 +92,11 @@ fun CollectionsScreen(
     var dropTargetKey by remember { mutableStateOf<String?>(null) }
     val itemBounds = remember { mutableStateMapOf<String, Rect>() }
 
-    val isSearching = vm.searchQuery.isNotBlank()
+    val isSearching = state.searchQuery.isNotBlank()
 
-    val treeItems = remember(vm.allFolders, vm.allRequests, vm.expandedFolderIds, vm.searchQuery) {
-        if (isSearching) vm.buildFilteredTreeItems(vm.searchQuery)
-        else vm.buildTreeItems()
+    val treeItems = remember(state.allFolders, state.allRequests, state.expandedFolderIds, state.searchQuery) {
+        if (isSearching) vm.buildFilteredTreeItems(state.searchQuery, state)
+        else vm.buildTreeItems(state)
     }
 
     Column(modifier = modifier) {
@@ -110,8 +114,8 @@ fun CollectionsScreen(
         HorizontalDivider()
 
         CollectionsSearchBar(
-            query = vm.searchQuery,
-            onQueryChange = vm::setSearchFilterQuery,
+            query = state.searchQuery,
+            onQueryChange = { vm.onEvent(CollectionsEvent.SetSearchQuery(it)) },
             modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 8.dp)
         )
         HorizontalDivider()
@@ -119,7 +123,7 @@ fun CollectionsScreen(
         if (treeItems.isEmpty()) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Text(
-                    if (isSearching) "No results for \"${vm.searchQuery}\"" else "No saved requests",
+                    if (isSearching) "No results for \"${state.searchQuery}\"" else "No saved requests",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -165,9 +169,9 @@ fun CollectionsScreen(
                                                 val targetId = dst.removePrefix("f_").toLongOrNull()
                                                 when {
                                                     src.startsWith("f_") ->
-                                                        vm.moveFolder(src.removePrefix("f_").toLong(), targetId)
+                                                        vm.onEvent(CollectionsEvent.MoveFolder(src.removePrefix("f_").toLong(), targetId))
                                                     src.startsWith("r_") ->
-                                                        vm.moveRequest(src.removePrefix("r_").toLong(), targetId)
+                                                        vm.onEvent(CollectionsEvent.MoveRequest(src.removePrefix("r_").toLong(), targetId))
                                                 }
                                             }
                                             draggedKey = null
@@ -184,20 +188,20 @@ fun CollectionsScreen(
                             is TreeItem.Folder -> FolderTreeRow(
                                 item = item,
                                 isDropTarget = isDropTarget,
-                                onToggle = { if (!isSearching) vm.toggleFolder(item.folder.id) },
+                                onToggle = { if (!isSearching) vm.onEvent(CollectionsEvent.ToggleFolder(item.folder.id)) },
                                 onNewSubfolder = {
                                     newFolderParentId = item.folder.id
                                     showNewFolderDialog = true
                                 },
-                                onDelete = { vm.deleteFolder(item.folder.id) }
+                                onDelete = { vm.onEvent(CollectionsEvent.DeleteFolder(item.folder.id)) }
                             )
                             is TreeItem.Request -> RequestTreeRow(
                                 item = item,
                                 isActive = item.request.id == activeRequestId,
-                                highlightQuery = vm.searchQuery,
+                                highlightQuery = state.searchQuery,
                                 onLoad = { onRequestSelected(item.request) },
                                 onSaveChanges = onSaveChanges,
-                                onDelete = { vm.deleteRequest(item.request.id) }
+                                onDelete = { vm.onEvent(CollectionsEvent.DeleteRequest(item.request.id)) }
                             )
                         }
                     }
@@ -208,12 +212,12 @@ fun CollectionsScreen(
 
     if (showNewFolderDialog) {
         NewFolderDialog(
-            allFolders = vm.allFolders,
-            folderPaths = vm.folderPaths,
+            allFolders = state.allFolders,
+            folderPaths = state.folderPaths,
             fixedParentId = newFolderParentId,
             onDismiss = { showNewFolderDialog = false },
             onCreate = { name, parentId ->
-                vm.createFolder(name, parentId)
+                vm.onEvent(CollectionsEvent.CreateFolder(name, parentId))
                 showNewFolderDialog = false
             }
         )

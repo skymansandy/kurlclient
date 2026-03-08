@@ -1,4 +1,4 @@
-package dev.skymansandy.kurlclient.presentation.screens.workspace
+package dev.skymansandy.kurlclient.presentation.screens.workspace.presentation.screens.workspace
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.skymansandy.kurlclient.presentation.screens.workspace.request.ImportCurlDialog
 import dev.skymansandy.kurlclient.presentation.screens.workspace.request.RequestPanel
 import dev.skymansandy.kurlclient.presentation.screens.workspace.request.SaveRequestDialog
@@ -26,7 +27,6 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun WorkspaceScreen(
-    vm: RequestViewModel = koinViewModel(),
     allFolders: List<CollectionFolder>,
     folderPaths: Map<Long, String>,
     onSaveSuccess: () -> Unit,
@@ -35,22 +35,26 @@ fun WorkspaceScreen(
     onShowSnackbar: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val vm: WorkspaceViewModel = koinViewModel()
+
+    val state by vm.state.collectAsStateWithLifecycle()
+
     var showSaveDialog by remember { mutableStateOf(false) }
     var showImportCurlDialog by remember { mutableStateOf(false) }
     var selectedTab by remember { mutableStateOf(0) }
     val clipboard = LocalClipboardManager.current
 
-    LaunchedEffect(vm.saveSuccess) {
-        if (vm.saveSuccess) {
+    LaunchedEffect(state.saveSuccess) {
+        if (state.saveSuccess) {
             onSaveSuccess()
-            vm.clearSaveSuccess()
+            vm.onEvent(WorkspaceEvent.ClearSaveSuccess)
         }
     }
 
-    LaunchedEffect(vm.overwriteSuccess) {
-        if (vm.overwriteSuccess) {
+    LaunchedEffect(state.overwriteSuccess) {
+        if (state.overwriteSuccess) {
             onOverwriteSuccess()
-            vm.clearOverwriteSuccess()
+            vm.onEvent(WorkspaceEvent.ClearOverwriteSuccess)
         }
     }
 
@@ -65,11 +69,11 @@ fun WorkspaceScreen(
 
     if (showSaveDialog) {
         SaveRequestDialog(
-            initialName = if (vm.url.isNotBlank()) vm.url.substringAfterLast("/").take(40) else "Untitled",
+            initialName = if (state.url.isNotBlank()) state.url.substringAfterLast("/").take(40) else "Untitled",
             folders = allFolders,
             folderPaths = folderPaths,
             onSave = { name, folderId ->
-                vm.saveRequest(name, folderId)
+                vm.onEvent(WorkspaceEvent.SaveRequest(name, folderId))
                 showSaveDialog = false
             },
             onCreateFolder = onCreateFolder,
@@ -84,12 +88,12 @@ fun WorkspaceScreen(
 
     Column(modifier = modifier) {
         UrlBar(
-            method = vm.method,
-            url = vm.url,
-            isLoading = vm.isLoading,
-            onMethodChange = vm::setRequestMethod,
-            onUrlChange = vm::setRequestUrl,
-            onSend = { vm.sendRequest(); selectedTab = 1 },
+            method = state.method,
+            url = state.url,
+            isLoading = state.isLoading,
+            onMethodChange = { vm.onEvent(WorkspaceEvent.SetMethod(it)) },
+            onUrlChange = { vm.onEvent(WorkspaceEvent.SetUrl(it)) },
+            onSend = { vm.onEvent(WorkspaceEvent.SendRequest); selectedTab = 1 },
             onSave = { showSaveDialog = true },
             onCopyCurl = onCopyCurl,
             onImportCurl = { showImportCurlDialog = true },
@@ -105,22 +109,22 @@ fun WorkspaceScreen(
         }
         when (selectedTab) {
             0 -> RequestPanel(
-                url = vm.url,
-                method = vm.method,
-                params = vm.params,
-                headers = vm.headers,
-                body = vm.body,
-                isLoading = vm.isLoading,
-                onUrlChange = vm::setRequestUrl,
-                onMethodChange = vm::setRequestMethod,
-                onParamUpdate = vm::updateParam,
-                onParamAdd = vm::addParam,
-                onParamRemove = vm::removeParam,
-                onHeaderUpdate = vm::updateHeader,
-                onHeaderAdd = vm::addHeader,
-                onHeaderRemove = vm::removeHeader,
-                onBodyChange = vm::setRequestBody,
-                onSend = { vm.sendRequest(); selectedTab = 1 },
+                url = state.url,
+                method = state.method,
+                params = state.params,
+                headers = state.headers,
+                body = state.body,
+                isLoading = state.isLoading,
+                onUrlChange = { vm.onEvent(WorkspaceEvent.SetUrl(it)) },
+                onMethodChange = { vm.onEvent(WorkspaceEvent.SetMethod(it)) },
+                onParamUpdate = { id, key, value, enabled -> vm.onEvent(WorkspaceEvent.UpdateParam(id, key, value, enabled)) },
+                onParamAdd = { vm.onEvent(WorkspaceEvent.AddParam) },
+                onParamRemove = { vm.onEvent(WorkspaceEvent.RemoveParam(it)) },
+                onHeaderUpdate = { id, key, value, enabled -> vm.onEvent(WorkspaceEvent.UpdateHeader(id, key, value, enabled)) },
+                onHeaderAdd = { vm.onEvent(WorkspaceEvent.AddHeader) },
+                onHeaderRemove = { vm.onEvent(WorkspaceEvent.RemoveHeader(it)) },
+                onBodyChange = { vm.onEvent(WorkspaceEvent.SetBody(it)) },
+                onSend = { vm.onEvent(WorkspaceEvent.SendRequest); selectedTab = 1 },
                 onSave = { showSaveDialog = true },
                 onCopyCurl = onCopyCurl,
                 onImportCurl = { showImportCurlDialog = true },
@@ -128,8 +132,8 @@ fun WorkspaceScreen(
                 modifier = Modifier.weight(1f).fillMaxWidth()
             )
             else -> ResponsePanel(
-                response = vm.response,
-                error = vm.error,
+                response = state.response,
+                error = state.error,
                 modifier = Modifier.weight(1f).fillMaxWidth()
             )
         }

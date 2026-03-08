@@ -14,8 +14,11 @@ import dev.skymansandy.kurlclient.navigation.NavDestination
 import dev.skymansandy.kurlclient.presentation.adaptive.WindowWidthClass
 import dev.skymansandy.kurlclient.presentation.adaptive.toWindowWidthClass
 import dev.skymansandy.kurlclient.presentation.core.dialog.DiscardWorkspaceAlertDialog
-import dev.skymansandy.kurlclient.presentation.screens.collections.CollectionsViewModel
-import dev.skymansandy.kurlclient.presentation.screens.workspace.RequestViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import dev.skymansandy.kurlclient.presentation.screens.collections.presentation.screens.collection.CollectionsEvent
+import dev.skymansandy.kurlclient.presentation.screens.collections.presentation.screens.collection.CollectionsViewModel
+import dev.skymansandy.kurlclient.presentation.screens.workspace.presentation.screens.workspace.WorkspaceViewModel
+import dev.skymansandy.kurlclient.presentation.screens.workspace.presentation.screens.workspace.WorkspaceEvent
 import dev.skymansandy.kurlstore.db.SavedRequest
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
@@ -25,8 +28,10 @@ fun KurlAppScaffold() {
     // Both VMs are accessed here only for cross-feature coordination.
     // WorkspaceScreen and CollectionsScreen create their own instances via viewModel(),
     // which returns the same activity-scoped instance.
-    val workspaceVm = koinViewModel<RequestViewModel>()
+    val workspaceVm = koinViewModel<WorkspaceViewModel>()
+    val workspaceState by workspaceVm.state.collectAsStateWithLifecycle()
     val collectionsVm = koinViewModel<CollectionsViewModel>()
+    val collectionsState by collectionsVm.state.collectAsStateWithLifecycle()
 
     var selectedNav by remember { mutableStateOf(NavDestination.Workspace) }
     var pendingRequest by remember { mutableStateOf<SavedRequest?>(null) }
@@ -39,19 +44,19 @@ fun KurlAppScaffold() {
         scope.launch { snackbarHostState.showSnackbar(msg) }
     }
     val onSaveSuccess: () -> Unit = {
-        collectionsVm.refresh()
+        collectionsVm.onEvent(CollectionsEvent.Refresh)
         onShowSnackbar("Request saved to collections")
     }
     val onOverwriteSuccess: () -> Unit = {
-        collectionsVm.refresh()
+        collectionsVm.onEvent(CollectionsEvent.Refresh)
         onShowSnackbar("Changes saved")
     }
     val onRequestSelected: (SavedRequest) -> Unit = { saved ->
-        if (workspaceVm.hasUnsavedChanges) {
+        if (workspaceState.hasUnsavedChanges) {
             pendingRequest = saved
             showDiscardDialog = true
         } else {
-            workspaceVm.loadSavedRequest(saved)
+            workspaceVm.onEvent(WorkspaceEvent.LoadSavedRequest(saved))
             selectedNav = NavDestination.Workspace
         }
     }
@@ -60,7 +65,7 @@ fun KurlAppScaffold() {
         DiscardWorkspaceAlertDialog(
             onConfirm = {
                 showDiscardDialog = false
-                pendingRequest?.let { workspaceVm.loadSavedRequest(it) }
+                pendingRequest?.let { workspaceVm.onEvent(WorkspaceEvent.LoadSavedRequest(it)) }
                 pendingRequest = null
                 selectedNav = NavDestination.Workspace
             },
@@ -77,35 +82,35 @@ fun KurlAppScaffold() {
         val windowClass = maxWidth.toWindowWidthClass()
         when (windowClass) {
             WindowWidthClass.Compact -> CompactScaffold(
-                hasUnsavedChanges = workspaceVm.hasUnsavedChanges,
-                activeRequestId = workspaceVm.loadedRequest?.id,
-                allFolders = collectionsVm.allFolders,
-                folderPaths = collectionsVm.folderPaths,
+                hasUnsavedChanges = workspaceState.hasUnsavedChanges,
+                activeRequestId = workspaceState.loadedRequest?.id,
+                allFolders = collectionsState.allFolders,
+                folderPaths = collectionsState.folderPaths,
                 selectedNav = selectedNav,
                 snackbarHostState = snackbarHostState,
                 onNavSelect = { selectedNav = it },
                 onSaveSuccess = onSaveSuccess,
                 onOverwriteSuccess = onOverwriteSuccess,
                 onShowSnackbar = onShowSnackbar,
-                onCreateFolder = collectionsVm::createFolder,
+                onCreateFolder = { name, parentId -> collectionsVm.onEvent(CollectionsEvent.CreateFolder(name, parentId)) },
                 onRequestSelected = onRequestSelected,
-                onSaveChanges = workspaceVm::overwriteLoadedRequest
+                onSaveChanges = { workspaceVm.onEvent(WorkspaceEvent.OverwriteLoadedRequest) }
             )
 
             else -> ExpandedScaffold(
-                hasUnsavedChanges = workspaceVm.hasUnsavedChanges,
-                activeRequestId = workspaceVm.loadedRequest?.id,
-                allFolders = collectionsVm.allFolders,
-                folderPaths = collectionsVm.folderPaths,
+                hasUnsavedChanges = workspaceState.hasUnsavedChanges,
+                activeRequestId = workspaceState.loadedRequest?.id,
+                allFolders = collectionsState.allFolders,
+                folderPaths = collectionsState.folderPaths,
                 selectedNav = selectedNav,
                 snackbarHostState = snackbarHostState,
                 onNavSelect = { selectedNav = it },
                 onSaveSuccess = onSaveSuccess,
                 onOverwriteSuccess = onOverwriteSuccess,
                 onShowSnackbar = onShowSnackbar,
-                onCreateFolder = collectionsVm::createFolder,
+                onCreateFolder = { name, parentId -> collectionsVm.onEvent(CollectionsEvent.CreateFolder(name, parentId)) },
                 onRequestSelected = onRequestSelected,
-                onSaveChanges = workspaceVm::overwriteLoadedRequest
+                onSaveChanges = { workspaceVm.onEvent(WorkspaceEvent.OverwriteLoadedRequest) }
             )
         }
     }

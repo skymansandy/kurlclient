@@ -53,6 +53,7 @@ kotlin {
                 implementation(projects.kurlCore)
                 implementation(projects.kurlStore)
                 implementation(projects.uiJsonViewer)
+                implementation(projects.presentationBase)
                 implementation(libs.koin.compose.viewmodel)
                 implementation(libs.koin.annotations)
             }
@@ -63,6 +64,10 @@ kotlin {
                 implementation(libs.kotlin.test)
             }
         }
+    }
+
+    compilerOptions {
+        freeCompilerArgs.add("-Xexplicit-backing-fields")
     }
 }
 
