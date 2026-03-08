@@ -12,6 +12,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import dev.skymansandy.kurlclient.presentation.screens.workspace.presentation.component.NavIcon
 import dev.skymansandy.kurlclient.presentation.screens.workspace.presentation.screens.collections.CollectionsScreen
 import dev.skymansandy.kurlclient.presentation.screens.workspace.presentation.screens.playground.PlaygroundScreen
 import dev.skymansandy.kurlclient.presentation.screens.workspace.presentation.screens.workspace.model.WorkspaceTab
