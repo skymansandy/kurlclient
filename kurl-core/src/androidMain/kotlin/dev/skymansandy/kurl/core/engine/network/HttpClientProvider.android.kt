@@ -11,7 +11,7 @@ internal actual fun createHttpClient(): HttpClient = HttpClient(OkHttp) {
                 listOf(
                     Protocol.HTTP_2,
                     Protocol.HTTP_1_1,
-                )
+                ),
             )
         }
     }

@@ -34,7 +34,7 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun ImportCurlDialog(
-    onImport: (String) -> Boolean,   // returns false if parse failed
+    onImport: (String) -> Boolean, // returns false if parse failed
     onDismiss: () -> Unit,
 ) {
     var text by remember { mutableStateOf("") }
@@ -68,7 +68,7 @@ internal fun ImportCurlDialog(
                         {
                             Text(
                                 stringResource(Res.string.error_parse_curl),
-                                color = MaterialTheme.colorScheme.error
+                                color = MaterialTheme.colorScheme.error,
                             )
                         }
                     } else null,
@@ -76,15 +76,15 @@ internal fun ImportCurlDialog(
                     maxLines = 12,
                     modifier = Modifier.fillMaxWidth(),
                     textStyle = MaterialTheme.typography.bodySmall.copy(
-                        fontFamily = FontFamily.Monospace
-                    )
+                        fontFamily = FontFamily.Monospace,
+                    ),
                 )
 
                 Spacer(Modifier.height(0.dp))
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End
+                    horizontalArrangement = Arrangement.End,
                 ) {
                     TextButton(onClick = onDismiss) {
                         Text(stringResource(Res.string.cancel))

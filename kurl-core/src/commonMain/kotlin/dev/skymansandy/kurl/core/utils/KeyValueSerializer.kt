@@ -2,8 +2,8 @@ package dev.skymansandy.kurl.core.utils
 
 import dev.skymansandy.kurl.core.model.KeyValueEntry
 
-private const val ENTRY_SEP = "\u001E"   // record separator between entries
-private const val FIELD_SEP = "\u001F"   // unit separator between fields
+private const val ENTRY_SEP = "\u001E" // record separator between entries
+private const val FIELD_SEP = "\u001F" // unit separator between fields
 
 fun List<KeyValueEntry>.serialize(): String =
     joinToString(ENTRY_SEP) { "${it.key}${FIELD_SEP}${it.value}${FIELD_SEP}${it.enabled}" }
@@ -17,7 +17,7 @@ fun String.deserializeKeyValueEntries(startId: Long): Pair<List<KeyValueEntry>, 
             id = id++,
             key = parts.getOrElse(0) { "" },
             value = parts.getOrElse(1) { "" },
-            enabled = parts.getOrElse(2) { "true" } == "true"
+            enabled = parts.getOrElse(2) { "true" } == "true",
         )
     }
     return Pair(entries, id)

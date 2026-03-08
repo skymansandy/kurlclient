@@ -13,7 +13,7 @@ internal class CollectionsScreenContract {
         val allRequests: List<SavedRequest> = emptyList(),
         val expandedFolderIds: Set<Long> = emptySet(),
         val folderPaths: Map<Long, String> = emptyMap(),
-        val searchQuery: String = ""
+        val searchQuery: String = "",
     ) : UiState {
 
         sealed interface TreeItem {

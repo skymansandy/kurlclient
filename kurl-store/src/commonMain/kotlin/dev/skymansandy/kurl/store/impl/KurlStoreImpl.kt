@@ -46,7 +46,7 @@ internal class KurlStoreImpl(
             db.collectionsQueries.insertFolder(
                 name = name,
                 parent_id = parentId,
-                created_at = currentTimeMillis()
+                created_at = currentTimeMillis(),
             )
             db.collectionsQueries.lastInsertedRowId().executeAsOne()
         }
@@ -66,24 +66,24 @@ internal class KurlStoreImpl(
     // ── Requests ──────────────────────────────────────────────────────────────
     override suspend fun saveRequest(
         name: String, folderId: Long?, url: String,
-        method: String, headers: String, params: String, body: String
+        method: String, headers: String, params: String, body: String,
     ) {
         withContext(Dispatchers.IO) {
             db.collectionsQueries.insertRequest(
                 name = name, folder_id = folderId, url = url, method = method,
-                headers = headers, params = params, body = body, created_at = currentTimeMillis()
+                headers = headers, params = params, body = body, created_at = currentTimeMillis(),
             )
         }
     }
 
     override suspend fun updateRequest(
         id: Long, name: String, folderId: Long?, url: String,
-        method: String, headers: String, params: String, body: String
+        method: String, headers: String, params: String, body: String,
     ) {
         withContext(Dispatchers.IO) {
             db.collectionsQueries.updateRequest(
                 id = id, name = name, folder_id = folderId, url = url, method = method,
-                headers = headers, params = params, body = body, created_at = currentTimeMillis()
+                headers = headers, params = params, body = body, created_at = currentTimeMillis(),
             )
         }
     }

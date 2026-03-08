@@ -50,7 +50,7 @@ internal fun RequestItem(
     onLoad: () -> Unit,
     onSaveChanges: () -> Unit,
     onDuplicate: () -> Unit,
-    onDelete: () -> Unit
+    onDelete: () -> Unit,
 ) {
     var menuExpanded by remember { mutableStateOf(false) }
     val indent = (item.depth * 16).dp
@@ -67,17 +67,17 @@ internal fun RequestItem(
                         lineColor,
                         Offset(x, 0f),
                         Offset(x, size.height),
-                        strokeWidth = 1.5.dp.toPx()
+                        strokeWidth = 1.5.dp.toPx(),
                     )
                 }
             }
             .then(
                 if (isActive) Modifier.background(
                     MaterialTheme.colorScheme.primaryContainer.copy(
-                        alpha = 0.3f
-                    )
+                        alpha = 0.3f,
+                    ),
                 )
-                else Modifier
+                else Modifier,
             )
             .clickable(onClick = onLoad)
             .padding(start = 32.dp + indent, end = 4.dp, top = 6.dp, bottom = 6.dp),
@@ -144,7 +144,7 @@ internal fun RequestItem(
                     onClick = {
                         menuExpanded = false
                         onLoad()
-                    }
+                    },
                 )
 
                 if (isActive) {
@@ -153,7 +153,7 @@ internal fun RequestItem(
                         onClick = {
                             menuExpanded = false
                             onSaveChanges()
-                        }
+                        },
                     )
                 }
 

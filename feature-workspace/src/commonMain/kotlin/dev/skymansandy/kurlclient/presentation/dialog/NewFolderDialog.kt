@@ -32,7 +32,7 @@ import org.jetbrains.compose.resources.stringResource
 internal fun NewFolderDialog(
     fixedParentId: Long?,
     onDismiss: () -> Unit,
-    onCreate: (name: String, parentId: Long?) -> Unit
+    onCreate: (name: String, parentId: Long?) -> Unit,
 ) {
     var name by remember { mutableStateOf("") }
     var parentId by remember { mutableStateOf(fixedParentId) }

@@ -11,6 +11,6 @@ internal actual fun buildNetworkInfo(requestUrl: String, httpVersion: String): N
     return NetworkInfo(
         httpVersion = httpVersion,
         remoteAddress = host,
-        tlsProtocol = if (isHttps) "TLS" else null
+        tlsProtocol = if (isHttps) "TLS" else null,
     )
 }

@@ -5,5 +5,5 @@ internal data class ParsedCurlRequest(
     val method: String,
     val headers: List<Pair<String, String>>,
     val params: List<Pair<String, String>>,
-    val body: String?
+    val body: String?,
 )

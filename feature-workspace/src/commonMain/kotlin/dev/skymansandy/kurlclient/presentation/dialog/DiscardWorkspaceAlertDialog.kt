@@ -36,6 +36,6 @@ internal fun DiscardWorkspaceAlertDialog(
             TextButton(onClick = onDismiss) {
                 Text(stringResource(Res.string.cancel))
             }
-        }
+        },
     )
 }

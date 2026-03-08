@@ -32,11 +32,11 @@ import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import dev.skymansandy.kurlclient.presentation.dialog.NewFolderDialog
 import dev.skymansandy.kurlclient.presentation.screens.collections.CollectionsScreenContract.CollectionsEvent
 import dev.skymansandy.kurlclient.presentation.screens.collections.CollectionsScreenContract.CollectionsState.TreeItem
 import dev.skymansandy.kurlclient.presentation.screens.collections.component.CollectionsSearchBar
 import dev.skymansandy.kurlclient.presentation.screens.collections.component.tree.FolderItem
-import dev.skymansandy.kurlclient.presentation.dialog.NewFolderDialog
 import dev.skymansandy.kurlclient.presentation.screens.collections.component.tree.RequestItem
 import dev.skymansandy.kurlstore.db.SavedRequest
 import kurlclient.feature_workspace.generated.resources.Res
@@ -53,7 +53,7 @@ internal fun CollectionsScreen(
     activeRequestId: Long? = null,
     onRequestSelected: (SavedRequest) -> Unit,
     onSaveChanges: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val vm: CollectionsViewModel = koinViewModel()
     val state by vm.state.collectAsStateWithLifecycle()
@@ -91,7 +91,7 @@ internal fun CollectionsScreen(
                 ) {
                     Icon(Icons.Default.Add, contentDescription = stringResource(Res.string.cd_new_folder))
                 }
-            }
+            },
         )
 
         HorizontalDivider()
@@ -168,16 +168,16 @@ internal fun CollectionsScreen(
                                                             vm.onEvent(
                                                                 CollectionsEvent.MoveFolder(
                                                                     src.removePrefix("f_").toLong(),
-                                                                    targetId
-                                                                )
+                                                                    targetId,
+                                                                ),
                                                             )
 
                                                         src.startsWith("r_") ->
                                                             vm.onEvent(
                                                                 CollectionsEvent.MoveRequest(
                                                                     src.removePrefix("r_").toLong(),
-                                                                    targetId
-                                                                )
+                                                                    targetId,
+                                                                ),
                                                             )
                                                     }
                                                 }
@@ -187,10 +187,10 @@ internal fun CollectionsScreen(
                                             onDragCancel = {
                                                 draggedKey = null
                                                 dropTargetKey = null
-                                            }
+                                            },
                                         )
                                     } else Modifier,
-                            )
+                            ),
                     ) {
                         when (item) {
                             is TreeItem.Folder -> FolderItem(
@@ -199,15 +199,15 @@ internal fun CollectionsScreen(
                                 onToggle = {
                                     if (!isSearching) vm.onEvent(
                                         CollectionsEvent.ToggleFolder(
-                                            item.folder.id
-                                        )
+                                            item.folder.id,
+                                        ),
                                     )
                                 },
                                 onNewSubfolder = {
                                     newFolderParentId = item.folder.id
                                     showNewFolderDialog = true
                                 },
-                                onDelete = { vm.onEvent(CollectionsEvent.DeleteFolder(item.folder.id)) }
+                                onDelete = { vm.onEvent(CollectionsEvent.DeleteFolder(item.folder.id)) },
                             )
 
                             is TreeItem.Request -> RequestItem(
@@ -217,7 +217,7 @@ internal fun CollectionsScreen(
                                 onLoad = { onRequestSelected(item.request) },
                                 onSaveChanges = onSaveChanges,
                                 onDuplicate = { vm.onEvent(CollectionsEvent.DuplicateRequest(item.request.id)) },
-                                onDelete = { vm.onEvent(CollectionsEvent.DeleteRequest(item.request.id)) }
+                                onDelete = { vm.onEvent(CollectionsEvent.DeleteRequest(item.request.id)) },
                             )
                         }
                     }
@@ -235,7 +235,7 @@ internal fun CollectionsScreen(
             onCreate = { name, parentId ->
                 vm.onEvent(CollectionsEvent.CreateFolder(name, parentId))
                 showNewFolderDialog = false
-            }
+            },
         )
     }
 }

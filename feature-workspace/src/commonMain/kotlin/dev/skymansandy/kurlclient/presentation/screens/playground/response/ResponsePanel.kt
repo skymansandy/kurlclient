@@ -24,7 +24,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.skymansandy.kurlclient.presentation.screens.playground.PlaygroundScreenContract.PlaygroundState.ResponseState
+import dev.skymansandy.kurlclient.presentation.screens.playground.PlaygroundScreenModel
 import dev.skymansandy.kurlclient.presentation.screens.playground.response.tabs.NetworkInfoTab
 import dev.skymansandy.kurlclient.presentation.screens.playground.response.tabs.ResponseBodyTab
 import dev.skymansandy.kurlclient.presentation.screens.playground.response.tabs.ResponseHeadersTab
@@ -39,10 +41,12 @@ import kotlin.math.roundToInt
 
 @Composable
 internal fun ResponsePanel(
-    response: ResponseState?,
-    error: String?,
-    modifier: Modifier = Modifier
+    vm: PlaygroundScreenModel,
+    modifier: Modifier = Modifier,
 ) {
+    val state by vm.state.collectAsStateWithLifecycle()
+    val response = state.response
+    val error = state.error
     var selectedTab by remember { mutableIntStateOf(0) }
 
     val tabBody = stringResource(Res.string.tab_body)
@@ -58,10 +62,13 @@ internal fun ResponsePanel(
             error = error,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 12.dp, vertical = 10.dp)
+                .padding(horizontal = 12.dp, vertical = 10.dp),
         )
 
-        TabRow(selectedTabIndex = selectedTab) {
+        TabRow(
+            selectedTabIndex = selectedTab,
+        ) {
+
             val headerCount = response?.headers?.size ?: 0
             val hasBody = response?.body?.isNotBlank() == true
             val hasNetwork = response?.networkInfo != null
@@ -73,13 +80,16 @@ internal fun ResponsePanel(
                         TabLabel(
                             title = title,
                             count = when (index) {
-                                1 -> headerCount; else -> 0
+                                1 -> headerCount
+                                else -> 0
                             },
                             hasDot = when (index) {
-                                0 -> hasBody; 2 -> hasNetwork; else -> false
-                            }
+                                0 -> hasBody
+                                2 -> hasNetwork
+                                else -> false
+                            },
                         )
-                    }
+                    },
                 )
             }
         }
@@ -98,14 +108,14 @@ internal fun ResponsePanel(
 private fun TabLabel(title: String, count: Int = 0, hasDot: Boolean = false) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(4.dp),
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(if (count > 0) "$title ($count)" else title)
         if (hasDot) {
             Box(
                 modifier = Modifier
                     .size(6.dp)
-                    .background(MaterialTheme.colorScheme.primary, CircleShape)
+                    .background(MaterialTheme.colorScheme.primary, CircleShape),
             )
         }
     }
@@ -115,18 +125,18 @@ private fun TabLabel(title: String, count: Int = 0, hasDot: Boolean = false) {
 private fun ResponseStatusBar(
     response: ResponseState?,
     error: String?,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Row(
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(12.dp),
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         when {
             error != null -> Text(
                 text = stringResource(Res.string.msg_error_prefix, error),
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.error
+                color = MaterialTheme.colorScheme.error,
             )
 
             response != null -> {
@@ -135,26 +145,26 @@ private fun ResponseStatusBar(
                 Text(
                     text = response.statusText,
                     style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
 
                 Text(
                     text = "${response.timeMs} ms",
                     style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
 
                 Text(
                     text = formatSize(response.sizeBytes),
                     style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
 
             else -> Text(
                 text = stringResource(Res.string.msg_send_request_hint),
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
     }
@@ -174,7 +184,7 @@ private fun StatusBadge(code: Int) {
             text = code.toString(),
             style = MaterialTheme.typography.labelMedium,
             color = MaterialTheme.colorScheme.onPrimary,
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
         )
     }
 }

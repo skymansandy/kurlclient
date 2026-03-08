@@ -33,7 +33,7 @@ private fun emit(
     out: MutableList<Line>,
     folded: Set<Int>,
     prefix: AnnotatedString?,
-    suffix: String?
+    suffix: String?,
 ) {
     val pre = prefix ?: AnnotatedString("")
     fun sfx() = if (suffix != null)
@@ -53,7 +53,7 @@ private fun emit(
                     }
                 },
                 foldId = node.id,
-                folded = isFolded
+                folded = isFolded,
             )
             if (!isFolded) {
                 node.entries.forEachIndexed { i, (k, v) ->
@@ -67,7 +67,7 @@ private fun emit(
                         out,
                         folded,
                         keyPre,
-                        if (i < node.entries.lastIndex) "," else null
+                        if (i < node.entries.lastIndex) "," else null,
                     )
                 }
                 out += Line(indent, buildAnnotatedString {
@@ -88,7 +88,7 @@ private fun emit(
                     }
                 },
                 foldId = node.id,
-                folded = isFolded
+                folded = isFolded,
             )
             if (!isFolded) {
                 node.items.forEachIndexed { i, v ->
@@ -98,7 +98,7 @@ private fun emit(
                         out,
                         folded,
                         null,
-                        if (i < node.items.lastIndex) "," else null
+                        if (i < node.items.lastIndex) "," else null,
                     )
                 }
                 out += Line(indent, buildAnnotatedString {
@@ -109,8 +109,8 @@ private fun emit(
 
         is JNode.Str -> out += Line(indent, buildAnnotatedString {
             append(pre); pushStyle(sp(cString)); append("\"${node.value.escaped()}\""); pop(); append(
-            sfx()
-        )
+                sfx(),
+            )
         })
 
         is JNode.Num -> out += Line(indent, buildAnnotatedString {

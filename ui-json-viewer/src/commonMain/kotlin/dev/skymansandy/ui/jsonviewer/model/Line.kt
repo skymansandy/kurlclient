@@ -6,5 +6,5 @@ internal data class Line(
     val indent: Int,
     val text: AnnotatedString,
     val foldId: Int = -1,
-    val folded: Boolean = false
+    val folded: Boolean = false,
 )

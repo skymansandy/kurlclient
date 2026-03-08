@@ -33,14 +33,14 @@ internal class PlaygroundScreenModel(
         setState {
             copy(
                 params = listOf(KeyValueEntry(id = nextId++)),
-                headers = listOf(KeyValueEntry(id = nextId++))
+                headers = listOf(KeyValueEntry(id = nextId++)),
             )
         }
 
         viewModelScope.launch {
             combine(
                 store.folders,
-                store.folderPaths
+                store.folderPaths,
             ) { folders, paths ->
                 folders to paths
             }.collect { (folders, paths) ->
@@ -59,21 +59,21 @@ internal class PlaygroundScreenModel(
             is PlaygroundEvent.SetUrl -> setState {
                 copy(
                     url = event.value,
-                    hasUnsavedChanges = true
+                    hasUnsavedChanges = true,
                 )
             }
 
             is PlaygroundEvent.SetMethod -> setState {
                 copy(
                     method = event.value,
-                    hasUnsavedChanges = true
+                    hasUnsavedChanges = true,
                 )
             }
 
             is PlaygroundEvent.SetBody -> setState {
                 copy(
                     body = event.value,
-                    hasUnsavedChanges = true
+                    hasUnsavedChanges = true,
                 )
             }
 
@@ -83,24 +83,24 @@ internal class PlaygroundScreenModel(
                         if (it.id == event.id) it.copy(
                             key = event.key,
                             value = event.value,
-                            enabled = event.enabled
+                            enabled = event.enabled,
                         ) else it
                     },
-                    hasUnsavedChanges = true
+                    hasUnsavedChanges = true,
                 )
             }
 
             is PlaygroundEvent.AddParam -> setState {
                 copy(
                     params = params + KeyValueEntry(id = nextId++),
-                    hasUnsavedChanges = true
+                    hasUnsavedChanges = true,
                 )
             }
 
             is PlaygroundEvent.RemoveParam -> setState {
                 copy(
                     params = params.filter { it.id != event.id },
-                    hasUnsavedChanges = true
+                    hasUnsavedChanges = true,
                 )
             }
 
@@ -110,24 +110,24 @@ internal class PlaygroundScreenModel(
                         if (it.id == event.id) it.copy(
                             key = event.key,
                             value = event.value,
-                            enabled = event.enabled
+                            enabled = event.enabled,
                         ) else it
                     },
-                    hasUnsavedChanges = true
+                    hasUnsavedChanges = true,
                 )
             }
 
             is PlaygroundEvent.AddHeader -> setState {
                 copy(
                     headers = headers + KeyValueEntry(id = nextId++),
-                    hasUnsavedChanges = true
+                    hasUnsavedChanges = true,
                 )
             }
 
             is PlaygroundEvent.RemoveHeader -> setState {
                 copy(
                     headers = headers.filter { it.id != event.id },
-                    hasUnsavedChanges = true
+                    hasUnsavedChanges = true,
                 )
             }
 
@@ -135,7 +135,7 @@ internal class PlaygroundScreenModel(
             is PlaygroundEvent.CreateFolder -> viewModelScope.launch {
                 store.createFolder(
                     event.name,
-                    event.parentId
+                    event.parentId,
                 )
             }
 
@@ -175,7 +175,7 @@ internal class PlaygroundScreenModel(
                 params = p,
                 body = parsed.body ?: "",
                 response = null,
-                error = null
+                error = null,
             )
         }
         return true
@@ -194,13 +194,13 @@ internal class PlaygroundScreenModel(
                     method = s.method.name,
                     headers = s.headers.serialize(),
                     params = s.params.serialize(),
-                    body = s.body
+                    body = s.body,
                 )
                 setState {
                     copy(
                         loadedRequest = loaded.copy(name = name, folder_id = folderId),
                         hasUnsavedChanges = false,
-                        overwriteSuccess = true
+                        overwriteSuccess = true,
                     )
                 }
             } else {
@@ -211,7 +211,7 @@ internal class PlaygroundScreenModel(
                     method = s.method.name,
                     headers = s.headers.serialize(),
                     params = s.params.serialize(),
-                    body = s.body
+                    body = s.body,
                 )
                 setState { copy(hasUnsavedChanges = false, saveSuccess = true) }
             }
@@ -230,7 +230,7 @@ internal class PlaygroundScreenModel(
                 method = s.method.name,
                 headers = s.headers.serialize(),
                 params = s.params.serialize(),
-                body = s.body
+                body = s.body,
             )
             setState { copy(hasUnsavedChanges = false, overwriteSuccess = true) }
         }
@@ -250,7 +250,7 @@ internal class PlaygroundScreenModel(
                 body = saved.body,
                 response = null,
                 error = null,
-                hasUnsavedChanges = false
+                hasUnsavedChanges = false,
             )
         }
     }
@@ -260,7 +260,7 @@ internal class PlaygroundScreenModel(
         if (s.url.isBlank()) return
         val url = if (!s.url.startsWith("http://", ignoreCase = true) && !s.url.startsWith(
                 "https://",
-                ignoreCase = true
+                ignoreCase = true,
             )
         ) {
             "https://${s.url}".also { setState { copy(url = it) } }
@@ -280,8 +280,8 @@ internal class PlaygroundScreenModel(
                         queryParams = s.params
                             .filter { it.enabled && it.key.isNotBlank() }
                             .associate { it.key to it.value },
-                        body = s.body.ifBlank { null }
-                    )
+                        body = s.body.ifBlank { null },
+                    ),
                 )
                 setState {
                     copy(
@@ -292,8 +292,8 @@ internal class PlaygroundScreenModel(
                             sizeBytes = kurlResponse.sizeBytes,
                             body = kurlResponse.body,
                             headers = kurlResponse.headers,
-                            networkInfo = kurlResponse.networkInfo
-                        )
+                            networkInfo = kurlResponse.networkInfo,
+                        ),
                     )
                 }
             } catch (e: Exception) {

@@ -8,7 +8,7 @@ internal fun buildCurlCommand(
     method: HttpMethod,
     headers: List<KeyValueEntry>,
     params: List<KeyValueEntry>,
-    body: String
+    body: String,
 ): String = buildString {
     append("curl")
 
@@ -86,13 +86,15 @@ internal fun parseCurlCommand(raw: String): ParsedCurlRequest? {
             // Flags that take a value we don't use
             "-u", "--user", "-A", "--user-agent", "--proxy",
             "--max-time", "--connect-timeout", "-e", "--referer",
-            "-o", "--output", "--cacert", "--cert", "--key" -> {
+            "-o", "--output", "--cacert", "--cert", "--key",
+            -> {
                 i += 2
             }
             // Boolean flags to skip
             "--compressed", "--insecure", "-k", "-L", "--location",
             "-v", "--verbose", "-s", "--silent", "-i", "--include",
-            "-G", "--get" -> {
+            "-G", "--get",
+            -> {
                 i++
             }
 
@@ -130,7 +132,7 @@ internal fun parseCurlCommand(raw: String): ParsedCurlRequest? {
         method = inferredMethod,
         headers = headers,
         params = params,
-        body = body
+        body = body,
     )
 }
 
@@ -172,7 +174,7 @@ private fun tokenize(s: String): List<String> {
                         buf.append(
                             when (s[i]) {
                                 'n' -> '\n'; 't' -> '\t'; 'r' -> '\r'; else -> s[i]
-                            }
+                            },
                         )
                     } else {
                         buf.append(s[i])

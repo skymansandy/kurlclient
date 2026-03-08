@@ -16,7 +16,7 @@ internal fun HighlightedText(
     text: String,
     query: String,
     style: TextStyle,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val highlight = MaterialTheme.colorScheme.primary
     val annotated = remember(text, query) {
@@ -37,8 +37,8 @@ internal fun HighlightedText(
                     pushStyle(
                         SpanStyle(
                             color = highlight,
-                            fontWeight = FontWeight.Bold
-                        )
+                            fontWeight = FontWeight.Bold,
+                        ),
                     )
                     append(text.substring(idx, idx + query.length))
                     pop()

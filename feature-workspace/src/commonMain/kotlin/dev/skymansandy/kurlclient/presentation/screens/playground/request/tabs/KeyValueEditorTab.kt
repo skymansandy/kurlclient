@@ -32,13 +32,13 @@ internal fun KeyValueEditorTab(
     onRemove: (Long) -> Unit,
     keyPlaceholder: String = "Key",
     valuePlaceholder: String = "Value",
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Column(
         modifier = modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState()),
-        verticalArrangement = Arrangement.spacedBy(6.dp)
+        verticalArrangement = Arrangement.spacedBy(6.dp),
     ) {
         entries.forEach { entry ->
             KeyValueRow(
@@ -46,13 +46,13 @@ internal fun KeyValueEditorTab(
                 keyPlaceholder = keyPlaceholder,
                 valuePlaceholder = valuePlaceholder,
                 onUpdate = { key, value, enabled -> onUpdate(entry.id, key, value, enabled) },
-                onRemove = { onRemove(entry.id) }
+                onRemove = { onRemove(entry.id) },
             )
         }
 
         TextButton(
             onClick = onAdd,
-            modifier = Modifier.align(Alignment.Start)
+            modifier = Modifier.align(Alignment.Start),
         ) {
             Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(16.dp))
             Text(" Add", style = MaterialTheme.typography.labelMedium)
@@ -66,24 +66,24 @@ private fun KeyValueRow(
     keyPlaceholder: String,
     valuePlaceholder: String,
     onUpdate: (String, String, Boolean) -> Unit,
-    onRemove: () -> Unit
+    onRemove: () -> Unit,
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(4.dp)
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
     ) {
         Checkbox(
             checked = entry.enabled,
             onCheckedChange = { onUpdate(entry.key, entry.value, it) },
-            modifier = Modifier.size(20.dp)
+            modifier = Modifier.size(20.dp),
         )
 
         InlineTextField(
             value = entry.key,
             placeholder = keyPlaceholder,
             onValueChange = { onUpdate(it, entry.value, entry.enabled) },
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(1f),
         )
 
         Text(":", color = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -92,7 +92,7 @@ private fun KeyValueRow(
             value = entry.value,
             placeholder = valuePlaceholder,
             onValueChange = { onUpdate(entry.key, it, entry.enabled) },
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(1f),
         )
 
         IconButton(onClick = onRemove, modifier = Modifier.size(28.dp)) {
@@ -100,7 +100,7 @@ private fun KeyValueRow(
                 Icons.Default.Delete,
                 contentDescription = "Remove",
                 modifier = Modifier.size(16.dp),
-                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
     }
