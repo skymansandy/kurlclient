@@ -24,9 +24,9 @@ kotlin {
             isStatic = true
         }
     }
-    
+
     jvm()
-    
+
     sourceSets {
         androidMain.dependencies {
             implementation(libs.compose.uiToolingPreview)
@@ -69,9 +69,15 @@ compose.desktop {
         mainClass = "dev.skymansandy.kurlclient.MainKt"
 
         nativeDistributions {
-            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "dev.skymansandy.kurlclient"
             packageVersion = "1.0.0"
+            modules("java.net.http")
+            targetFormats(
+                TargetFormat.Dmg,
+                TargetFormat.Msi,
+                TargetFormat.Deb,
+                TargetFormat.Exe,
+            )
         }
     }
 }
