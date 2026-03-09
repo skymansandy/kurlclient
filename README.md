@@ -43,46 +43,41 @@ A cross-platform HTTP client built with **Kotlin Multiplatform** and **Compose M
                     │   (commonMain) │  DI wiring (Koin)
                     └───────┬────────┘
                             │
-              ┌─────────────▼──────────────┐
-              │      feature-workspace      │
-              │  WorkSpaceScreen            │
-              │  ├── CompactScaffold        │  Adaptive
-              │  └── ExpandedScaffold       │  layouts
-              │       ├── PlaygroundScreen  │
-              │       │   ├── RequestPanel  │
-              │       │   │   ├── UrlBar    │
-              │       │   │   ├── Headers   │
-              │       │   │   ├── Params    │
-              │       │   │   ├── Body      │
-              │       │   │   └── Auth (WIP)│
-              │       │   └── ResponsePanel │
-              │       │       ├── Body      │
-              │       │       ├── Headers   │
-              │       │       └── NetworkInfo│
-              │       └── CollectionsScreen  │
-              │           └── FolderTree    │
-              └─────────────┬──────────────┘
-                            │ MVI (State / Event / Effect)
-              ┌─────────────▼──────────────┐
-              │    ViewModels (Koin)        │
-              │  WorkspaceViewModel         │
-              │  PlaygroundScreenModel      │
-              │  CollectionsViewModel       │
-              └──────┬──────────┬──────────┘
-                     │          │
-          ┌──────────▼──┐  ┌────▼───────────┐
-          │  kurl-core  │  │   kurl-store    │
-          │  KurlEngine │  │  SQLDelight DB  │
-          │  (Ktor HTTP)│  │  CollectionFolder│
-          │  KurlRequest│  │  SavedRequest   │
-          │  KurlResponse│ └─────────────────┘
-          └─────────────┘
-                     │
-          ┌──────────▼──────────────────────┐
-          │      ui-json-viewer             │
-          │  JsonParser → JNode tree        │
-          │  JsonViewer (syntax coloring)   │
-          └─────────────────────────────────┘
+              ┌─────────────▼────────────────────────────┐
+              │      feature-workspace                   │
+              │  WorkSpaceScreen                         │
+              │  ├── CompactScaffold                     │  Adaptive
+              │  └── ExpandedScaffold                    │  layouts
+              │       ├── PlaygroundScreen               │
+              │       │   ├── RequestPanel               │
+              │       │   │   ├── UrlBar                 │
+              │       │   │   ├── Headers                │
+              │       │   │   ├── Params                 │
+              │       │   │   ├── Body                   │
+              │       │   │   └── Auth (WIP)             │
+              │       │   └── ResponsePanel              │
+              │       │       ├── Body                   │
+              │       │       ├── Headers                │
+              │       │       └── NetworkInfo            │
+              │       └── CollectionsScreen              │
+              │           └── FolderTree                 │
+              └──────┬──────────────┬──────────────────┬─┘
+                     │ MVI          │                  │
+              ┌──────▼──────────┐   │                  │
+              │  ViewModels     │   │                  │
+              │  (Koin)         │   │                  │
+              │  WorkspaceVm    │   │                  │
+              │  PlaygroundVm   │   │                  │
+              │  CollectionsVm  │   │                  │
+              └──────┬──────────┘   │                  │
+                     │              │                  │
+          ┌──────────▼───┐  ┌───────▼──────────┐  ┌────▼────────────────────┐
+          │  kurl-core   │  │   kurl-store     │  │     ui-json-viewer      │
+          │  KurlEngine  │  │  SQLDelight DB   │  │  JsonParser → JNode     │
+          │  (Ktor HTTP) │  │  CollectionFolder│  │  JsonViewer composable  │
+          │  KurlRequest │  │  SavedRequest    │  └─────────────────────────┘
+          │  KurlResponse│  └──────────────────┘ 
+          └──────────────┘
 ```
 
 ### Modules
